@@ -1,7 +1,7 @@
 <template>
     <div class="login-wrap">
         <div class="ms-login">
-            <div class="ms-title">后台管理系统</div>
+            <div class="ms-title">SOE管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
                     <el-input v-model="param.username" placeholder="username">
@@ -21,7 +21,7 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">登录</el-button>
                 </div>
-                <p class="login-tips">温馨提示 : 欢迎来到后台管理系统。</p>
+                <p class="login-tips">温馨提示 : 欢迎来到SOE管理系统。</p>
             </el-form>
         </div>
     </div>
@@ -32,13 +32,15 @@ import { ref, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { getUserInformation } from "../api/index";
 
 export default {
     setup() {
         const router = useRouter();
+        let userName = "15571696970";
+        let password = "123456";
         const param = reactive({
-            username: "admin",
-            password: "123123",
+            username: userName, password
         });
 
         const rules = {
@@ -55,16 +57,27 @@ export default {
         };
         const login = ref(null);
         const submitForm = () => {
-            login.value.validate((valid) => {
-                if (valid) {
-                    ElMessage.success("登录成功");
-                    localStorage.setItem("ms_username", param.username);
-                    router.push("/");
-                } else {
-                    ElMessage.error("登录成功");
-                    return false;
-                }
-            });
+             getUserInformation({phone:param.username || userName,pwd:param.password || password}).then((res) => {
+                    let data = res.data;
+                    let token = data.split("-")[2];
+                    let strings = token.split("."); //截取token，获取载体
+                    let userinfo = JSON.parse(decodeURIComponent(escape(window.atob(strings[1].replace(/-/g, "+").replace(/_/g, "/")))));
+                    login.value.validate((valid) => {
+                         if (valid) {
+                                       ElMessage.success("登录成功");
+                                       localStorage.setItem("ms_username", param.username);
+                                       localStorage.setItem("userinfo", JSON.stringify(userinfo));
+                                       router.push("/");
+                                      }else {
+                                        ElMessage.error("登录成功");
+                                        return false;
+                                      }
+                            });
+                        }).catch((e)=>{
+                         ElMessage.error("登录失败，用户名或者密码错误！");
+                         console.log(e);
+                         return false;
+                        });
         };
 
         const store = useStore();

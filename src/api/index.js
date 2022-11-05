@@ -18,4 +18,13 @@ export const logout = query => {
     });
 };
 
+export const getUserInformation = (query) => {
+    return request({
+        url: "http://47.101.58.72:8888/user-server/api/user/v1/login",
+        method: 'post',
+        data: query,
+        params:{}
+    });
+};
+
 

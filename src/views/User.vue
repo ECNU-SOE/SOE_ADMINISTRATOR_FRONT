@@ -29,6 +29,7 @@
                     </template>
                     <el-form label-width="90px">
                         <el-form-item label="用户名："> {{ name }} </el-form-item>
+                        <el-form-item label="手机号："> {{ form.phone }} </el-form-item>
                         <el-form-item label="旧密码：">
                             <el-input type="password" v-model="form.old"></el-input>
                         </el-form-item>
@@ -73,7 +74,11 @@ export default {
     },
     setup() {
         const name = localStorage.getItem("ms_username");
+        const userinfo = JSON.parse(localStorage.getItem("userinfo"));
+        let loginUser = userinfo.loginUser || {};
+        let phone = loginUser.phone || "";
         const form = reactive({
+            phone:phone,
             old: "",
             new: "",
             desc: "不可能！我的代码怎么可能会有bug！",

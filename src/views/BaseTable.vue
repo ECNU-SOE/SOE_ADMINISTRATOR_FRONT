@@ -37,12 +37,26 @@
 
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" v-model="editVisible" width="30%">
-            <el-form label-width="70px">
+            <el-form label-width="90px">
                 <el-form-item label="用户名">
-                    <el-input v-model="form.name"></el-input>
+                    <el-input v-model="form.name" :disabled="true"></el-input>
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+               <el-form-item label="权限设置">
+                 <el-radio-group v-model="form.resource" style="width:100%;">
+                    <el-select v-model="form.region" placeholder="请选择" style="width:100%;">
+                       <el-option key="admin" label="admin" value="admin"></el-option>
+                       <el-option key="user" label="user" value="user"></el-option>
+                    </el-select>
+                 </el-radio-group>
+               </el-form-item>
+               <el-form-item label="培训师等级">
+                  <el-radio-group v-model="form.resource" style="width:100%;">
+                    <el-select v-model="form.region" placeholder="请选择" style="width:100%;">
+                       <el-option key="A" label="A" value="A"></el-option>
+                       <el-option key="B" label="B" value="B"></el-option>
+                       <el-option key="C" label="C" value="C"></el-option>
+                    </el-select>
+                  </el-radio-group>
                 </el-form-item>
             </el-form>
             <template #footer>
