@@ -47,6 +47,11 @@ export default {
                 icon: "el-icon-lx-cascades",
                 index: "/table",
                 title: "数据管理",
+            },
+            {
+                icon: "el-icon-lx-cascades",
+                index: "/material",
+                title: "语料管理",
             }, {
                 icon: "el-icon-lx-sort",
                 index: "4",

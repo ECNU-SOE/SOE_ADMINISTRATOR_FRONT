@@ -67,6 +67,7 @@ export default {
                                        ElMessage.success("登录成功");
                                        localStorage.setItem("ms_username", param.username);
                                        localStorage.setItem("userinfo", JSON.stringify(userinfo));
+                                       localStorage.setItem("data", data);
                                        router.push("/");
                                       }else {
                                         ElMessage.error("登录成功");
