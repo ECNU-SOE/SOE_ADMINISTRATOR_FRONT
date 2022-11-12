@@ -52,6 +52,10 @@ export default {
                 icon: "el-icon-lx-cascades",
                 index: "/material",
                 title: "语料管理",
+            },{
+                icon: "el-icon-lx-cascades",
+                index: "/materialGroup",
+                title: "语料组管理",
             }, {
                 icon: "el-icon-lx-sort",
                 index: "4",

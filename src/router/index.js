@@ -116,6 +116,13 @@ const routes = [
                     title: '语料表格'
                 },
                 component: () => import ( /* webpackChunkName: "material" */ "../views/material.vue")
+            },{
+                path: "/materialGroup",
+                name: "materialGroup",
+                meta: {
+                    title: '语料组'
+                },
+                component: () => import ( /* webpackChunkName: "material" */ "../views/materialGroup.vue")
             }
         ]
     }, {

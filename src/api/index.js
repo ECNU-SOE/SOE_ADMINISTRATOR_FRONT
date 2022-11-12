@@ -48,3 +48,15 @@ export const addLanguageMaterial = (opt) => {
         }
     });
 };
+
+export const addLanguageMaterialGroup = (opt) => {
+    return request({
+        url: "http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/create",
+        method: 'post',
+        data: opt,
+        params:{},
+        headers:{
+            token:opt.token
+        }
+    });
+};
