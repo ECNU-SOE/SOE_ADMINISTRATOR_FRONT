@@ -173,7 +173,7 @@ export default {
       startTime:"",
       endTime:""
     });
-    let selectionsList = [],stateArr=[];
+    let stateArr=[];
     let pageIndex =0;
     let idx = -1;
     let token = localStorage.getItem("data");
@@ -254,7 +254,6 @@ export default {
       pageIndex,
       groupsInfo,
       stateArr,
-      selectionsList,
       clear,
       handleAdd,
       handleEdit,
@@ -262,6 +261,13 @@ export default {
       saveEdit
     };
   },
+
+  data(){
+    return {
+      selectionsList:[]
+    }
+  },
+
 
   computed:{
     selections(){

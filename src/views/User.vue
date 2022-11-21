@@ -74,7 +74,7 @@ export default {
     },
     setup() {
         const name = localStorage.getItem("ms_username");
-        const userinfo = JSON.parse(localStorage.getItem("userinfo"));
+        const userinfo = (localStorage.getItem("userinfo") && JSON.parse(localStorage.getItem("userinfo"))) || {};
         let loginUser = userinfo.loginUser || {};
         let phone = loginUser.phone || "";
         const form = reactive({
