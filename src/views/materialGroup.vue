@@ -9,18 +9,15 @@
     </div>
     <div class="container">
       <div class="handle-box">
-        <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
+        <el-input v-model="query.id" placeholder="语料组标识,默认(1588871928125460480)" class="handle-input mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
       </div>
-      <div class="addDelete">
-        <el-button type="primary"  @click="handleAdd()" class="addBtn">添加按钮</el-button>
-      </div>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-        <el-table-column prop="id" label="语料标识" align="center"></el-table-column>
+      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" :span-method="spanMethod">
+        <el-table-column prop="name" label="语料组名称" align="center"></el-table-column>
         <el-table-column prop="type" label="类型" align="center"></el-table-column>
+        <el-table-column prop="id" label="语料标识" align="center"></el-table-column>
         <el-table-column prop="pinyin" label="拼音" align="center"></el-table-column>
         <el-table-column prop="refText" label="文本" align="center"></el-table-column>
-        <el-table-column prop="creator" label="创建者" align="center"></el-table-column>
         <!--        <el-table-column prop="gmtCreate" label="创建时间" align="center"></el-table-column>-->
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
@@ -37,72 +34,13 @@
       </div>
     </div>
 
-    <!-- 编辑弹出框 -->
-    <el-dialog title="修改语料" v-model="editVisible" width="30%">
-      <el-form label-width="120px">
-        <el-form-item label="语料类型">
-          <el-select v-model="form.type" placeholder="请选择" style="width:100%;">
-            <el-option key=0 label="单字" value=0></el-option>
-            <el-option key=1 label="词语" value=1></el-option>
-            <el-option key=2 label="句子" value=2></el-option>
-            <el-option key=3 label="段落" value=3></el-option>
-            <el-option key=5 label="古诗" value=5></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="语料级别">
-          <el-input v-model="form.level" ></el-input>
-        </el-form-item>
-        <el-form-item label="语料拼音">
-          <el-input v-model="form.pinyin" ></el-input>
-        </el-form-item>
-        <el-form-item label="语料文本内容">
-          <el-input v-model="form.refText"  type="textarea"></el-input>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="editVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="saveEdit">确 定</el-button>
-                </span>
-      </template>
-    </el-dialog>
-
-    <!-- 添加弹出框 -->
-    <el-dialog title="添加语料" v-model="addVisible" width="30%">
-      <el-form label-width="120px">
-        <el-form-item label="语料类型">
-          <el-select v-model="form.type" placeholder="请选择" style="width:100%;">
-            <el-option key=0 label="单字" value=0></el-option>
-            <el-option key=1 label="词语" value=1></el-option>
-            <el-option key=2 label="句子" value=2></el-option>
-            <el-option key=3 label="段落" value=3></el-option>
-            <el-option key=5 label="古诗" value=5></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="语料级别">
-          <el-input v-model="form.level" ></el-input>
-        </el-form-item>
-        <el-form-item label="语料拼音">
-          <el-input v-model="form.pinyin" ></el-input>
-        </el-form-item>
-        <el-form-item label="语料文本内容">
-          <el-input v-model="form.refText"  type="textarea"></el-input>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="editVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="saveAdd">确 定</el-button>
-                </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import { ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { getLanguageMaterial,addLanguageMaterialGroup } from "../api/index";
+import { showAllLanguageMaterialGroup } from "../api/index";
 
 export default {
   name: "materialGroup",
@@ -111,33 +49,25 @@ export default {
       cur: 1,
       size: 20,
     });
-    let set = {
-      0:"单字",
-      1:"词语",
-      2:"句子",
-      3:"段落",
-      5:"古诗"
-    }
 
-    let reverseSet = {
-      "单字":0,
-      "词语":1,
-      "句子":2,
-      "段落":3,
-      "古诗":5
-    }
     let tableData = ref([]);
     const pageTotal = ref(0);
     // 获取表格数据
     const getData = () => {
-      getLanguageMaterial(query).then((res) => {
-        if(res.code !== 0){
-          console.log("数据为空")
-          return;
+      showAllLanguageMaterialGroup(query).then((res) => {
+        let name = res.name;
+        let cpsrcdList = res.cpsrcdList;
+        let count = 0;
+        tableData.value = [];
+        for(let i in cpsrcdList){
+          for(let j =0; j < cpsrcdList[i].corpus_list.length;j++){
+            count++;
+            tableData.value.push({name,
+              type:cpsrcdList[i].type,id:cpsrcdList[i].corpus_list[j].id,
+            pinyin:cpsrcdList[i].corpus_list[j].pinyin,refText:cpsrcdList[i].corpus_list[j].refText})
+          }
         }
-        let data = res.data;
-        tableData.value = data.records;
-        pageTotal.value = data.total || 50;
+        pageTotal.value = count;
       }).catch((e)=>{
         tableData.value = [];
         pageTotal.value = 0;
@@ -170,18 +100,7 @@ export default {
     let idx = -1;
     let token = localStorage.getItem("data");
 
-    const saveEdit = () => {
-      if(!form.refText){
-        ElMessage({
-          message: '语料文本内容不能为空.',
-          type: 'warning',
-        })
-        return false;
-      }
-      editVisible.value = false;
-      //editMaterial();
-      getData();
-    };
+
 
     const handleEdit = (index, row) => {
       idx = index;
@@ -212,30 +131,6 @@ export default {
       addVisible.value = true;
     };
 
-    const addMaterial = () => {
-      addLanguageMaterialGroup({data:form,token}).then((res) => {
-        if(res.code !== 0){
-          ElMessage.error(`添加失败!`)
-          return;
-        }
-        ElMessage.success(`添加语料成功!`);
-      }).catch((e)=>{
-        ElMessage.error(`添加失败，原因为${e}`)
-      });
-    };
-
-    const saveAdd = () => {
-      if(!form.refText){
-        ElMessage({
-          message: '语料文本内容不能为空.',
-          type: 'warning',
-        })
-        return false;
-      }
-      editVisible.value = false;
-      addMaterial();
-      getData();
-    };
 
     return {
       query,
@@ -249,10 +144,52 @@ export default {
       handlePageChange,
       handleEdit,
       handleDelete,
-      saveEdit,
-      saveAdd
     };
   },
+
+  computed:{
+    groupNum(){
+      return new Set(this.tableData.map(o => o.type));
+    }
+  },
+
+  methods:{
+
+    typeListLth(name){
+      return this.tableData.filter(o => o.type === name).length;
+    },
+    classNameLen(name){  //根据班级名称获取该班级第一个学生在全量学生中的偏移位置
+      const tmp = Array.from(this.groupNum);
+      const index = tmp.indexOf(name);  //某班级在全班级中的偏移位置
+      let len = 0;
+      for (let i = 0;i < index;i++){
+        len += this.typeListLth(tmp[i]);
+      }
+      return len;
+    },
+
+    spanMethod(data){
+      const {row,rowIndex,columnIndex} = data;
+      if (columnIndex < 2 || columnIndex > 3) {  //班级合并展示区
+        const len = this.typeListLth(row.type);
+        const lenName = this.classNameLen(row.type);
+        if (rowIndex === lenName) {   //某班级首位学生行
+          return {
+            rowspan:len,
+            colspan:1
+          }
+        } else return {   //某班级非首位学生行
+          rowspan: 0,
+          colspan: 0
+        };
+      } else {  //学生信息展示区
+        return {
+          rowspan: 1,
+          colspan: 1
+        };
+      }
+    },
+  }
 };
 </script>
 

@@ -60,3 +60,14 @@ export const addLanguageMaterialGroup = (opt) => {
         }
     });
 };
+
+export const showAllLanguageMaterialGroup = (opt) => {
+    return request({
+        url: `http://47.101.58.72:8888/corpus-server/api/test/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        method: 'get',
+        data: opt,
+        params:{}
+    });
+};
+
+

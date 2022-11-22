@@ -96,14 +96,21 @@
         <el-form-item label="截止答题时间">
           <el-input v-model="groupsInfo.endTime" ></el-input>
         </el-form-item>
-        <div class="right">
-          <div class="title">已选
+        <div class="yuLiaoList">
+          <div class="selectedListTitle">已选列表
 <!--            <span class="clear" @click="handleCLearAll">清空全部</span>-->
           </div>
+          <el-scrollbar style="height:100%">
           <div class="one-selected" v-for="(item, index) in selections" :key="index">
-            <span>{{item.id}}</span>
+            <el-table :data="selections" header-cell-class-name="table-header"  border >
+              <el-table-column prop="id" label="语料标识" align="center"></el-table-column>
+              <el-table-column prop="pinyin" label="拼音" align="center"></el-table-column>
+              <el-table-column prop="refText" label="文本" align="center"></el-table-column>
+            </el-table>
+<!--            <span>{{item.id}}</span>-->
 <!--            <span @click="cancelSelect(item, index)">X</span>-->
           </div>
+          </el-scrollbar>
         </div>
       </el-form>
       <template #footer>
@@ -284,8 +291,9 @@ export default {
       this.stateArr[this.pageIndex] = selection
       this.selectionsList = this.stateArr.flat()
     },
-    handleSelectAll(){
-
+    handleSelectAll(selection){
+      this.stateArr[this.pageIndex] = selection
+      this.selectionsList = this.stateArr.flat()
     },
     // 查询操作
     handleSearch(){
@@ -372,7 +380,17 @@ export default {
 }
 
 .addGroupBtn {
-  left:75%;
+  left:85%;
   position: relative;
+}
+
+.yuLiaoList {
+  height: 200px;
+  /*overflow-y: auto;*/
+  text-align: center;
+}
+
+.selectedListTitle {
+  margin-bottom: 5px;
 }
 </style>
