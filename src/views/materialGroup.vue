@@ -11,6 +11,7 @@
       <div class="handle-box">
         <el-input v-model="query.id" placeholder="语料组标识,默认(1588871928125460480)" class="handle-input mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="handleDelete" class="deleteGroup">删除语料组</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" :span-method="spanMethod">
         <el-table-column prop="name" label="语料组名称" align="center"></el-table-column>
@@ -18,15 +19,6 @@
         <el-table-column prop="id" label="语料标识" align="center"></el-table-column>
         <el-table-column prop="pinyin" label="拼音" align="center"></el-table-column>
         <el-table-column prop="refText" label="文本" align="center"></el-table-column>
-        <!--        <el-table-column prop="gmtCreate" label="创建时间" align="center"></el-table-column>-->
-        <el-table-column label="操作" width="180" align="center">
-          <template #default="scope">
-            <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑
-            </el-button>
-            <el-button type="text" icon="el-icon-delete" class="red"
-                       @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
       </el-table>
       <div class="pagination">
         <el-pagination background layout="total, prev, pager, next" :current-page="query.cur"
@@ -40,7 +32,7 @@
 <script>
 import { ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { showAllLanguageMaterialGroup } from "../api/index";
+import { showAllLanguageMaterialGroup,deleteLanguageMaterialGroup } from "../api/index";
 
 export default {
   name: "materialGroup",
@@ -115,16 +107,22 @@ export default {
     };
 
     // 删除操作
-    const handleDelete = (index) => {
+    const handleDelete = () => {
       // 二次确认删除
       ElMessageBox.confirm("确定要删除吗？", "提示", {
         type: "warning",
       })
           .then(() => {
-            ElMessage.success("删除成功");
-            tableData.value.splice(index, 1);
+            deleteLanguageMaterialGroup({id:query.id,token}).then((res) => {
+             if(res.data === 1){
+               ElMessage.success("删除成功");
+               getData();
+             }
+            }).catch((e)=>{
+              console.log(e);
+            });
           })
-          .catch(() => {});
+          .catch((e) => { console.log(e);});
     };
 
     const handleAdd = () =>{
@@ -225,5 +223,10 @@ export default {
 
 .addBtn {
   margin-bottom: 10px;
+}
+
+.deleteGroup {
+  background-color: red;
+  border: red;
 }
 </style>

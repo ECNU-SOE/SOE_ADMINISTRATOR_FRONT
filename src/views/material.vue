@@ -101,15 +101,11 @@
 <!--            <span class="clear" @click="handleCLearAll">清空全部</span>-->
           </div>
           <el-scrollbar style="height:100%">
-          <div class="one-selected" v-for="(item, index) in selections" :key="index">
             <el-table :data="selections" header-cell-class-name="table-header"  border >
               <el-table-column prop="id" label="语料标识" align="center"></el-table-column>
               <el-table-column prop="pinyin" label="拼音" align="center"></el-table-column>
               <el-table-column prop="refText" label="文本" align="center"></el-table-column>
             </el-table>
-<!--            <span>{{item.id}}</span>-->
-<!--            <span @click="cancelSelect(item, index)">X</span>-->
-          </div>
           </el-scrollbar>
         </div>
       </el-form>

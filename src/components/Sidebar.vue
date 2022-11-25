@@ -62,15 +62,15 @@ export default {
                 title: "权限管理",
                 subs: [
                     {
-                        index: "/permission",
+                        index: "/role",
                         title: "角色",
                     },
                     {
                         index: "/permission",
-                        title: "模块",
+                        title: "权限",
                     },
                     {
-                        index: "/permission",
+                        index: "/userManager",
                         title: "用户",
                     }
                 ],

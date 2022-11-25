@@ -123,6 +123,20 @@ const routes = [
                     title: '语料组'
                 },
                 component: () => import ( /* webpackChunkName: "material" */ "../views/materialGroup.vue")
+            },{
+                name: 'role',
+                path: '/role',
+                meta: {
+                    title: '角色管理'
+                },
+                component: () => import("../views/Role.vue")
+            },{
+                name: 'userManager',
+                path: '/userManager',
+                meta: {
+                    title: '用户管理'
+                },
+                component: () => import("../views/userManager.vue")
             }
         ]
     }, {
