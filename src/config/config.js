@@ -6,7 +6,7 @@ let env = process.env.NODE_ENV || 'development'
    },
 
    prod: {
-      baseUrl: 'http://www.baidu.com'
+      baseUrl: 'http://47.101.58.72:8080'
    }
 }
 export default config[env]

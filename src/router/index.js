@@ -102,13 +102,6 @@ const routes = [
                     title: '个人中心'
                 },
                 component: () => import (/* webpackChunkName: "user" */ '../views/User.vue')
-            }, {
-                path: '/editor',
-                name: 'editor',
-                meta: {
-                    title: '富文本编辑器'
-                },
-                component: () => import (/* webpackChunkName: "editor" */ '../views/Editor.vue')
             },{
                 path: "/material",
                 name: "material",

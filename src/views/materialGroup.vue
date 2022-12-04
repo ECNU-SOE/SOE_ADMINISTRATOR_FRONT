@@ -47,8 +47,8 @@ export default {
     // 获取表格数据
     const getData = () => {
       showAllLanguageMaterialGroup(query).then((res) => {
-        let name = res.name;
-        let cpsrcdList = res.cpsrcdList;
+        let name = res.data.name;
+        let cpsrcdList = res.data.cpsrcdList;
         let count = 0;
         tableData.value = [];
         for(let i in cpsrcdList){
