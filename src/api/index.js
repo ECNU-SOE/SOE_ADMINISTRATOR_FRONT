@@ -30,7 +30,7 @@ export const getUserInformation = (query) => {
 
 export const getLanguageMaterial = (query) => {
     return request({
-        url: `${baseUrl}corpus-server/api/corpus/v1/list?cur=1&size=20`,
+        url: `${baseUrl}corpus-server/api/corpus/v1/list?cur=1&size=100`,
         method: 'post',
         data: query,
         params:{}
@@ -61,10 +61,20 @@ export const addLanguageMaterialGroup = (opt) => {
     });
 };
 
+export const getCurrentLanguageMaterialGroup = (opt) => {
+    return request({
+        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=${opt.id}`,
+        method: 'get',
+        data: opt,
+        params:{}
+    });
+};
+
+
 export const showAllLanguageMaterialGroup = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
-        method: 'get',
+        url: `${baseUrl}corpus-server/api/cpsgrp/v1/list?cur=1&size=22`,
+        method: 'post',
         data: opt,
         params:{}
     });

@@ -46,7 +46,7 @@ export default {
             {
                 icon: "el-icon-lx-cascades",
                 index: "/table",
-                title: "数据管理",
+                title: "用户管理",
             },
             {
                 icon: "el-icon-lx-cascades",

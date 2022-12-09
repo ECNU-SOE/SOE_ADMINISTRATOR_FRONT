@@ -13,8 +13,8 @@
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
       </div>
       <div class="addAndDeleteBtnList">
-        <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn">添加语料</el-button>
-        <el-button type="primary"  @click="handleAddGroup()" class="addGroupBtn">添加语料组</el-button>
+        <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus">添加语料</el-button>
+        <el-button type="primary"  @click="handleAddGroup()" class="addGroupBtn" icon="el-icon-plus">添加语料组</el-button>
       </div>
       <div class="addGroup">
 
@@ -376,7 +376,7 @@ export default {
 }
 
 .addGroupBtn {
-  left:85%;
+  left:70%;
   position: relative;
 }
 

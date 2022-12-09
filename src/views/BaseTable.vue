@@ -17,7 +17,7 @@
                 <el-table-column prop="sex" label="性别" align="center"></el-table-column>
                 <el-table-column prop="nation" label="民族" align="center"></el-table-column>
                 <el-table-column prop="language" label="语言" align="center"></el-table-column>
-                <el-table-column prop="name" label="用户名" align="center"></el-table-column>
+                <el-table-column prop="username" label="用户名" align="center"></el-table-column>
                 <el-table-column prop="password" label="密码" align="center"></el-table-column>
                 <el-table-column prop="permission" label="权限" align="center"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
