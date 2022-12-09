@@ -1,5 +1,6 @@
 import request from '../utils/request';
-let baseUrl = "http://47.101.58.72:8888/";
+import config from '../config/config.js';
+let baseUrl = config.baseUrl;
 
 export const fetchData = query => {
     return request({
@@ -29,7 +30,7 @@ export const getUserInformation = (query) => {
 
 export const getLanguageMaterial = (query) => {
     return request({
-        url: `${baseUrl}corpus-server/api/corpus/v1/list?cur=1&size=100`,
+        url: `corpus-server/api/corpus/v1/list?cur=1&size=100`,
         method: 'post',
         data: query,
         params:{}
@@ -38,7 +39,7 @@ export const getLanguageMaterial = (query) => {
 
 export const addLanguageMaterial = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/corpus/v1/add`,
+        url: `corpus-server/api/corpus/v1/add`,
         method: 'post',
         data: opt.data,
         params:{},
@@ -50,7 +51,7 @@ export const addLanguageMaterial = (opt) => {
 
 export const addLanguageMaterialGroup = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/cpsgrp/v1/create`,
+        url: `corpus-server/api/cpsgrp/v1/create`,
         method: 'post',
         data: opt,
         params:{},
@@ -62,7 +63,7 @@ export const addLanguageMaterialGroup = (opt) => {
 
 export const getCurrentLanguageMaterialGroup = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=${opt.id}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=${opt.id}`,
         method: 'get',
         data: opt,
         params:{}
@@ -72,7 +73,7 @@ export const getCurrentLanguageMaterialGroup = (opt) => {
 
 export const showAllLanguageMaterialGroup = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/cpsgrp/v1/list?cur=1&size=22`,
+        url: `corpus-server/api/cpsgrp/v1/list?cur=1&size=22`,
         method: 'post',
         data: opt,
         params:{}
@@ -81,7 +82,7 @@ export const showAllLanguageMaterialGroup = (opt) => {
 
 export const deleteLanguageMaterialGroup = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/cpsgrp/v1/del?cpsgrpId=${opt.id}`,
+        url: `corpus-server/api/cpsgrp/v1/del?cpsgrpId=${opt.id}`,
         method: 'get',
         data: opt,
         params:{},
@@ -94,7 +95,7 @@ export const deleteLanguageMaterialGroup = (opt) => {
 
 export const getRoles = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -102,7 +103,7 @@ export const getRoles = (opt) => {
 };
 export const updateRole = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -110,7 +111,7 @@ export const updateRole = (opt) => {
 };
 export const addRole = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -118,7 +119,7 @@ export const addRole = (opt) => {
 };
 export const deleteRole = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -126,7 +127,7 @@ export const deleteRole = (opt) => {
 };
 export const changeRoleStatus = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -134,7 +135,7 @@ export const changeRoleStatus = (opt) => {
 };
 export const getMenuCheckedTree = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -142,7 +143,7 @@ export const getMenuCheckedTree = (opt) => {
 };
 export const saveMenuCheckedKeys = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -150,7 +151,7 @@ export const saveMenuCheckedKeys = (opt) => {
 };
 export const getApiCheckedTree = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -158,7 +159,7 @@ export const getApiCheckedTree = (opt) => {
 };
 export const saveApiCheckedKeys = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -167,7 +168,7 @@ export const saveApiCheckedKeys = (opt) => {
 
 export const getUsers = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -175,7 +176,7 @@ export const getUsers = (opt) => {
 };
 export const updateUser = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -183,7 +184,7 @@ export const updateUser = (opt) => {
 };
 export const addUser = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -191,7 +192,7 @@ export const addUser = (opt) => {
 };
 export const deleteUser = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -199,7 +200,7 @@ export const deleteUser = (opt) => {
 };
 export const resetUserPwd = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -207,7 +208,7 @@ export const resetUserPwd = (opt) => {
 };
 export const changeEnabled = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -215,7 +216,7 @@ export const changeEnabled = (opt) => {
 };
 export const getCheckedRoles = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -223,7 +224,7 @@ export const getCheckedRoles = (opt) => {
 };
 export const saveCheckedUserRoles = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
@@ -231,7 +232,7 @@ export const saveCheckedUserRoles = (opt) => {
 };
 export const getOrgTree = (opt) => {
     return request({
-        url: `${baseUrl}corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
+        url: `corpus-server/api/evaluate/v1/details?cpsgrpId=cpsgrp_${opt.id || '1588871928125460480'}`,
         method: 'get',
         data: opt,
         params:{}
