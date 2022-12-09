@@ -1,5 +1,4 @@
 import request from '../utils/request';
-import config from '../config/config.js'
 let baseUrl = "http://47.101.58.72:8888/";
 
 export const fetchData = query => {
@@ -20,11 +19,11 @@ export const logout = query => {
 
 export const getUserInformation = (query) => {
     return request({
-        url: `${baseUrl}user-server/api/user/v1/login`,
+        url: `user-server/api/user/v1/login`,
         method: 'post',
         data: query,
         params:{}
-    });e
+    });
 };
 
 
