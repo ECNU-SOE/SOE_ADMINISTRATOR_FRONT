@@ -17,7 +17,7 @@ export default {
         proxy: {
             '/api': {
                 target: 'http://47.101.58.72:8888/',
-                changeOrigin: true,
+                changeOrigin: false,
                 rewrite: path => path.replace(/^\/api/, '')
             }
         }
