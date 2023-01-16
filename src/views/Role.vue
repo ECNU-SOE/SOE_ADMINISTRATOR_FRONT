@@ -32,10 +32,12 @@
         <el-table-column prop="roleCode" label="角色编码" width="200" align="center"/>
         <el-table-column prop="roleSort" label="排序" width="200" align="center"/>
         <el-table-column prop="status" label="是否禁用" width="" align="center">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-switch
-                active-text ="是"
-                inactive-text = "否"
+                active-text="是"
+                inactive-text="否"
+                active-value="是"
+                inactive-value="否"
                 v-model="scope.row.status"
                 @change=changeStatus(scope.$index,scope.row) >
             </el-switch>
@@ -43,7 +45,7 @@
         </el-table-column>
         <el-table-column prop="roleDesc" label="角色描述" width="" align="center"/>
         <el-table-column label="操作" width="200" align="center">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-button size="mini" type="primary" icon="el-icon-edit" circle
                        @click="handleEdit(scope.$index, scope.row)"/>
             <el-button size="mini" type="danger" icon="el-icon-delete" circle
@@ -57,7 +59,7 @@
       </el-table>
     </el-card>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible"
+    <el-dialog title="编辑信息" v-model="dialogFormVisible"
                :before-close="beforeDialogClose">
       <el-form :model="dialogForm" ref="dialogForm"
                :rules="dialogFormRules" label-width="80px">
@@ -93,7 +95,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="permDialogTitle" :visible.sync="permDialogVisible">
+    <el-dialog title="权限管理" v-model="permDialogVisible">
       <el-row>
         <el-col :span="12">
           <multi-tree
@@ -161,12 +163,12 @@ export default {
       permDialogTitle:"",
       menuData:[],
       menuLabelPropName:"menuName",
-      menuButtonName:"保存菜单查看权限",
+      menuButtonName:"菜单查看权限",
       menuDefaultExpandedKeys:[],
       menuDefaultCheckedKeys:[],
       apiData:[],
       apiLabelPropName:"apiName",
-      apiButtonName:"保存接口访问权限",
+      apiButtonName:"班级访问权限",
       apiDefaultExpandedKeys:[],
       apiDefaultCheckedKeys:[]
     }
@@ -269,10 +271,87 @@ export default {
       axios.all([getMenuCheckedTree(row.id), getApiCheckedTree(row.id)])
           .then(axios.spread(function (res1, res2) {
             // 两个请求都执行完成后，进入该函数
-            _this.menuData = res1.data.tree
+            // _this.menuData = res1.data.tree
+            _this.menuData = [
+              {
+                id: 1,
+                label: '一级 1',
+                children: [{
+                  id: 4,
+                  label: '二级 1-1',
+                  children: [{
+                    id: 9,
+                    label: '三级 1-1-1'
+                  }, {
+                    id: 10,
+                    label: '三级 1-1-2'
+                  }]
+                }]
+              },
+              {
+                id: 2,
+                label: '一级 2',
+                children: [{
+                  id: 5,
+                  label: '二级 2-1'
+                }, {
+                  id: 6,
+                  label: '二级 2-2'
+                }]
+              },
+              {
+                id: 3,
+                label: '一级 3',
+                children: [{
+                  id: 7,
+                  label: '二级 3-1'
+                }, {
+                  id: 8,
+                  label: '二级 3-2'
+                }]
+              }
+            ];
             _this.menuDefaultExpandedKeys = res1.data.expandedKeys
             _this.menuDefaultCheckedKeys = res1.data.checkedKeys
-            _this.apiData = res2.data.tree
+            _this.apiData =  [
+              {
+                id: 1,
+                label: '一级 1',
+                children: [{
+                  id: 4,
+                  label: '二级 1-1',
+                  children: [{
+                    id: 9,
+                    label: '三级 1-1-1'
+                  }, {
+                    id: 10,
+                    label: '三级 1-1-2'
+                  }]
+                }]
+              },
+              {
+                id: 2,
+                label: '一级 2',
+                children: [{
+                  id: 5,
+                  label: '二级 2-1'
+                }, {
+                  id: 6,
+                  label: '二级 2-2'
+                }]
+              },
+              {
+                id: 3,
+                label: '一级 3',
+                children: [{
+                  id: 7,
+                  label: '二级 3-1'
+                }, {
+                  id: 8,
+                  label: '二级 3-2'
+                }]
+              }
+            ];
             _this.apiDefaultExpandedKeys = res2.data.expandedKeys
             _this.apiDefaultCheckedKeys = res2.data.checkedKeys
             _this.permDialogVisible = true;
@@ -292,8 +371,11 @@ export default {
           })
     },
     setData(roles) {
-      if (roles.isok) {
-        this.tableData = roles.data
+      if (roles.code === 0) {
+        // this.tableData = roles.data
+        this.tableData = [{roleName:"管理员",roleCode:"admin",roleSort:"1",status:"否",roleDesc:"系统管理员"},
+          {roleName:"培训师A",roleCode:"teacherA",roleSort:"2",status:"否",roleDesc:"培训师A"},{roleName:"培训师B",roleCode:"teacherB",roleSort:"3",status:"否",roleDesc:"培训师B"},
+       {roleName:"培训师C",roleCode:"teacherC",roleSort:"4",status:"否",roleDesc:"培训师C"},{roleName:"普通用户",roleCode:"common",roleSort:"5",status:"是",roleDesc:"普通用户"}];
       }
     }
   },

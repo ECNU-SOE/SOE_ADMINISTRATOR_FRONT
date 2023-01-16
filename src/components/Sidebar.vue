@@ -43,11 +43,11 @@ export default {
                 index: "/dashboard",
                 title: "系统首页",
             },
-            {
-                icon: "el-icon-lx-cascades",
-                index: "/table",
-                title: "用户管理",
-            },
+            // {
+            //     icon: "el-icon-lx-cascades",
+            //     index: "/table",
+            //     title: "用户管理",
+            // },
             {
                 icon: "el-icon-lx-cascades",
                 index: "/material",
@@ -65,10 +65,10 @@ export default {
                         index: "/role",
                         title: "角色",
                     },
-                    {
-                        index: "/permission",
-                        title: "权限",
-                    },
+                    // {
+                    //     index: "/permission",
+                    //     title: "权限",
+                    // },
                     {
                         index: "/userManager",
                         title: "用户",

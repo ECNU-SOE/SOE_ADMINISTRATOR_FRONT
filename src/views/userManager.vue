@@ -79,12 +79,15 @@
 
           <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
             <el-table-column prop="username" label="用户名称" width="100" align="center"/>
-            <el-table-column prop="orgName" label="所在组织" width="200" align="center"/>
+            <el-table-column prop="faculty" label="学院" width="200" align="center"/>
+            <el-table-column prop="departure" label="系别" width="200" align="center"/>
             <el-table-column prop="enabled" label="用户状态" width="150" align="center">
-              <template slot-scope="scope">
+              <template v-slot="scope">
                 <el-switch
                     active-text ="激活"
                     inactive-text = "禁用"
+                    active-value="激活"
+                    inactive-value="禁用"
                     v-model="scope.row.enabled"
                     @change=changeEnabled(scope.$index,scope.row)
                 >
@@ -93,9 +96,8 @@
             </el-table-column>
             <el-table-column prop="phone" label="联系电话" width="120" align="center"/>
             <el-table-column prop="email" label="用户邮箱" width="150" align="center"/>
-            <el-table-column prop="createTime" label="创建时间" width="200" align="center" />
             <el-table-column label="操作" width="300" align="center" fixed="right">
-              <template slot-scope="scope">
+              <template v-slot="scope">
                 <el-button size="mini" type="primary" icon="el-icon-edit" circle
                            @click="handleEdit(scope.$index, scope.row,'修改用户')"/>
                 <el-button size="mini" type="danger" icon="el-icon-delete" circle
@@ -126,7 +128,7 @@
 
 
 
-        <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible"
+        <el-dialog :title="dialogTitle" v-model="dialogFormVisible"
                    :before-close="beforeDialogClose">
           <el-alert
               :title="dialogAlertInfo"
@@ -178,7 +180,7 @@
 
 
 
-        <el-dialog :title="roleDialogTitle" :visible.sync="roleDialogVisible">
+        <el-dialog :title="roleDialogTitle" v-model="roleDialogVisible">
           <el-button type="primary"
                      size="small"
                      style="float: right"
@@ -283,8 +285,8 @@ export default {
   },
   computed:{
     dialogAlertInfo(){
-      return "新增用户默认初始密码:" +
-          this.$store.getters.getSysConfigItem("user.init.password") +
+      return "新增用户默认初始密码:123456" +
+          // this.$store.getters.getSysConfigItem("user.init.password") +
           ",会在用户登陆后提示用户自行修改。" +
           "如果您希望为用户修改密码，" +
           "请使用密码重置功能"
@@ -355,8 +357,8 @@ export default {
       this.$refs.dialogForm.validateField("orgId");
     },
     resetPwd(index,row){
-      this.$confirm("确定重置密码为："
-          + this.$store.getters.getSysConfigItem("user.init.password")
+      this.$confirm("确定重置密码为：123456"
+          // + this.$store.getters.getSysConfigItem("user.init.password")
           + "么？")
           .then(_ => {
             resetUserPwd(row.username).then(res => {
@@ -386,10 +388,16 @@ export default {
       }
     },
     setData(pageinfo) {
-      if (pageinfo.isok) {
-        this.tableData = pageinfo.data.records
-        this.pagination.pageSize = pageinfo.data.size
-        this.pagination.total = pageinfo.data.total
+      if (pageinfo) {
+        // this.tableData = pageinfo.data.records
+        this.tableData = [{username:"admin",faculty:"软件学院",departure:"软件工程",enabled:"激活",phone:"123456789",email:"123@ecnu.com"},
+          {username:"trz",faculty:"汉语学院",departure:"德语",enabled:"激活",phone:"123456789",email:"123@ecnu.com"},
+          {username:"ccc",faculty:"软件学院",departure:"计算机",enabled:"激活",phone:"123456789",email:"123@ecnu.com"},
+          {username:"ddd",faculty:"汉语学院",departure:"英语",enabled:"激活",phone:"123456789",email:"123@ecnu.com"}];
+        // this.pagination.pageSize = pageinfo.data.size
+        // this.pagination.total = pageinfo.data.total
+        this.pagination.pageSize = 10;
+        this.pagination.total = 4;
       }
     },
     setOrgData(orgTree){
@@ -403,12 +411,15 @@ export default {
       getUsers(
           {username:"",phone:"",enabled:"",email:"",orgId:null,timeRange: ["",""]}
           ,{pageNum: 1, pageSize: 20,}
-      ),
-      getOrgTree({status:false,name:""})])
-        .then(axios.spread(function (res1, res2) {
-          // 两个请求都执行完成后，进入该函数
-          next(vm => {vm.setData(res1);vm.setOrgData(res2)})
-        }));
+      )])
+          .then(function (res){
+        next(vm => {vm.setData(res)})
+      })
+      // getOrgTree({status:false,name:""})])
+      //   .then(axios.spread(function (res1, res2) {
+      //     // 两个请求都执行完成后，进入该函数
+      //     next(vm => {vm.setData(res1);vm.setOrgData(res2)})
+      //   }));
   }
 }
 </script>
