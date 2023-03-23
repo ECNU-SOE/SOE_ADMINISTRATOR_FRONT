@@ -1,4 +1,4 @@
-# SOE_ADMINISTRATOR_FRONT
+# front-vue
 
 ## Project setup
 ```
