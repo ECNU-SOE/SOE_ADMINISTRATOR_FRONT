@@ -8,18 +8,19 @@ module.exports = {
     config.resolve.alias
       .set('@',resolve('src'))
   },
-  // devServer: {
-  //   proxy: {
-  //     '/api': {
-  //       // 此处的写法，目的是为了 将 /api 替换成 https://www.baidu.com/
-  //       target: 'http://47.101.58.72:8888/',
-  //       // 允许跨域
-  //       changeOrigin: true,
-  //       ws: true,
-  //       pathRewrite: {
-  //         '^/api': ''
-  //       }
-  //     }
-  //   }
-  // }
+  devServer: {
+    // proxy: {
+    //   '/api': {
+    //     // 此处的写法，目的是为了 将 /api 替换成 https://www.baidu.com/
+    //     target: 'http://47.101.58.72:8888/',
+    //     // 允许跨域
+    //     changeOrigin: true,
+    //     ws: true,
+    //     pathRewrite: {
+    //       '^/api': ''
+    //     }
+    //   }
+    // }
+    port:3000
+  }
 }
