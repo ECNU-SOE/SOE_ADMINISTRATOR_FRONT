@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/front-vue.iml" filepath="$PROJECT_DIR$/front-vue.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SOE_ADMINISTRATOR_FRONT.iml" filepath="$PROJECT_DIR$/SOE_ADMINISTRATOR_FRONT.iml" />
     </modules>
   </component>
 </project>
