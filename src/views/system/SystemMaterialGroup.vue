@@ -3,13 +3,23 @@
     <el-card body-style="padding: 0">
       <el-form ref="roleQueryForm" :model="materialQueryForm" label-width="100px">
         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="语料组标识" prop="roleLike">
-              <el-input v-model="materialQueryForm.idLike"
-                        placeholder="请输入语料标识"/>
+          <el-col :span="6">
+            <el-form-item label="课题标识" prop="roleLike">
+              <el-input v-model="materialQueryForm.courseId"
+                        placeholder="请输入课题标识"/>
             </el-form-item>
           </el-col>
-          <el-col :span="6" :offset="6">
+          <el-col :span="6">
+            <el-form-item label="语料组主题" prop="title">
+              <el-input v-model="materialQueryForm.title" placeholder="请输入语料组主题"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="语料组类型" prop="type">
+              <el-input v-model="materialQueryForm.type" placeholder="请输入语料组类型"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6" >
             <el-form-item>
               <el-button type="primary" size="small"
                          @click="handleSearch()" icon="el-icon-search">
@@ -24,7 +34,8 @@
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加语料组</el-button>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" :span-method="spanMethod">
         <el-table-column prop="id" label="语料组标识" align="center"></el-table-column>
-        <el-table-column prop="name" label="语料组名称" align="center"></el-table-column>
+        <el-table-column prop="courseId" label="课程标识" align="center"></el-table-column>
+        <el-table-column prop="title" label="语料组主题" align="center"></el-table-column>
         <el-table-column prop="description" label="语料组描述" align="center"></el-table-column>
         <el-table-column prop="type" label="语料组类型" align="center"></el-table-column>
         <el-table-column prop="cpsrcdNum" label="题目数量" align="center"></el-table-column>
@@ -127,7 +138,9 @@ export default {
         topics:[]
       },
       materialQueryForm:{
-        idLike: ""
+        courseId: "",
+        title:"",
+        type:null
       },
       // 表格编辑时弹窗和保存
       editGroupVisible:false,
@@ -167,7 +180,10 @@ export default {
     },
     // 查询操作
     handleSearch(){
-      this.getData({pageIndex:1});
+      let courseId = this.materialQueryForm.courseId || "";
+      let title = this.materialQueryForm.title || "";
+      let type = this.materialQueryForm.type;
+      this.getData({courseId,title,type});
     },
     // 分页导航
     handlePageChange(val){
