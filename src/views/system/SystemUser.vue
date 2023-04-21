@@ -255,7 +255,7 @@
             {type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur'}
           ],
           phone: [
-            {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码', trigger: 'blur'}
+            {pattern: /^1[345678]\d{9}$/, message: '目前只支持中国大陆的手机号码', trigger: 'blur'}
           ],
         },
         elTreeDisabled:false,

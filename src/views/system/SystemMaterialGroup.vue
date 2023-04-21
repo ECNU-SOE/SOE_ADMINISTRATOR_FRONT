@@ -5,7 +5,7 @@
         <el-row :gutter="20">
           <el-col :span="6">
             <el-form-item label="课题标识" prop="roleLike">
-              <el-input v-model="materialQueryForm.courseId"
+              <el-input v-model="materialQueryForm.classId"
                         placeholder="请输入课题标识"/>
             </el-form-item>
           </el-col>
@@ -32,9 +32,9 @@
 
     <el-card>
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加语料组</el-button>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" :span-method="spanMethod">
+      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" >
         <el-table-column prop="id" label="语料组标识" align="center"></el-table-column>
-        <el-table-column prop="courseId" label="课程标识" align="center"></el-table-column>
+        <el-table-column prop="classId" label="课程标识" align="center"></el-table-column>
         <el-table-column prop="title" label="语料组主题" align="center"></el-table-column>
         <el-table-column prop="description" label="语料组描述" align="center"></el-table-column>
         <el-table-column prop="type" label="语料组类型" align="center"></el-table-column>
@@ -68,21 +68,26 @@
         <el-form-item label="语料组描述">
           <el-input v-model="selections.description" ></el-input>
         </el-form-item>
-        <div class="topicList">
-          <div class="selectedListTitle">语料组主题</div>
-          <el-table :data="selections.topics" header-cell-class-name="table-header"  border  height="250">
-            <el-table-column prop="title" label="主题名称" align="center"></el-table-column>
-            <el-table-column prop="score" label="分数" align="center"></el-table-column>
-            <el-table-column prop="description" label="描述信息" align="center"></el-table-column>
-            <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>
-            <el-table-column label="查看语料细节" width="180" align="center">
-              <template #default="scope">
-                <el-button size="mini" type="primary" icon="el-icon-edit" @click="openMaterialList(scope.$index, scope.row)" circle>
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
+<!--        <div class="topicList">-->
+<!--          <el-button type="primary"  @click="handleAddTopic()" class="addMaterialBtn" icon="el-icon-plus" size="small">添加主题</el-button>-->
+<!--          <div class="selectedListTitle">语料组主题</div>-->
+<!--          <el-table :data="selections.topics" header-cell-class-name="table-header"  border  height="250">-->
+<!--            <el-table-column prop="title" label="主题名称" align="center"></el-table-column>-->
+<!--            <el-table-column prop="score" label="分数" align="center"></el-table-column>-->
+<!--            <el-table-column prop="description" label="描述信息" align="center"></el-table-column>-->
+<!--            <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>-->
+<!--            <el-table-column label="操作" width="180" align="center">-->
+<!--              <template #default="scope">-->
+<!--                <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleUpdateTopic(scope.$index, scope.row)" circle>-->
+<!--                </el-button>-->
+<!--                <el-button size="mini" type="primary" icon="el-icon-more-outline" @click="openMaterialList(scope.$index, scope.row)" circle>-->
+<!--                </el-button>-->
+<!--                <el-button size="mini" type="danger" icon="el-icon-delete"-->
+<!--                           @click="handleDeleteTopic(scope.$index, scope.row)" circle></el-button>-->
+<!--              </template>-->
+<!--            </el-table-column>-->
+<!--          </el-table>-->
+<!--        </div>-->
       </el-form>
       <template #footer>
                 <span class="dialog-footer">
@@ -114,12 +119,46 @@
       </template>
     </el-dialog>
 
+
+    <!-- 添加主题弹出框 -->
+    <el-dialog :title="dialogTopicTitle" class="editTopic" :visible.sync="editTopicVisible" width="30%" >
+      <div class="topicClass">
+        <el-scrollbar style="height:100%">
+          <el-form label-width="120px" :rules="topicObjRules" :model="topicObj">
+            <el-form-item label="topic次序" prop="tNum">
+              <el-input-number v-model="topicObj.tNum"></el-input-number>
+            </el-form-item>
+            <el-form-item label="大题名称" prop="title">
+              <el-input v-model="topicObj.title" ></el-input>
+            </el-form-item>
+            <el-form-item label="大题分值" prop="score">
+              <el-input v-model="topicObj.score" ></el-input>
+            </el-form-item>
+            <el-form-item label="难度" prop="difficulty">
+              <el-input-number v-model="topicObj.difficulty"></el-input-number>
+            </el-form-item>
+            <el-form-item label="说明" prop="description">
+              <el-input v-model="topicObj.description" ></el-input>
+            </el-form-item>
+          </el-form>
+        </el-scrollbar>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="closeTopicDialog">取 消</el-button>
+                    <el-button type="primary" @click="handleSaveTopic">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 
-import { showAllLanguageMaterialGroup,deleteLanguageMaterialGroup,getCurrentLanguageMaterialGroup,getLanguageMaterial } from '@/api/system/sys_materialGroup'
+import { showAllLanguageMaterialGroup,deleteLanguageMaterialGroup,getCurrentLanguageMaterialGroup,
+  getLanguageMaterial,updateCurrentLanguageMaterialGroup,addTopicInterface,addCurrentLanguageMaterialGroup} from '@/api/system/sys_materialGroup'
+import {getJwtToken} from "@/lib/utils";
 
 export default {
   name: "materialGroup",
@@ -129,6 +168,7 @@ export default {
       tableData:[],
       dialogTitle:'',
       dialogMaterialTitle:'',
+      dialogTopicTitle:"",
       selectionsObj:{
         id:"",
         title:"",
@@ -137,17 +177,38 @@ export default {
         difficulty:0,
         topics:[]
       },
+      topicObj:{
+        id:"",
+        cpsgrpId:"",
+        tNum:0,
+        title:"",
+        score:"",
+        difficulty:0,
+        description:""
+      },
       materialQueryForm:{
-        courseId: "",
+        classId: "",
         title:"",
         type:null
       },
       // 表格编辑时弹窗和保存
       editGroupVisible:false,
       editMaterialVisible:false,
+      editTopicVisible:false,
       materialsList:[],
       tempList:[],
-      token:localStorage.getItem("data")
+      token:getJwtToken(),
+      topicObjRules:{
+        tNum: [
+          {required: true, message: '请选择topic次序',trigger:'blur'},
+        ],
+        title: [
+          {required: true, message: '请输入大题名称', trigger: 'blur'},
+        ],
+        score: [
+          {required: true, message: '请输入大题分值', trigger: 'blur'},
+        ]
+      }
     }
   },
 
@@ -167,7 +228,7 @@ export default {
 
   methods:{
 
-    getData(opt){
+    getData(opt={}){
       showAllLanguageMaterialGroup(opt).then((res) => {
         let records = res.data.records;
         this.tableData = records;
@@ -180,10 +241,10 @@ export default {
     },
     // 查询操作
     handleSearch(){
-      let courseId = this.materialQueryForm.courseId || "";
+      let classId = this.materialQueryForm.classId || "";
       let title = this.materialQueryForm.title || "";
       let type = this.materialQueryForm.type;
-      this.getData({courseId,title,type});
+      this.getData({classId,title,type});
     },
     // 分页导航
     handlePageChange(val){
@@ -204,7 +265,27 @@ export default {
     },
 
     saveEdit(){
-
+      let opt = this.selectionsObj || {};
+      opt.token = this.token;
+      if(this.selectionsObj.id){
+        updateCurrentLanguageMaterialGroup(opt).then((e)=>{
+          if(e.data){
+            this.$message({message: "更新成功", type: 'success'});
+          }
+        }).catch((e)=>{
+          this.$message({message: e.message, type: 'error'});
+        });
+      }else {
+        addCurrentLanguageMaterialGroup(opt).then((e)=>{
+          if(e.data){
+            this.$message({message: "添加成功", type: 'success'});
+            this.getData();
+          }
+        }).catch((e)=>{
+          this.$message({message: e.message, type: 'error'});
+        });
+      }
+      this.editGroupVisible = false;
     },
 
 
@@ -219,6 +300,18 @@ export default {
       }
     },
 
+    clearTopicInformation(){
+      this.topicObj = {
+        id:"",
+        cpsgrpId:"",
+        tNum:0,
+        title:"",
+        score:"",
+        difficulty:0,
+        description:""
+      }
+    },
+
     handleAdd(){
       this.dialogTitle = '新增语料组';
       this.clearSelectionList();
@@ -227,24 +320,25 @@ export default {
 
     handleEdit(index, row){
       let id = this.tableData[index].id;
-      this.dialogTitle = "修改语料组信息";
-      getCurrentLanguageMaterialGroup({id}).then((res)=>{
-        this.editGroupVisible = true;
-        this.clearSelectionList();
-        let data = res.data;
-        this.selectionsObj.id = data.id;
-        this.selectionsObj.title = data.title;
-        this.selectionsObj.type = data.type;
-        this.selectionsObj.description = data.description;
-        for(let i in data.topics){
-          this.selectionsObj.topics.push({
-            title:data.topics[i].title,score:data.topics[i].score,
-            description:data.topics[i].description,difficulty:data.topics[i].difficulty})
-        }
-      }).catch((e)=>{
-        this.clearSelectionList();
-        console.log(e);
-      })
+      this.$router.push({path:"/home/sysmaterialgroupdetail",query:{id:id}})
+      // this.dialogTitle = "修改语料组信息";
+      // getCurrentLanguageMaterialGroup({id}).then((res)=>{
+      //   this.editGroupVisible = true;
+      //   this.clearSelectionList();
+      //   let data = res.data;
+      //   this.selectionsObj.id = data.id;
+      //   this.selectionsObj.title = data.title;
+      //   this.selectionsObj.type = data.type;
+      //   this.selectionsObj.description = data.description;
+      //   for(let i in data.topics){
+      //     this.selectionsObj.topics.push({
+      //       title:data.topics[i].title,score:data.topics[i].score,
+      //       description:data.topics[i].description,difficulty:data.topics[i].difficulty})
+      //   }
+      // }).catch((e)=>{
+      //   this.clearSelectionList();
+      //   console.log(e);
+      // })
     },
 
     // 删除操作
@@ -252,19 +346,19 @@ export default {
       // 二次确认删除
       let self = this;
       let id = this.tableData[index].id;
-      ElMessageBox.confirm("确定要删除吗？", "提示", {
+      this.$confirm("确定要删除吗？", "提示", {
         type: "warning",
       }).then(() => {
         deleteLanguageMaterialGroup({id,token:self.token}).then((res) => {
           if(res.data === 1){
-            ElMessage.success("删除成功");
+            this.$message({message: "删除成功", type: 'success'});
             self.getData();
           }else{
-            ElMessage.error("删除失败");
+            this.$message({message: `删除失败,原因为${e}`, type: 'error'});
           }
         }).catch((e)=>{
           console.log(e);
-          ElMessage.error("删除失败");
+          this.$message({message: `删除失败,原因为${e}`, type: 'error'});
         });
       })
         .catch((e) => { console.log(e);});
@@ -319,27 +413,50 @@ export default {
       }
     },
 
+    handleAddTopic(){
+      this.clearTopicInformation();
+      this.dialogTopicTitle='添加主题';
+      this.editGroupVisible = false;
+      this.editTopicVisible = true;
+    },
+
+    handleDeleteTopic(){
+
+    },
+
+    handleUpdateTopic(){
+      this.dialogTopicTitle='更新主题';
+      this.editGroupVisible = false;
+      this.editTopicVisible = true;
+    },
+
+    handleSaveTopic(){
+      this.topicObj.cpsgrpId = this.selectionsObj.id || '';
+      if(this.topicObj.id){
+        updateTopic(this.topicObj).then((res)=>{
+          this.$message({message: res.data, type: 'success'});
+        }).catch((e)=>{
+          this.$message({message: e.message, type: 'error'});
+        });
+      }else {
+        addTopicInterface(this.topicObj).then((res)=>{
+          this.$message({message: res.data, type: 'success'});
+        }).catch((e)=>{
+          this.$message({message: e.message, type: 'error'});
+        });
+      }
+      this.closeTopicDialog();
+
+    },
+
+    closeTopicDialog(){
+      this.editGroupVisible = true;
+      this.editTopicVisible = false;
+    },
+
 
     spanMethod(data){
-      // const {row,rowIndex,columnIndex} = data;
-      // if (columnIndex < 2 || columnIndex > 3) {  //班级合并展示区
-      //   const len = this.typeListLth(row.type);
-      //   const lenName = this.classNameLen(row.type);
-      //   if (rowIndex === lenName) {   //某班级首位学生行
-      //     return {
-      //       rowspan:len,
-      //       colspan:1
-      //     }
-      //   } else return {   //某班级非首位学生行
-      //     rowspan: 0,
-      //     colspan: 0
-      //   };
-      // } else {  //学生信息展示区
-      //   return {
-      //     rowspan: 1,
-      //     colspan: 1
-      //   };
-      // }
+
     },
   },
 
@@ -360,6 +477,9 @@ export default {
 }
 
 .selectedListTitle {
-  text-align: center;
+  position: absolute;
+  margin-left: 219px;
+  margin-top: -28px;
+  font-size: 16px;
 }
 </style>

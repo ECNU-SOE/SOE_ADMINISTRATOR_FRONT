@@ -28,6 +28,9 @@ router.$addRoutes = function (params){
 
 router.beforeEach((to,from,next) => {
   if(to.name !== 'login'){
+    // if(to.name === "sysmaterialgroupdetail" && !to.query.id){
+    //   return;
+    // }
     NProgress.start()
     refreshToken().then(res => {
       //没有获得新的token==null，
