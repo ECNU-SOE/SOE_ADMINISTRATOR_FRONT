@@ -28,8 +28,8 @@ router.$addRoutes = function (params){
 
 router.beforeEach((to,from,next) => {
   if(to.name !== 'login'){
-    // if(to.name === "sysmaterialgroupdetail" && !to.query.id){
-    //   return;
+    // if(to.name === "sysmaterialgroupdetail" && !to.query.tableData.id){
+    //   next({name: 'sysmaterialgroup'});
     // }
     NProgress.start()
     refreshToken().then(res => {

@@ -69,6 +69,15 @@ export const addTopicInterface = (query) => {
   });
 };
 
+export const getTopicInterface = (query) => {
+  return newJwtServerInstance.request({
+    url: `/corpus-server/api/topic/v1/detail?topicId=${query.id}`,
+    method: 'get',
+    data: query,
+    params:{}
+  });
+};
+
 export const updateTopicInterface = (query) => {
   return newJwtServerInstance.request({
     url: `/corpus-server/api/topic/v1/update`,

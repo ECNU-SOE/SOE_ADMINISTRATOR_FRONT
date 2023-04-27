@@ -151,7 +151,7 @@
     },
     methods: {
       submitQueryForm() {
-          getApiTree({name: this.apiQueryform.name, status: this.apiQueryform.status})
+          getApiTree({name: this.apiQueryform.name, status: this.apiQueryform.status || false})
           .then(res => {
             this.setData(res)
           })

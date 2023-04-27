@@ -1,4 +1,5 @@
 import {jwtServerInstance} from "../index";
+import {getJwtToken} from "@/lib/utils";
 
 //条件分页查询班级信息
 export const getClassInformation = (query) => {
@@ -6,7 +7,10 @@ export const getClassInformation = (query) => {
         url: `/api/course/v1/list`,
         method: 'post',
         data: query,
-        params:{}
+        params:{},
+        header:{
+            token:getJwtToken()
+        }
     });
 };
 

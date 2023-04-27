@@ -52,8 +52,8 @@
 
     <!-- 编辑查看语料组弹出框 -->
     <el-dialog :title="dialogTitle" class="editGroups" :visible.sync="editGroupVisible" width="30%">
-      <el-form label-width="120px">
-        <el-form-item label="语料组名称">
+      <el-form label-width="120px" :rules="selectionsRules" :model="selections">
+        <el-form-item label="语料组标题" prop="title">
           <el-input v-model="selections.title" ></el-input>
         </el-form-item>
         <el-form-item label="语料组类型">
@@ -68,26 +68,18 @@
         <el-form-item label="语料组描述">
           <el-input v-model="selections.description" ></el-input>
         </el-form-item>
-<!--        <div class="topicList">-->
-<!--          <el-button type="primary"  @click="handleAddTopic()" class="addMaterialBtn" icon="el-icon-plus" size="small">添加主题</el-button>-->
-<!--          <div class="selectedListTitle">语料组主题</div>-->
-<!--          <el-table :data="selections.topics" header-cell-class-name="table-header"  border  height="250">-->
-<!--            <el-table-column prop="title" label="主题名称" align="center"></el-table-column>-->
-<!--            <el-table-column prop="score" label="分数" align="center"></el-table-column>-->
-<!--            <el-table-column prop="description" label="描述信息" align="center"></el-table-column>-->
-<!--            <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>-->
-<!--            <el-table-column label="操作" width="180" align="center">-->
-<!--              <template #default="scope">-->
-<!--                <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleUpdateTopic(scope.$index, scope.row)" circle>-->
-<!--                </el-button>-->
-<!--                <el-button size="mini" type="primary" icon="el-icon-more-outline" @click="openMaterialList(scope.$index, scope.row)" circle>-->
-<!--                </el-button>-->
-<!--                <el-button size="mini" type="danger" icon="el-icon-delete"-->
-<!--                           @click="handleDeleteTopic(scope.$index, scope.row)" circle></el-button>-->
-<!--              </template>-->
-<!--            </el-table-column>-->
-<!--          </el-table>-->
-<!--        </div>-->
+        <el-form-item label="语料组难度">
+          <el-input-number v-model="selections.difficulty"></el-input-number>
+        </el-form-item>
+        <el-form-item label="公开情况">
+          <el-input v-model="selections.isPublic" ></el-input>
+        </el-form-item>
+        <el-form-item label="开始时间">
+          <el-input v-model="selections.startTime" ></el-input>
+        </el-form-item>
+        <el-form-item label="结束时间">
+          <el-input v-model="selections.endTime" ></el-input>
+        </el-form-item>
       </el-form>
       <template #footer>
                 <span class="dialog-footer">
@@ -198,6 +190,9 @@ export default {
       materialsList:[],
       tempList:[],
       token:getJwtToken(),
+      selectionsRules:{
+        title:[ {required: true, message: '请输入语料组标题',trigger:'blur'}]
+      },
       topicObjRules:{
         tNum: [
           {required: true, message: '请选择topic次序',trigger:'blur'},
@@ -320,7 +315,8 @@ export default {
 
     handleEdit(index, row){
       let id = this.tableData[index].id;
-      this.$router.push({path:"/home/sysmaterialgroupdetail",query:{id:id}})
+      sessionStorage.setItem("cpsrcdId",id)
+      this.$router.push({path:"/home/sysmaterialgroupdetail",query:{id}})
       // this.dialogTitle = "修改语料组信息";
       // getCurrentLanguageMaterialGroup({id}).then((res)=>{
       //   this.editGroupVisible = true;
