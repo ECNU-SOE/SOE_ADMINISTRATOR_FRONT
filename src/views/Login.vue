@@ -45,10 +45,10 @@
 
       <div class="panels-container">
         <div class="panel left-panel">
-          <div class="content">
-            <h3>新用户注册</h3>
-            <button class="btn transparent" id="sign-up-btn">去注册</button>
-          </div>
+<!--          <div class="content">-->
+<!--            <h3>新用户注册</h3>-->
+<!--            <button class="btn transparent" id="sign-up-btn">去注册</button>-->
+<!--          </div>-->
 
           <img src="../assets/img/log.svg" class="image" alt="">
         </div>
@@ -86,12 +86,12 @@
         },
        mounted(){
           const sign_in_btn = document.querySelector("#sign-in-btn");
-          const sign_up_btn = document.querySelector("#sign-up-btn");
+          // const sign_up_btn = document.querySelector("#sign-up-btn");
           const container = document.querySelector(".container");
 
-          sign_up_btn.addEventListener('click',()=>{
-            container.classList.add("sign-up-mode");
-          })
+          // sign_up_btn.addEventListener('click',()=>{
+          //   container.classList.add("sign-up-mode");
+          // })
 
           sign_in_btn.addEventListener('click',()=>{
             container.classList.remove("sign-up-mode");
@@ -102,12 +102,14 @@
                 login(this.loginForm.username,
                     this.loginForm.password
                 ).then(res =>{
+                  this.$message({message: `登录成功`, type: 'success'});
                   let token = res.data;
                   // let strings = token.split("."); //截取token，获取载体
                   // let userinfo = JSON.parse(decodeURIComponent(escape(window.atob(strings[1].replace(/-/g, "+").replace(/_/g, "/")))));
                     setJwtToken(token)
                     this.$router.push({path:"/home"})
                 }).catch(err => {
+                    this.$message({message: `登录失败，请验证账号密码之后重新登录`, type: 'error'});
                     this.loginForm.errorMsg = err.message;
                     this.loginForm.errorVisible = true;
                 });

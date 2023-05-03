@@ -1,10 +1,9 @@
 import {jwtServerInstance} from "../index";
 import {getJwtToken} from "@/lib/utils";
 
-//条件分页查询班级信息
-export const getClassInformation = (query) => {
+export const getCourseInformation = (query) => {
     return jwtServerInstance.request({
-        url: `/api/class/v1/list`,
+        url: `/api/cour/v1/list`,
         method: 'post',
         data: query,
         params:{},
@@ -14,9 +13,9 @@ export const getClassInformation = (query) => {
     });
 };
 
-export const getCurrentClassInformation = (query) => {
+export const getCurrentCourseInformation = (query) => {
     return jwtServerInstance.request({
-        url: `/api/class/v1/detail?id=${query.id}`,
+        url: `/api/cour/v1/detail?id=${query.id}`,
         method: 'get',
         data: query,
         params:{},
@@ -26,12 +25,11 @@ export const getCurrentClassInformation = (query) => {
     });
 };
 
-
-export const addClass = (opt) => {
+export const addCourse = (query) => {
     return jwtServerInstance.request({
-        url: `/api/class/v1/add`,
+        url: `/api/cour/v1/add`,
         method: 'post',
-        data: opt,
+        data: query,
         params:{},
         headers:{
             token:getJwtToken()
@@ -39,11 +37,11 @@ export const addClass = (opt) => {
     });
 };
 
-export const updateClass = (opt) => {
+export const updateCourse = (query) => {
     return jwtServerInstance.request({
-        url: `/api/class/v1/update`,
+        url: `/api/cour/v1/add`,
         method: 'post',
-        data: opt,
+        data: query,
         params:{},
         headers:{
             token:getJwtToken()
@@ -51,14 +49,17 @@ export const updateClass = (opt) => {
     });
 };
 
-export const deleteClass = (opt) => {
+export const deleteCourse = (opt) => {
     return jwtServerInstance.request({
-        url: `/api/class/v1/del?id=${opt.id}`,
+        url: `/api/cour/v1/del?id=${opt.id}`,
         method: 'get',
         data: opt,
         params:{},
         headers:{
-            token:getJwtToken()
+            token:opt.token
         }
     });
 };
+
+
+

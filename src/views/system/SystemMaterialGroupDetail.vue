@@ -1,7 +1,7 @@
 <template>
 <div>
 
-      <el-form>
+      <el-form :model="formObj">
         <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-row :gutter="120">
           <el-col :span="5">
@@ -20,9 +20,16 @@
               <el-input v-model="formObj.description" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
             </el-form-item>
           </el-col>
-            <el-col :span="5">
+            <el-col :span="6">
               <el-form-item label="公开情况">
-                <el-input v-model="formObj.isPublic" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
+                <el-select v-model="formObj.isPublic" :disabled="true">
+                  <el-option
+                      v-for="item in publicOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -30,11 +37,6 @@
             <el-col :span="5">
               <el-form-item label="语料组难度">
                 <el-input-number v-model="formObj.difficulty" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input-number>
-              </el-form-item>
-            </el-col>
-            <el-col :span="5">
-              <el-form-item label="语料组类型">
-                <el-input v-model="formObj.type" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
               </el-form-item>
             </el-col>
           <el-col :span="5">
@@ -47,6 +49,18 @@
               <el-input v-model="formObj.endTime" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
             </el-form-item>
           </el-col>
+            <el-col :span="6">
+              <el-form-item label="语料组类型">
+                <el-select v-model="formObj.type" placeholder="请选择" :disabled="true">
+                  <el-option
+                      v-for="item in materialGroupOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :span="2">
               <el-form-item>
                 <el-button type="primary" size="small"
@@ -201,11 +215,12 @@
       </el-form-item>
       <el-form-item label="语料组类型">
         <el-select v-model="formObj.type" placeholder="请选择" style="width:100%;">
-          <el-option key=0 label="单字" value=0></el-option>
-          <el-option key=1 label="词语" value=1></el-option>
-          <el-option key=2 label="句子" value=2></el-option>
-          <el-option key=3 label="段落" value=3></el-option>
-          <el-option key=5 label="古诗" value=5></el-option>
+          <el-option
+              v-for="item in materialGroupOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="语料组描述">
@@ -215,13 +230,28 @@
         <el-input-number v-model="formObj.difficulty"></el-input-number>
       </el-form-item>
       <el-form-item label="公开情况">
-        <el-input v-model="formObj.isPublic" ></el-input>
+        <el-select v-model="formObj.isPublic" >
+          <el-option
+              v-for="item in publicOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="开始时间">
-        <el-input v-model="formObj.startTime" ></el-input>
+        <el-date-picker
+            v-model="formObj.startTime"
+            type="date"
+            placeholder="选择日期" style="width: 100%;">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间">
-        <el-input v-model="formObj.endTime" ></el-input>
+        <el-date-picker
+            v-model="formObj.endTime"
+            type="date"
+            placeholder="选择日期" style="width: 100%;">
+        </el-date-picker>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -284,7 +314,7 @@
         <el-input v-model="cpsrcdObj.audioUrl" ></el-input>
         <el-upload
             class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="http://47.101.58.72:8888/user-server/"
             :on-change="audioUrlChange">
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
@@ -351,6 +381,25 @@ export default {
         audioUrl:"",
         tags:""
       },
+      publicOptions:[
+        {
+          value: 1,
+          label: '公开'
+        }, {
+          value: 0,
+          label: '私有'
+        }
+      ],
+      materialGroupOptions:[ {
+        value: 1,
+        label: '作业'
+      }, {
+        value: 2,
+        label: '测试'
+      }, {
+        value: 3,
+        label: '试卷'
+      }],
       tempTopicObj:{},
       tempCpsrcdObj:{},
       topicTitle:'',

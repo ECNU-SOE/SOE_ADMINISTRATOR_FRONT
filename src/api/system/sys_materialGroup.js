@@ -1,4 +1,5 @@
 import {newJwtServerInstance} from "../index";
+import {getJwtToken} from "@/lib/utils";
 export const showAllLanguageMaterialGroup = (opt) => {
   return newJwtServerInstance.request({
     // corpus-server
@@ -16,7 +17,7 @@ export const deleteLanguageMaterialGroup = (opt) => {
     data: opt,
     params:{},
     headers:{
-      token:opt.token
+      token:getJwtToken()
     }
   });
 };
@@ -46,7 +47,7 @@ export const addCurrentLanguageMaterialGroup = (opt) => {
     data: opt,
     params:{},
     headers:{
-      token:opt.token
+      token:getJwtToken()
     }
   });
 };
@@ -123,3 +124,14 @@ export const deleteCpsrcdInterface = (query) => {
   });
 };
 
+export const saveAudio = (query) => {
+  return newJwtServerInstance.request({
+    url: `/corpus-server/api/file/v1/upload`,
+    method: 'post',
+    data: query,
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
+  });
+};

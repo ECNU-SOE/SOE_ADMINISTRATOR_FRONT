@@ -3,20 +3,10 @@
     <el-card body-style="padding: 0">
       <el-form ref="roleQueryForm" :model="materialQueryForm" label-width="100px">
         <el-row :gutter="20">
-          <el-col :span="6">
-            <el-form-item label="课题标识" prop="roleLike">
+          <el-col :span="18">
+            <el-form-item label="语料组标识" prop="roleLike">
               <el-input v-model="materialQueryForm.classId"
-                        placeholder="请输入课题标识"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="语料组主题" prop="title">
-              <el-input v-model="materialQueryForm.title" placeholder="请输入语料组主题"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="语料组类型" prop="type">
-              <el-input v-model="materialQueryForm.type" placeholder="请输入语料组类型"/>
+                        placeholder="请输入语料组标识"/>
             </el-form-item>
           </el-col>
           <el-col :span="6" >
@@ -58,11 +48,12 @@
         </el-form-item>
         <el-form-item label="语料组类型">
           <el-select v-model="selections.type" placeholder="请选择" style="width:100%;">
-            <el-option key=0 label="单字" value=0></el-option>
-            <el-option key=1 label="词语" value=1></el-option>
-            <el-option key=2 label="句子" value=2></el-option>
-            <el-option key=3 label="段落" value=3></el-option>
-            <el-option key=5 label="古诗" value=5></el-option>
+            <el-option
+                v-for="item in materialGroupOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="语料组描述">
@@ -72,41 +63,30 @@
           <el-input-number v-model="selections.difficulty"></el-input-number>
         </el-form-item>
         <el-form-item label="公开情况">
-          <el-input v-model="selections.isPublic" ></el-input>
+          <el-select v-model="selections.isPublic" >
+            <el-option key=0 label="公开" value=1></el-option>
+            <el-option key=1 label="私有" value=0></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="开始时间">
-          <el-input v-model="selections.startTime" ></el-input>
+          <el-date-picker
+              v-model="selections.startTime"
+              type="date"
+              placeholder="选择日期" style="width: 100%;">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间">
-          <el-input v-model="selections.endTime" ></el-input>
+          <el-date-picker
+              v-model="selections.endTime"
+              type="date"
+              placeholder="选择日期" style="width: 100%;">
+          </el-date-picker>
         </el-form-item>
       </el-form>
       <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="editGroupVisible = false">取 消</el-button>
                     <el-button type="primary" @click="saveEdit">确 定</el-button>
-                </span>
-      </template>
-    </el-dialog>
-
-
-    <!-- 编辑修改语料弹出框 -->
-    <el-dialog :title="dialogMaterialTitle" class="editGroups" :visible.sync="editMaterialVisible" width="30%" >
-      <div class="allYuLiaoList">
-        <el-scrollbar style="height:100%">
-          <el-table :data="allMaterials" header-cell-class-name="table-header"  border  height="250" ref="multipleSelectionsTable" @select="handleSelect" @select-all="handleSelectAll">
-            <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="id" label="语料标识" align="center"></el-table-column>
-            <el-table-column prop="name" label="语料名称" align="center"></el-table-column>
-            <el-table-column prop="pinyin" label="拼音" align="center"></el-table-column>
-            <el-table-column prop="refText" label="文本" align="center"></el-table-column>
-          </el-table>
-        </el-scrollbar>
-      </div>
-      <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="closeSelectMaterials">取 消</el-button>
-                    <el-button type="primary" @click="saveSelectMaterials">确 定</el-button>
                 </span>
       </template>
     </el-dialog>
@@ -169,6 +149,16 @@ export default {
         difficulty:0,
         topics:[]
       },
+      materialGroupOptions:[ {
+        value: 1,
+        label: '作业'
+      }, {
+        value: 2,
+        label: '测试'
+      }, {
+        value: 3,
+        label: '试卷'
+      }],
       topicObj:{
         id:"",
         cpsgrpId:"",
@@ -208,17 +198,9 @@ export default {
   },
 
   computed:{
-    groupNum(){
-      return new Set(this.tableData.map(o => o.type));
-    },
-
     selections(){
       return this.selectionsObj
     },
-
-    allMaterials(){
-      return this.materialsList
-    }
   },
 
   methods:{
@@ -237,26 +219,18 @@ export default {
     // 查询操作
     handleSearch(){
       let classId = this.materialQueryForm.classId || "";
-      let title = this.materialQueryForm.title || "";
-      let type = this.materialQueryForm.type;
-      this.getData({classId,title,type});
-    },
-    // 分页导航
-    handlePageChange(val){
-      this.getData({pageIndex:val});
-    },
-
-    typeListLth(name){
-      return this.tableData.filter(o => o.type === name).length;
-    },
-    classNameLen(name){  //根据班级名称获取该班级第一个学生在全量学生中的偏移位置
-      const tmp = Array.from(this.groupNum);
-      const index = tmp.indexOf(name);  //某班级在全班级中的偏移位置
-      let len = 0;
-      for (let i = 0;i < index;i++){
-        len += this.typeListLth(tmp[i]);
+      if(classId){
+        getCurrentLanguageMaterialGroup({id:classId}).then((res)=>{
+          this.tableData = [];
+          this.tableData.push(res.data);
+        }).catch((e)=>{
+          this.tableData = [];
+          console.log(e)
+        })
+      }else {
+        this.getData({classId});
       }
-      return len;
+
     },
 
     saveEdit(){
@@ -295,18 +269,6 @@ export default {
       }
     },
 
-    clearTopicInformation(){
-      this.topicObj = {
-        id:"",
-        cpsgrpId:"",
-        tNum:0,
-        title:"",
-        score:"",
-        difficulty:0,
-        description:""
-      }
-    },
-
     handleAdd(){
       this.dialogTitle = '新增语料组';
       this.clearSelectionList();
@@ -317,24 +279,6 @@ export default {
       let id = this.tableData[index].id;
       sessionStorage.setItem("cpsrcdId",id)
       this.$router.push({path:"/home/sysmaterialgroupdetail",query:{id}})
-      // this.dialogTitle = "修改语料组信息";
-      // getCurrentLanguageMaterialGroup({id}).then((res)=>{
-      //   this.editGroupVisible = true;
-      //   this.clearSelectionList();
-      //   let data = res.data;
-      //   this.selectionsObj.id = data.id;
-      //   this.selectionsObj.title = data.title;
-      //   this.selectionsObj.type = data.type;
-      //   this.selectionsObj.description = data.description;
-      //   for(let i in data.topics){
-      //     this.selectionsObj.topics.push({
-      //       title:data.topics[i].title,score:data.topics[i].score,
-      //       description:data.topics[i].description,difficulty:data.topics[i].difficulty})
-      //   }
-      // }).catch((e)=>{
-      //   this.clearSelectionList();
-      //   console.log(e);
-      // })
     },
 
     // 删除操作
@@ -360,46 +304,6 @@ export default {
         .catch((e) => { console.log(e);});
     },
 
-    openMaterialList(){
-      let list = this.selectionsObj.topics;
-      this.dialogMaterialTitle = '查看语料信息';
-      getLanguageMaterial({cur: 1, size: 20}).then((res) => {
-        if(res.code !== 0){
-          console.log("数据为空")
-          return;
-        }
-        let data = res.data;
-        this.materialsList = data.records;
-        this.$refs.multipleSelectionsTable.clearSelection();
-        list.forEach(it=>{
-          this.$refs.multipleSelectionsTable.toggleRowSelection(it,true);
-        })
-
-      }).catch((e)=>{
-        this.materialsList = [];
-      });
-      this.editGroupVisible = false;
-      this.editMaterialVisible = true;
-    },
-
-    saveSelectMaterials(){
-      this.selectionsObj.topics = this.tempList;
-      this.editMaterialVisible = false;
-      this.editGroupVisible = true;
-    },
-
-    closeSelectMaterials(){
-      this.editMaterialVisible = false;
-      this.editGroupVisible = true;
-    },
-
-    handleSelect(selection, row){
-      this.tempList = selection.flat()
-    },
-    handleSelectAll(selection){
-      this.tempList = selection.flat()
-    },
-
     setData(data){
       if(data){
         let records = data.data.records;
@@ -407,53 +311,8 @@ export default {
         let total = data.data.total;
         this.pageTotal = total || 50;
       }
-    },
+    }
 
-    handleAddTopic(){
-      this.clearTopicInformation();
-      this.dialogTopicTitle='添加主题';
-      this.editGroupVisible = false;
-      this.editTopicVisible = true;
-    },
-
-    handleDeleteTopic(){
-
-    },
-
-    handleUpdateTopic(){
-      this.dialogTopicTitle='更新主题';
-      this.editGroupVisible = false;
-      this.editTopicVisible = true;
-    },
-
-    handleSaveTopic(){
-      this.topicObj.cpsgrpId = this.selectionsObj.id || '';
-      if(this.topicObj.id){
-        updateTopic(this.topicObj).then((res)=>{
-          this.$message({message: res.data, type: 'success'});
-        }).catch((e)=>{
-          this.$message({message: e.message, type: 'error'});
-        });
-      }else {
-        addTopicInterface(this.topicObj).then((res)=>{
-          this.$message({message: res.data, type: 'success'});
-        }).catch((e)=>{
-          this.$message({message: e.message, type: 'error'});
-        });
-      }
-      this.closeTopicDialog();
-
-    },
-
-    closeTopicDialog(){
-      this.editGroupVisible = true;
-      this.editTopicVisible = false;
-    },
-
-
-    spanMethod(data){
-
-    },
   },
 
   beforeRouteEnter(to, from, next) {
@@ -472,10 +331,4 @@ export default {
   margin-top: 20px;
 }
 
-.selectedListTitle {
-  position: absolute;
-  margin-left: 219px;
-  margin-top: -28px;
-  font-size: 16px;
-}
 </style>

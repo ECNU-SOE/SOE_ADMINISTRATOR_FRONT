@@ -5,9 +5,9 @@
       <el-form ref="roleQueryForm" :model="materialQueryForm" label-width="80px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="班级标识" prop="roleLike">
+            <el-form-item label="课程标识" prop="roleLike">
               <el-input v-model="materialQueryForm.idLike"
-                        placeholder="请输入班级标识"/>
+                        placeholder="请输入课程标识"/>
             </el-form-item>
           </el-col>
           <el-col :span="6" :offset="6">
@@ -22,15 +22,14 @@
     </el-card>
 
     <el-card>
-      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加班级</el-button>
+      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加课程</el-button>
 
       <el-table :data="tableData" border class="table"  ref="multipleTable" header-cell-class-name="table-header">
-        <el-table-column prop="id" label="班级标识" align="center"></el-table-column>
-        <el-table-column prop="name" label="班级名称" align="center"></el-table-column>
-        <el-table-column prop="description" label="班级描述" align="center"></el-table-column>
-        <el-table-column prop="level" label="班级难度" align="center"></el-table-column>
-        <el-table-column prop="gmtCreate" label="创建时间" align="center"></el-table-column>
-        <el-table-column prop="gmtModified" label="修改时间" align="center"></el-table-column>
+        <el-table-column prop="id" label="课程标识" align="center"></el-table-column>
+        <el-table-column prop="name" label="课程名称" align="center"></el-table-column>
+        <el-table-column prop="description" label="课程描述" align="center"></el-table-column>
+        <el-table-column prop="startTime" label="开始时间" align="center"></el-table-column>
+        <el-table-column prop="endTime" label="结束时间" align="center"></el-table-column>
         <el-table-column prop="creator" label="创建者" align="center"></el-table-column>
         <!--        <el-table-column prop="gmtCreate" label="创建时间" align="center"></el-table-column>-->
         <el-table-column label="操作" width="180" align="center">
@@ -47,25 +46,26 @@
 
     <!-- 编辑添加语料弹出框 -->
     <el-dialog :title="dialogTitle" :visible.sync="editVisible" width="30%">
-      <el-form label-width="120px" :rules="formRules" :model="form">
-        <el-form-item label="课程ID" prop="courseId">
-          <el-select v-model="form.courseId" >
-            <el-option
-                v-for="item in courseIdOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-            </el-option>
-          </el-select>
+      <el-form label-width="120px" :rules="formObjRules" :model="formObj">
+        <el-form-item label="课程名字" prop="name">
+          <el-input v-model="formObj.name" ></el-input>
         </el-form-item>
-        <el-form-item label="班级名称">
-          <el-input v-model="form.name" ></el-input>
+        <el-form-item label="课程描述">
+          <el-input v-model="formObj.description" ></el-input>
         </el-form-item>
-        <el-form-item label="班级描述">
-          <el-input v-model="form.description" ></el-input>
+        <el-form-item label="开课时间">
+          <el-date-picker
+              v-model="formObj.startTime"
+              type="date"
+              placeholder="选择日期" style="width: 100%;">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="班级难度">
-          <el-input-number v-model="form.level" ></el-input-number>
+        <el-form-item label="结束时间">
+          <el-date-picker
+              v-model="formObj.endTime"
+              type="date"
+              placeholder="选择日期" style="width: 100%;">
+          </el-date-picker>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -81,10 +81,10 @@
 
 <script>
 
-import { getClassInformation,addClass,updateClass,deleteClass,getCurrentClassInformation } from '@/api/system/sys_class.js'
-import {getCourseInformation} from '@/api/system/sys_course.js'
+import { getCourseInformation,addCourse,updateCourse,deleteCourse,getCurrentCourseInformation} from '@/api/system/sys_course.js'
+
 export default {
-  name: "class",
+  name: "course",
 
   data(){
     return {
@@ -93,15 +93,15 @@ export default {
       },
       tableData:[],
       dialogTitle:'',
-      form:{
+      formObj:{
         id:"",
-        courseId:"",
-        level: "",
-        description:"",
-        name:""
+        name: "",
+        description: "",
+        startTime:"",
+        endTime:""
       },
-      formRules:{
-        courseId:[ {required: true, message: '请输入课程标识',trigger:'blur'}]
+      formObjRules:{
+        name:[{required: true, message: '请输入课程名字',trigger:'blur'}]
       },
       groupsInfo:{
         name:"",
@@ -110,7 +110,6 @@ export default {
         startTime:"",
         endTime:""
       },
-      courseIdOptions:[],
       pageTotal:0,
       editVisible:false,
       query:{
@@ -136,21 +135,21 @@ export default {
     // 查询操作
     handleSearch(){
       this.query.pageIndex = 1;
-
       if(this.materialQueryForm.idLike){
-        getCurrentClassInformation({id:this.materialQueryForm.idLike}).then((res)=>{
+        getCurrentCourseInformation({id:this.materialQueryForm.idLike}).then((res)=>{
           this.tableData = [];
           this.tableData.push(res.data)
         }).catch((e)=>{
           console.log(e);
         });
       }else {
-        this.getClassList();
+        this.getCourseList();
       }
+
     },
 
-    getClassList(){
-      getClassInformation({}).then((res)=>{
+    getCourseList(){
+      getCourseInformation({}).then((res)=>{
         this.setData(res);
       })
     },
@@ -164,10 +163,6 @@ export default {
 
 
     saveEdit(){
-      if(!this.form.courseId){
-        this.$message({message: "班级所属的课程id不能为空.", type: 'warning'});
-        return false;
-      }
       this.editVisible = false;
       this.submitForm();
     },
@@ -183,10 +178,9 @@ export default {
 
     handleEdit(index, row){
       this.editVisible = true;
-      this.getCourseIdList();
-      this.dialogTitle = "修改班级"
-      Object.keys(this.form).forEach((item) => {
-        this.form[item] = row[item];
+      this.dialogTitle = "修改课程"
+      Object.keys(this.formObj).forEach((item) => {
+        this.formObj[item] = row[item];
       });
     },
 
@@ -195,13 +189,13 @@ export default {
       // 二次确认删除
       let deleteItem = this.tableData[index];
       this.$confirm("确定要删除吗？").then(() => {
-        deleteClass(deleteItem).then((res) => {
+        deleteCourse(deleteItem).then((res) => {
           if(res.code !== 0){
             this.$message({message: "删除失败!", type: 'error'});
             return;
           }
-          this.getClassList();
           this.$message({message: "删除成功!", type: 'success'});
+          this.getCourseList();
         }).catch((e)=>{
           this.$message({message: `删除失败，原因为${e}`, type: 'error'});
         });
@@ -209,58 +203,44 @@ export default {
     },
 
     handleAdd(){
-      this.dialogTitle = '新增班级';
-      this.clear(this.form);
+      this.dialogTitle = '新增课程';
+      this.clear(this.formObj);
       this.editVisible = true;
-      this.getCourseIdList();
     },
 
 
     submitForm(){
-      if(this.form){
-        if(this.form.id){
-          updateClass(this.form).then((res) => {
+      if(this.formObj){
+        if(this.formObj.id){
+          updateCourse(this.formObj).then((res) => {
             if(res.code !== 0){
               this.$message({message: "修改失败!", type: 'error'});
               return;
             }
-            this.getClassList();
             this.$message({message: "修改成功!", type: 'success'});
+            this.getCourseList();
           }).catch((e)=>{
             this.$message({message: `修改失败，原因为${e}`, type: 'error'});
           });
         }else {
-          addClass(this.form).then((res) => {
+          addCourse(this.formObj).then((res) => {
             if(res.code !== 0){
               this.$message({message: "添加失败!", type: 'error'});
               return;
             }
-            this.getClassList();
             this.$message({message: "添加成功!", type: 'success'});
+            this.getCourseList();
           }).catch((e)=>{
             this.$message({message: `添加失败，原因为${e}`, type: 'error'});
           });
         }
       }
-    },
-
-
-    getCourseIdList(){
-      getCourseInformation({}).then((res)=>{
-       let records = res.data.records;
-       this.courseIdOptions = [];
-       records.forEach(it=>{
-         this.courseIdOptions.push({value:it.id,label:it.name})
-       })
-      }).catch((e)=>{
-        this.courseIdOptions = [];
-        console.log(e);
-      })
     }
+
   },
 
   beforeRouteEnter(to, from, next) {
-    getClassInformation({
+    getCourseInformation({
       "cur":1,
       "size":5,
       "id":"1"}).then(res => {
@@ -273,9 +253,5 @@ export default {
 <style scoped>
 .el-form {
   margin-top: 20px;
-}
-
-.el-select {
-  display: block;
 }
 </style>
