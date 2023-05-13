@@ -281,6 +281,23 @@ export default {
       this.$router.push({path:"/home/sysmaterialgroupdetail",query:{id}})
     },
 
+    handleSaveTopic(){
+      this.topicObj.cpsgrpId = this.selectionsObj.id || '';
+      addTopicInterface(this.topicObj).then((res)=>{
+        this.$message({message: res.data, type: 'success'});
+      }).catch((e)=>{
+        this.$message({message: e.message, type: 'error'});
+      });
+      this.closeTopicDialog();
+
+    },
+
+    closeTopicDialog(){
+      this.editGroupVisible = true;
+      this.editTopicVisible = false;
+    },
+
+
     // 删除操作
     handleDelete(index){
       // 二次确认删除

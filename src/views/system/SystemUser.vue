@@ -78,8 +78,12 @@
                      icon="el-icon-plus" @click="handleAdd('新增用户')">新增</el-button>
 
           <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
-            <el-table-column prop="phone" label="用户名称" width="100" align="center"/>
-            <el-table-column prop="orgName" label="所在组织" width="200" align="center"/>
+            <el-table-column prop="phone" label="手机号" width="120" align="center"/>
+            <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
+            <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
+            <el-table-column prop="sex" label="性别" width="100" align="center"/>
+            <el-table-column prop="sex" label="性别" width="100" align="center"/>
+            <el-table-column prop="firstLanguage" label="母语" width="100" align="center"/>
             <el-table-column prop="enabled" label="用户状态" width="150" align="center">
               <template slot-scope="scope">
                 <el-switch
@@ -91,9 +95,8 @@
                 </el-switch>
               </template>
             </el-table-column>
-            <el-table-column prop="phone" label="联系电话" width="120" align="center"/>
             <el-table-column prop="mail" label="用户邮箱" width="150" align="center"/>
-            <el-table-column prop="gmtCreate" label="创建时间" width="200" align="center" />
+<!--            <el-table-column prop="gmtCreate" label="创建时间" width="200" align="center" />-->
             <el-table-column label="操作" width="300" align="center" fixed="right">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" icon="el-icon-edit" circle
@@ -221,7 +224,10 @@
           enabled:"",
           email:"",
           orgId:null,
-          timeRange: ["",""]
+          nickName:"",
+          firstLanguage:0,
+          sex:0,
+          birth:""
         },
         pagination:{
           pageNum: 1,

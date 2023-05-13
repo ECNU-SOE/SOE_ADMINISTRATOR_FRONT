@@ -1,52 +1,73 @@
 <template>
   <div>
 
-    <el-card body-style="padding: 0">
-      <el-form ref="roleQueryForm" :model="materialQueryForm" label-width="80px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="课程标识" prop="roleLike">
-              <el-input v-model="materialQueryForm.idLike"
-                        placeholder="请输入课程标识"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6" :offset="6">
-            <el-form-item>
-              <el-button type="primary" size="small"
-                         @click="handleSearch()" icon="el-icon-search">
-                查询</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </el-card>
+    <el-row>
+      <el-col :span="6">
+        <el-card body-style="padding: 0" style="margin-left: 10px;">
+          <el-descriptions title="课程信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
+            <el-descriptions-item label="课程名称" span="3" >kooriookami</el-descriptions-item>
+            <el-descriptions-item label="课程编号" span="3">18100000000</el-descriptions-item>
+            <el-descriptions-item label="课程难度" span="3">
+              <el-rate
+                v-model="value"
+                disabled
+                show-score
+                text-color="#ff9900"
+                score-template="">
+            </el-rate>
+              (0-5)
+            </el-descriptions-item>
+            <el-descriptions-item label="创建日期" span="3">
+             2022-01-02
+            </el-descriptions-item>
+            <el-descriptions-item label="更新日期" span="3">2022-01-02</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
+      <el-col :span="16" style="margin-left: 1%;">
+        <el-card body-style="padding: 0" style="margin-left: 10px;">
+          <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
+            <el-descriptions-item label="课程名称" span="3" >kooriookami</el-descriptions-item>
+            <el-descriptions-item label="课程编号" span="3">18100000000</el-descriptions-item>
+            <el-descriptions-item label="创建日期" span="3">
+              2022-01-02
+            </el-descriptions-item>
+            <el-descriptions-item label="更新日期" span="3">2022-01-02</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
+    </el-row>
 
-    <el-card>
-      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加课程</el-button>
-      <el-form style="white-space: nowrap;">
-        <div v-for="(subItem,subIndex) in tableData" :key="subIndex">
-          <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
-            <el-image
-                style="width: 100px; height: 100px;position: absolute;margin-left: 33%;margin-top: 4%;scale: 2.4;"
-                :src="url"></el-image>
-            <el-descriptions title="课程信息" :contentStyle="contentStyle" :labelStyle="labelStyle">
-              <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
-              <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
-              <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-              <el-descriptions-item label="开始时间" prop="startTime" span="3">{{subItem.startTime}}</el-descriptions-item>
-              <el-descriptions-item label="结束时间" prop="endTime" span="3">{{subItem.endTime}}</el-descriptions-item>
-            </el-descriptions>
-            <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
-              修改
-            </el-button>
-            <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(subIndex)">
-              删除
-            </el-button>
-          </el-card>
-        </div>
-      </el-form>
-    </el-card>
-
+    <el-row>
+      <el-col :span="6">
+        <el-card style="margin-left: 10px;">
+          <el-radio v-model="radio" label="1" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">课程设置</el-radio>
+          <el-radio v-model="radio" label="2" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">班级管理</el-radio>
+          <el-radio v-model="radio" label="3" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">资料管理</el-radio>
+          <el-radio v-model="radio" label="4" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">数据统计</el-radio>
+        </el-card>
+      </el-col>
+      <el-col :span="16" style="margin-left: 1%;">
+        <el-tabs type="border-card" style="width: 59%;">
+          <el-tab-pane label="用户管理">
+            <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
+              <el-table-column prop="phone" label="手机号" width="120" align="center"/>
+              <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
+              <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
+              <el-table-column prop="sex" label="性别" width="100" align="center"/>
+              <el-table-column prop="sex" label="性别" width="100" align="center"/>
+              <el-table-column prop="firstLanguage" label="母语" width="100" align="center"/>
+              <el-table-column prop="mail" label="用户邮箱" width="150" align="center"/>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="教学团队">教学团队</el-tab-pane>
+          <el-tab-pane label="考试作业">考试作业</el-tab-pane>
+          <el-tab-pane label="班级讨论">班级讨论</el-tab-pane>
+          <el-tab-pane label="资料管理">资料管理</el-tab-pane>
+          <el-tab-pane label="班级设置">班级设置</el-tab-pane>
+        </el-tabs>
+      </el-col>
+    </el-row>
 
     <!-- 编辑添加语料弹出框 -->
     <el-dialog :title="dialogTitle" :visible.sync="editVisible" width="30%">
@@ -92,6 +113,7 @@ export default {
 
   data(){
     return {
+      value:4,
       materialQueryForm:{
         idLike: ""
       },
@@ -104,8 +126,6 @@ export default {
         startTime:"",
         endTime:""
       },
-      contentStyle:{"text-align": "center"},
-      labelStyle:{"text-align": "center"},
       formObjRules:{
         name:[{required: true, message: '请输入课程名字',trigger:'blur'}]
       },
@@ -122,7 +142,14 @@ export default {
         cur: 1,
         size: 20,
       },
-      url:"https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      contentStyle:{
+        "text-align":"center;"
+      },
+      labelStyle:{
+        "text-align":"center;",
+        "margin-left":"5px"
+      },
+      radio:"tabs",
       stateArr:[],
       pageIndex:0,
       set:{
@@ -184,9 +211,11 @@ export default {
     },
 
     handleEdit(index, row){
-      let id = this.tableData[index].id;
-      sessionStorage.setItem("courseId",id)
-      this.$router.push({path:"/home/syscoursedetail",query:{id}})
+      this.editVisible = true;
+      this.dialogTitle = "修改课程"
+      Object.keys(this.formObj).forEach((item) => {
+        this.formObj[item] = row[item];
+      });
     },
 
     // 删除操作
@@ -245,7 +274,10 @@ export default {
   },
 
   beforeRouteEnter(to, from, next) {
-    getCourseInformation({}).then(res => {
+    getCourseInformation({
+      "cur":1,
+      "size":5,
+      "id":"1"}).then(res => {
       next(vm => vm.setData(res))
     });
   }
@@ -257,7 +289,4 @@ export default {
   margin-top: 20px;
 }
 
-.el-input {
-  width: 80%;
-}
 </style>

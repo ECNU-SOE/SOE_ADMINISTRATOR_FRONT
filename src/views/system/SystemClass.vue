@@ -260,10 +260,7 @@ export default {
   },
 
   beforeRouteEnter(to, from, next) {
-    getClassInformation({
-      "cur":1,
-      "size":5,
-      "id":"1"}).then(res => {
+    getClassInformation({}).then(res => {
       next(vm => vm.setData(res))
     });
   }

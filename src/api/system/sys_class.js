@@ -4,7 +4,7 @@ import {getJwtToken} from "@/lib/utils";
 //条件分页查询班级信息
 export const getClassInformation = (query) => {
     return jwtServerInstance.request({
-        url: `/api/class/v1/list`,
+        url: `/api/class/v1/list?cur=1&size=10`,
         method: 'post',
         data: query,
         params:{},

@@ -56,7 +56,7 @@ export const getUsers = (queryform,pagination) => {
       orgId: queryform.orgId,
       // username: queryform.username,
       //目前phone就是username
-      phone: queryform.username,
+      phone: queryform.phone,
       email: queryform.email,
       enabled: queryform.enabled,
       // createStartTime: queryform.timeRange[0],
@@ -165,5 +165,14 @@ export const changeUserPwd = (oldPass,newPass) => {
   })
 }
 
+
+//新增一条sys_user数据记录
+export const registerUser = (userForm) => {
+  return jwtServerInstance.request({
+    url:'/api/user/v1/register',
+    method:'post',
+    data:userForm
+  })
+}
 
 

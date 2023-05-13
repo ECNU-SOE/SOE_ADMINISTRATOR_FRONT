@@ -27,17 +27,21 @@
           <h2 class="title">用户注册</h2>
           <div class="input-field">
             <i class="fa fa-user"></i>
-            <input type="text" placeholder="Username">
+            <input type="text" placeholder="userName" v-model="loginForm.username">
           </div>
           <div class="input-field">
             <i class="fa fa-envelope"></i>
-            <input type="text" placeholder="Email">
+            <input type="text" placeholder="nickName" v-model="loginForm.nickName">
           </div>
           <div class="input-field">
             <i class="fa fa-lock"></i>
-            <input type="password" placeholder="password">
+            <input type="password" placeholder="password" v-model="loginForm.password">
           </div>
-          <input type="button" value="注 册" class="btn solid">
+          <div class="input-field">
+            <i class="fa fa-lock"></i>
+            <input type="password" placeholder="repeat" v-model="loginForm.repeat" >
+          </div>
+          <input type="button" value="注 册" class="btn solid"  @click="registerUserName" >
 
 
         </form>
@@ -45,10 +49,10 @@
 
       <div class="panels-container">
         <div class="panel left-panel">
-<!--          <div class="content">-->
-<!--            <h3>新用户注册</h3>-->
-<!--            <button class="btn transparent" id="sign-up-btn">去注册</button>-->
-<!--          </div>-->
+          <div class="content">
+            <h3>新用户注册</h3>
+            <button class="btn transparent" id="sign-up-btn">去注册</button>
+          </div>
 
           <img src="../assets/img/log.svg" class="image" alt="">
         </div>
@@ -70,13 +74,15 @@
 
 <script>
     import {setJwtToken} from '@/lib/utils'
-    import {login} from '@/api/system/sys_user'
+    import {login,registerUser} from '@/api/system/sys_user'
     export default {
         name: "login",
         data() {
             return {
                 loginForm: {
                     username: "",
+                    nickName:"",
+                    repeat:"",
                     password: "",
                     errorMsg:"",
                     errorVisible: false
@@ -86,12 +92,12 @@
         },
        mounted(){
           const sign_in_btn = document.querySelector("#sign-in-btn");
-          // const sign_up_btn = document.querySelector("#sign-up-btn");
+          const sign_up_btn = document.querySelector("#sign-up-btn");
           const container = document.querySelector(".container");
 
-          // sign_up_btn.addEventListener('click',()=>{
-          //   container.classList.add("sign-up-mode");
-          // })
+          sign_up_btn.addEventListener('click',()=>{
+            container.classList.add("sign-up-mode");
+          })
 
           sign_in_btn.addEventListener('click',()=>{
             container.classList.remove("sign-up-mode");
@@ -114,6 +120,29 @@
                     this.loginForm.errorVisible = true;
                 });
             },
+            registerUserName(){
+              if(this.loginForm.password !== this.loginForm.repeat){
+                this.$message({message: `注册失败，两次输入的密码不一致`, type: 'error'});
+                return;
+              }
+              if(!this.loginForm.password){
+                this.$message({message: `注册失败，密码不能为空`, type: 'error'});
+                return;
+              }
+              if(!this.loginForm.username){
+                this.$message({message: `注册失败，用户名不能为空`, type: 'error'});
+                return;
+              }
+              registerUser({
+                phone:this.loginForm.username,
+                nickName:this.loginForm.nickName,
+                pwd:this.loginForm.password
+              }).then(res =>{
+                this.$message({message: `注册成功`, type: 'success'});
+              }).catch(e=>{
+                this.$message({message: `注册失败，原因为${e}`, type: 'error'});
+              })
+              },
             getPassword(){
 
             }
