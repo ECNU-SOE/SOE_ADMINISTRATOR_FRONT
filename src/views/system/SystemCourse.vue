@@ -27,14 +27,14 @@
         <div v-for="(subItem,subIndex) in tableData" :key="subIndex">
           <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
             <el-image
-                style="width: 100px; height: 100px;position: absolute;margin-left: 33%;margin-top: 4%;scale: 2.4;"
+                style="width: 100px; height: 100px;position: absolute;margin-left: 30%;margin-top: 4%;scale: 1.6;"
                 :src="url"></el-image>
             <el-descriptions title="课程信息" :contentStyle="contentStyle" :labelStyle="labelStyle">
               <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
               <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
               <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-              <el-descriptions-item label="开始时间" prop="startTime" span="3">{{getCurrentTime(subItem.startTime)}}</el-descriptions-item>
-              <el-descriptions-item label="结束时间" prop="endTime" span="3">{{getCurrentTime(subItem.endTime)}}</el-descriptions-item>
+              <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{getCurrentTime(subItem.gmtCreate)}}</el-descriptions-item>
+              <el-descriptions-item label="修改时间" prop="gmtModified" span="3">{{getCurrentTime(subItem.gmtModified)}}</el-descriptions-item>
             </el-descriptions>
             <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
               修改
@@ -57,16 +57,16 @@
         <el-form-item label="课程描述">
           <el-input v-model="formObj.description" ></el-input>
         </el-form-item>
-        <el-form-item label="开课时间">
+        <el-form-item label="创建时间">
           <el-date-picker
-              v-model="formObj.startTime"
+              v-model="formObj.gmtCreate"
               type="date"
               placeholder="选择日期" style="width: 100%;">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="结束时间">
+        <el-form-item label="修改时间">
           <el-date-picker
-              v-model="formObj.endTime"
+              v-model="formObj.gmtModified"
               type="date"
               placeholder="选择日期" style="width: 100%;">
           </el-date-picker>
@@ -102,8 +102,8 @@ export default {
         id:"",
         name: "",
         description: "",
-        startTime:"",
-        endTime:""
+        gmtCreate:"",
+        gmtModified:""
       },
       contentStyle:{"text-align": "center"},
       labelStyle:{"text-align": "center"},
@@ -114,8 +114,8 @@ export default {
         name:"",
         type: "",
         description: "",
-        startTime:"",
-        endTime:""
+        gmtCreate:"",
+        gmtModified:""
       },
       pageTotal:0,
       editVisible:false,

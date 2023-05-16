@@ -16,10 +16,10 @@
             </el-rate>
               (0-5)
             </el-descriptions-item>
-            <el-descriptions-item label="开始日期" span="3">
-              {{this.getCurrentTime(tableData.startTime)}}
+            <el-descriptions-item label="创建日期" span="3">
+              {{this.getCurrentTime(tableData.gmtCreate)}}
             </el-descriptions-item>
-            <el-descriptions-item label="结束日期" span="3">{{this.getCurrentTime(tableData.endTime)}}</el-descriptions-item>
+            <el-descriptions-item label="修改日期" span="3">{{this.getCurrentTime(tableData.gmtModified)}}</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
@@ -40,10 +40,10 @@
     <el-row>
       <el-col :span="6">
         <el-card style="margin-left: 10px;">
-          <el-radio v-model="radio" label="1" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">课程设置</el-radio>
-          <el-radio v-model="radio" label="2" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">班级管理</el-radio>
-          <el-radio v-model="radio" label="3" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">资料管理</el-radio>
-          <el-radio v-model="radio" label="4" border size="medium" style="display: block;margin-top: 20px;width: 300px;margin-left:30px;height: 50px;">数据统计</el-radio>
+          <el-radio v-model="radio" label="1" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;">课程设置</el-radio>
+          <el-radio v-model="radio" label="2" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;">班级管理</el-radio>
+          <el-radio v-model="radio" label="3" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;">资料管理</el-radio>
+          <el-radio v-model="radio" label="4" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;">数据统计</el-radio>
         </el-card>
       </el-col>
       <el-col :span="16" style="margin-left: 1%;">
@@ -51,13 +51,13 @@
           <el-tab-pane label="用户管理">
             <div style="margin: 5px;height: 35px;">
               <label>共计10个人</label>
-              <el-button size="small" type="primary" icon="el-icon-edit" @click="updateCpsrcdId(subIndex)" style="position: absolute;margin-left: 50%;">
+              <el-button size="small" type="primary" icon="el-icon-edit" @click="updateCpsrcdId(subIndex)" style="position: absolute;margin-left: 48%;width: 10%;">
                 添加学生
               </el-button>
-              <el-button size="small" type="primary" icon="el-icon-upload2" @click="deleteCpsrcdId(subIndex)" style="position: absolute;margin-left: 60%;">
+              <el-button size="small" type="primary" icon="el-icon-upload2" @click="deleteCpsrcdId(subIndex)" style="position: absolute;margin-left: 60%;width: 10%;">
                 导出名单
               </el-button>
-              <el-input style="position: absolute;width: 15%;margin-left: 70%;" placeholder="请输入学号或者姓名"></el-input>
+              <el-input style="position: absolute;width: 15%;margin-left: 72%;" placeholder="请输入学号或者姓名"></el-input>
             </div>
             <el-table :data="classInfoList" border style="margin-bottom: 20px;">
               <el-table-column prop="phone" label="手机号" width="120" align="center"/>
@@ -71,7 +71,7 @@
           </el-tab-pane>
           <el-tab-pane label="教学团队">教学团队</el-tab-pane>
           <el-tab-pane label="考试作业">
-            <div v-for="(subItem,subIndex) in tableData" :key="subIndex">
+            <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
               <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
                 <el-image
                     style="width: 100px; height: 100px;position: absolute;margin-left: 33%;margin-top: 4%;scale: 2.4;"
@@ -80,8 +80,8 @@
                   <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
                   <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
                   <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-                  <el-descriptions-item label="开始时间" prop="startTime" span="3">{{subItem.startTime}}</el-descriptions-item>
-                  <el-descriptions-item label="结束时间" prop="endTime" span="3">{{subItem.endTime}}</el-descriptions-item>
+                  <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
+                  <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{subItem.gmtModified}}</el-descriptions-item>
                 </el-descriptions>
                 <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
                   修改
@@ -108,16 +108,16 @@
         <el-form-item label="课程描述">
           <el-input v-model="formObj.description" ></el-input>
         </el-form-item>
-        <el-form-item label="开课时间">
+        <el-form-item label="创建时间">
           <el-date-picker
-              v-model="formObj.startTime"
+              v-model="formObj.gmtCreate"
               type="date"
               placeholder="选择日期" style="width: 100%;">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="结束时间">
+        <el-form-item label="修改时间">
           <el-date-picker
-              v-model="formObj.endTime"
+              v-model="formObj.gmtModified"
               type="date"
               placeholder="选择日期" style="width: 100%;">
           </el-date-picker>
@@ -155,8 +155,8 @@ export default {
         id:"",
         name: "",
         description: "",
-        startTime:"",
-        endTime:""
+        gmtCreate:"",
+        gmtModified:""
       },
       formObjRules:{
         name:[{required: true, message: '请输入课程名字',trigger:'blur'}]
@@ -165,8 +165,8 @@ export default {
         name:"",
         type: "",
         description: "",
-        startTime:"",
-        endTime:""
+        gmtCreate:"",
+        gmtModified:""
       },
       editVisible:false,
       query:{
