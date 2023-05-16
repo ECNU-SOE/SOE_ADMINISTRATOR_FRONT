@@ -33,8 +33,8 @@
               <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
               <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
               <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-              <el-descriptions-item label="开始时间" prop="startTime" span="3">{{subItem.startTime}}</el-descriptions-item>
-              <el-descriptions-item label="结束时间" prop="endTime" span="3">{{subItem.endTime}}</el-descriptions-item>
+              <el-descriptions-item label="开始时间" prop="startTime" span="3">{{getCurrentTime(subItem.startTime)}}</el-descriptions-item>
+              <el-descriptions-item label="结束时间" prop="endTime" span="3">{{getCurrentTime(subItem.endTime)}}</el-descriptions-item>
             </el-descriptions>
             <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
               修改
@@ -86,6 +86,7 @@
 <script>
 
 import { getCourseInformation,addCourse,updateCourse,deleteCourse,getCurrentCourseInformation} from '@/api/system/sys_course.js'
+import {getCurrentTimeStr} from "@/lib/utils";
 
 export default {
   name: "course",
@@ -240,6 +241,10 @@ export default {
           });
         }
       }
+    },
+
+    getCurrentTime(time){
+      return getCurrentTimeStr(time);
     }
 
   },

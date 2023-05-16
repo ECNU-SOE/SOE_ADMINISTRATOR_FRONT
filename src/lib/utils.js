@@ -13,3 +13,19 @@ export const getTokenUser = () => {
     let userString = decodeURIComponent(escape(window.atob(token.split('.')[1].replace(/-/g, "+").replace(/_/g, "/"))))
   return JSON.parse(userString).loginUser && JSON.parse(userString).loginUser.phone || ""
 }
+
+export function getCurrentTimeStr(time){
+    try {
+        let timestamp = new Date(time).getTime();
+        let date = new Date(timestamp);
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1  < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+        let day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+        let hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        let minute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        let second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+        return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+    }catch (e){
+        return time;
+    }
+}

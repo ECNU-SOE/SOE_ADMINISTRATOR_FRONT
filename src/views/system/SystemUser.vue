@@ -82,7 +82,6 @@
             <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
             <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
             <el-table-column prop="sex" label="性别" width="100" align="center"/>
-            <el-table-column prop="sex" label="性别" width="100" align="center"/>
             <el-table-column prop="firstLanguage" label="母语" width="100" align="center"/>
             <el-table-column prop="enabled" label="用户状态" width="150" align="center">
               <template slot-scope="scope">
@@ -95,7 +94,7 @@
                 </el-switch>
               </template>
             </el-table-column>
-            <el-table-column prop="mail" label="用户邮箱" width="150" align="center"/>
+            <el-table-column prop="mail" label="用户邮箱" width="160" align="center"/>
 <!--            <el-table-column prop="gmtCreate" label="创建时间" width="200" align="center" />-->
             <el-table-column label="操作" width="300" align="center" fixed="right">
               <template slot-scope="scope">

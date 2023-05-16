@@ -98,13 +98,6 @@ export default {
         pinyin:"",
         refText:""
       },
-      groupsInfo:{
-        name:"",
-        type: "",
-        description: "",
-        startTime:"",
-        endTime:""
-      },
       pageTotal:0,
       editVisible:false,
       query:{

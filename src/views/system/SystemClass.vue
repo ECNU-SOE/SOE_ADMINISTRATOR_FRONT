@@ -103,13 +103,6 @@ export default {
       formRules:{
         courseId:[ {required: true, message: '请输入课程标识',trigger:'blur'}]
       },
-      groupsInfo:{
-        name:"",
-        type: "",
-        description: "",
-        startTime:"",
-        endTime:""
-      },
       courseIdOptions:[],
       pageTotal:0,
       editVisible:false,

@@ -4,23 +4,22 @@
     <el-row>
       <el-col :span="6">
         <el-card body-style="padding: 0" style="margin-left: 10px;">
-          <el-descriptions title="课程信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
-            <el-descriptions-item label="课程名称" span="3" >kooriookami</el-descriptions-item>
-            <el-descriptions-item label="课程编号" span="3">18100000000</el-descriptions-item>
+          <el-descriptions title="课程信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle" v-model="tableData">
+            <el-descriptions-item label="课程名称" span="3" >{{tableData.name}}</el-descriptions-item>
+            <el-descriptions-item label="课程编号" span="3">{{tableData.id}}</el-descriptions-item>
             <el-descriptions-item label="课程难度" span="3">
               <el-rate
                 v-model="value"
-                disabled
                 show-score
                 text-color="#ff9900"
                 score-template="">
             </el-rate>
               (0-5)
             </el-descriptions-item>
-            <el-descriptions-item label="创建日期" span="3">
-             2022-01-02
+            <el-descriptions-item label="开始日期" span="3">
+              {{this.getCurrentTime(tableData.startTime)}}
             </el-descriptions-item>
-            <el-descriptions-item label="更新日期" span="3">2022-01-02</el-descriptions-item>
+            <el-descriptions-item label="结束日期" span="3">{{this.getCurrentTime(tableData.endTime)}}</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
@@ -29,7 +28,7 @@
           <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
             <el-descriptions-item label="课程名称" span="3" >kooriookami</el-descriptions-item>
             <el-descriptions-item label="课程编号" span="3">18100000000</el-descriptions-item>
-            <el-descriptions-item label="创建日期" span="3">
+            <el-descriptions-item label="开始日期" span="3">
               2022-01-02
             </el-descriptions-item>
             <el-descriptions-item label="更新日期" span="3">2022-01-02</el-descriptions-item>
@@ -48,9 +47,19 @@
         </el-card>
       </el-col>
       <el-col :span="16" style="margin-left: 1%;">
-        <el-tabs type="border-card" style="width: 59%;">
+        <el-tabs type="border-card" style="width: 59%;" :stretch=true>
           <el-tab-pane label="用户管理">
-            <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
+            <div style="margin: 5px;height: 35px;">
+              <label>共计10个人</label>
+              <el-button size="small" type="primary" icon="el-icon-edit" @click="updateCpsrcdId(subIndex)" style="position: absolute;margin-left: 50%;">
+                添加学生
+              </el-button>
+              <el-button size="small" type="primary" icon="el-icon-upload2" @click="deleteCpsrcdId(subIndex)" style="position: absolute;margin-left: 60%;">
+                导出名单
+              </el-button>
+              <el-input style="position: absolute;width: 15%;margin-left: 70%;" placeholder="请输入学号或者姓名"></el-input>
+            </div>
+            <el-table :data="classInfoList" border style="margin-bottom: 20px;">
               <el-table-column prop="phone" label="手机号" width="120" align="center"/>
               <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
               <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
@@ -61,7 +70,28 @@
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="教学团队">教学团队</el-tab-pane>
-          <el-tab-pane label="考试作业">考试作业</el-tab-pane>
+          <el-tab-pane label="考试作业">
+            <div v-for="(subItem,subIndex) in tableData" :key="subIndex">
+              <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
+                <el-image
+                    style="width: 100px; height: 100px;position: absolute;margin-left: 33%;margin-top: 4%;scale: 2.4;"
+                    :src="url"></el-image>
+                <el-descriptions title="课程信息" :contentStyle="contentStyle" :labelStyle="labelStyle">
+                  <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
+                  <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
+                  <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
+                  <el-descriptions-item label="开始时间" prop="startTime" span="3">{{subItem.startTime}}</el-descriptions-item>
+                  <el-descriptions-item label="结束时间" prop="endTime" span="3">{{subItem.endTime}}</el-descriptions-item>
+                </el-descriptions>
+                <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
+                  修改
+                </el-button>
+                <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(subIndex)">
+                  删除
+                </el-button>
+              </el-card>
+            </div>
+          </el-tab-pane>
           <el-tab-pane label="班级讨论">班级讨论</el-tab-pane>
           <el-tab-pane label="资料管理">资料管理</el-tab-pane>
           <el-tab-pane label="班级设置">班级设置</el-tab-pane>
@@ -106,18 +136,20 @@
 
 <script>
 
-import { getCourseInformation,addCourse,updateCourse,deleteCourse,getCurrentCourseInformation} from '@/api/system/sys_course.js'
-
+import {addCourse,updateCourse,deleteCourse,getCurrentCourseInformation} from '@/api/system/sys_course.js'
+import {getCurrentTimeStr} from "@/lib/utils";
 export default {
   name: "course",
 
   data(){
     return {
+      courseId:sessionStorage.getItem("courseId"),
       value:4,
       materialQueryForm:{
         idLike: ""
       },
       tableData:[],
+      classInfoList:[],
       dialogTitle:'',
       formObj:{
         id:"",
@@ -136,12 +168,12 @@ export default {
         startTime:"",
         endTime:""
       },
-      pageTotal:0,
       editVisible:false,
       query:{
         cur: 1,
         size: 20,
       },
+      url:"https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
       contentStyle:{
         "text-align":"center;"
       },
@@ -162,6 +194,9 @@ export default {
     }
   },
 
+  created() {
+    this.getCourseList({id:this.courseId});
+  },
 
   methods:{
 
@@ -182,16 +217,15 @@ export default {
 
     },
 
-    getCourseList(){
-      getCourseInformation({}).then((res)=>{
+    getCourseList(opt){
+      getCurrentCourseInformation(opt).then((res)=>{
         this.setData(res);
       })
     },
 
     setData(data){
       if(data){
-        this.tableData = data.data.records;
-        this.pageTotal = data.data.total || 50;
+        this.tableData = data.data;
       }
     },
 
@@ -269,17 +303,12 @@ export default {
           });
         }
       }
+    },
+
+    getCurrentTime(time){
+      return getCurrentTimeStr(time);
     }
 
-  },
-
-  beforeRouteEnter(to, from, next) {
-    getCourseInformation({
-      "cur":1,
-      "size":5,
-      "id":"1"}).then(res => {
-      next(vm => vm.setData(res))
-    });
   }
 };
 </script>
@@ -288,5 +317,6 @@ export default {
 .el-form {
   margin-top: 20px;
 }
+
 
 </style>
