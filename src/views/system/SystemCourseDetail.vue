@@ -26,22 +26,26 @@
       <el-col :span="16" style="margin-left: 1%;">
         <el-row>
           <el-card body-style="padding: 0" style="margin-left: 10px;">
-            <el-col :span="8">
+            <el-col :span="3">
+              <el-image
+                  style="margin: 5%;height: 150px"
+                  :src="pictureUrl"></el-image>
+            </el-col>
+            <el-col :span="6" style="margin-left: 20px;">
             <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
-              <el-descriptions-item label="课程名称" span="3" >kooriookami</el-descriptions-item>
-              <el-descriptions-item label="课程编号" span="3">18100000000</el-descriptions-item>
-              <el-descriptions-item label="开始日期" span="3">
-                2022-01-02
-              </el-descriptions-item>
-              <el-descriptions-item label="更新日期" span="3">2022-01-02</el-descriptions-item>
+              <el-descriptions-item label="课程名称" prop="name" span="3" >{{currentClass.name}}</el-descriptions-item>
+              <el-descriptions-item label="课程标识" prop="id" span="3">{{currentClass.id}}</el-descriptions-item>
+              <el-descriptions-item label="课程描述" prop="description" span="3">{{currentClass.description}}</el-descriptions-item>
+              <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{currentClass.gmtCreate}}</el-descriptions-item>
+              <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{currentClass.gmtModified}}</el-descriptions-item>
             </el-descriptions>
             </el-col>
-            <el-col :span="2">
-            <el-button size="small" type="primary" icon="el-icon-delete" @click="handleDelete(subIndex)" style="position: absolute;margin-left: 2%;">
+            <el-col :span="1">
+            <el-button size="small" type="primary" icon="el-icon-delete" @click="updateClass()" style="position: absolute;margin-top:3%;margin-left: -4%;">
               更换班级
             </el-button>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="3">
             <el-card style="position: absolute;margin-left: 20%;">
               <el-input  type="textarea"></el-input>
             </el-card>
@@ -65,10 +69,10 @@
           <el-tab-pane label="用户管理">
             <div style="margin: 5px;height: 35px;">
               <label>共计10个人</label>
-              <el-button size="small" type="primary" icon="el-icon-edit" @click="updateCpsrcdId(subIndex)" style="position: absolute;margin-left: 48%;width: 10%;">
+              <el-button size="small" type="primary" icon="el-icon-edit" @click="addStudent()" style="position: absolute;margin-left: 48%;width: 10%;">
                 添加学生
               </el-button>
-              <el-button size="small" type="primary" icon="el-icon-upload2" @click="deleteCpsrcdId(subIndex)" style="position: absolute;margin-left: 60%;width: 10%;">
+              <el-button size="small" type="primary" icon="el-icon-upload2" @click="exportXls()" style="position: absolute;margin-left: 60%;width: 10%;">
                 导出名单
               </el-button>
               <el-input style="position: absolute;width: 15%;margin-left: 72%;" placeholder="请输入学号或者姓名"></el-input>
@@ -90,17 +94,17 @@
               <el-radio v-model="radio" label="notStart" size="mini">未开始</el-radio>
               <el-radio v-model="radio" label="processing" size="mini" >进行中</el-radio>
               <el-radio v-model="radio" label="stopped" size="mini" >已结束</el-radio>
-              <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)" style="margin-left: 30%;">
+              <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit()" style="margin-left: 30%;">
                 新建作业
               </el-button>
-              <el-button size="small" type="primary" icon="el-icon-delete" @click="handleDelete(subIndex)">
+              <el-button size="small" type="primary" icon="el-icon-delete" @click="handleDelete()">
                 语料组库
               </el-button>
             </div>
             <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
               <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
                 <el-image
-                    style="width: 100px; height: 100px;position: absolute;margin-left: 33%;margin-top: 4%;scale: 2.4;"
+                    style="width: 100px; height: 100px;position: absolute;margin-left: 30%;margin-top: 4%;scale: 1.6;"
                     :src="url"></el-image>
                 <el-descriptions title="课程信息" :contentStyle="contentStyle" :labelStyle="labelStyle">
                   <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
@@ -157,6 +161,75 @@
       </template>
     </el-dialog>
 
+
+    <!-- 更换班级弹出框 -->
+    <el-dialog title="更换班级" :visible.sync="updateClassVisible" width="30%">
+      <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
+        <el-card :class="{active:subIndex === selectIndex}" @click.native="selectClass(subIndex)">
+          <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
+            <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
+            <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
+            <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
+            <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
+            <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{subItem.gmtModified}}</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </div>
+      <el-card>
+        <span class="el-icon-plus" @click="handleDelete()">
+         新建班级
+        </span>
+      </el-card>
+      <template #footer>
+                <span class="dialog-footer">
+                    <label style="margin-right: 20%;">共有2个班级可选</label>
+                    <el-button @click="updateClassVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveEdit">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
+    <!-- 添加学生弹出框 -->
+    <el-dialog title="添加学生" :visible.sync="addStudentVisible" width="38%">
+      <div style="min-height: 500px;">
+        <el-tabs type="border-card" :stretch=true style="width: 35%;">
+          <el-tab-pane label="手动导入">
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-form-item label="姓名">
+                <el-input v-model="formInline.name" placeholder="请输入姓名"></el-input>
+              </el-form-item>
+              <el-form-item label="手机号">
+                <el-input v-model="formInline.phone" placeholder="请输入手机号"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button size="small" type="primary" icon="el-icon-edit" @click="addStudent()" >查询</el-button>
+              </el-form-item>
+            </el-form>
+            <el-table :data="classInfoList" border style="margin-bottom: 20px;">
+              <el-table-column type="selection"></el-table-column>
+              <el-table-column prop="phone" label="手机号" width="120" align="center"/>
+              <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
+              <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
+              <el-table-column prop="sex" label="性别" width="100" align="center"/>
+              <el-table-column prop="sex" label="性别" width="100" align="center"/>
+              <el-table-column prop="firstLanguage" label="母语" width="100" align="center"/>
+              <el-table-column prop="mail" label="用户邮箱" width="150" align="center"/>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="批量导入">
+          </el-tab-pane>
+          <el-tab-pane label="课程导入">
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="addStudentVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveEdit">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -184,10 +257,15 @@ export default {
       materialQueryForm:{
         idLike: ""
       },
+      formInline:{
+        name:'',
+        phone:''
+      },
       tableData:[],
       classInfoList:[],
       currentClass:{},
       dialogTitle:'',
+      selectIndex:-1,
       formObj:{
         id:"",
         name: "",
@@ -198,6 +276,7 @@ export default {
       formObjRules:{
         name:[{required: true, message: '请输入课程名字',trigger:'blur'}]
       },
+      pictureUrl:"https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
       groupsInfo:{
         name:"",
         type: "",
@@ -206,6 +285,8 @@ export default {
         gmtModified:""
       },
       editVisible:false,
+      updateClassVisible:false,
+      addStudentVisible:false,
       query:{
         cur: 1,
         size: 20,
@@ -275,7 +356,7 @@ export default {
 
     setClassData(data){
       if(data){
-        this.classInfoList = data.data.records;
+        this.classInfoList = [{name:"1班",id:"123",description:"123",gmtCreate:"2022-01-01",gmtModified:"2022-02-01"},{name:"2班",id:"1234",description:"123",gmtCreate:"2022-01-01",gmtModified:"2022-02-01"}];
         this.currentClass = this.classInfoList[0];
       }
     },
@@ -358,6 +439,22 @@ export default {
 
     getCurrentTime(time){
       return getCurrentTimeStr(time);
+    },
+
+    updateClass(){
+      this.updateClassVisible = true;
+    },
+
+    selectClass(){
+
+    },
+
+    addStudent(){
+      this.addStudentVisible = true;
+    },
+
+    exportXls(){
+
     }
 
   }
@@ -367,6 +464,10 @@ export default {
 <style scoped>
 .el-form {
   margin-top: 20px;
+}
+
+.active{
+  background-color: #ffffff;
 }
 
 

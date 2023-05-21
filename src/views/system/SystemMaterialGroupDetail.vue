@@ -86,7 +86,6 @@
           :props="defaultProps"
           default-expand-all
           :expand-on-click-node="false"
-          :filter-node-method="filterOrg"
           @node-click="orgNodeClick"
           :highlight-current="true"
           node-key="id"
@@ -669,10 +668,6 @@ export default {
 
     orgNodeClick(node){
       this.editTopic(node);
-    },
-
-    filterOrg(){
-
     },
 
     audioUrlChange(e){

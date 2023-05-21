@@ -35,7 +35,7 @@ router.beforeEach((to,from,next) => {
     refreshToken().then(res => {
       //没有获得新的token==null，
       // 表示旧的token已经失效，需要重新登录
-      if(res.data == null){
+      if(res.code !== 0){
         next({name: 'login'}) //去登录界面
         setJwtToken('') //清空token
       }else{//否则去你想去的界面，并把新的token保存起来
