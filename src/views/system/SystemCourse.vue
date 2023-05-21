@@ -28,7 +28,7 @@
           <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
             <el-image
                 style="width: 100px; height: 100px;position: absolute;margin-left: 30%;margin-top: 4%;scale: 1.6;"
-                :src="url"></el-image>
+                :src="subItem.picture || url"></el-image>
             <el-descriptions title="课程信息" :contentStyle="contentStyle" :labelStyle="labelStyle">
               <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
               <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>

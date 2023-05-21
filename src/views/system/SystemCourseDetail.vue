@@ -24,16 +24,30 @@
         </el-card>
       </el-col>
       <el-col :span="16" style="margin-left: 1%;">
-        <el-card body-style="padding: 0" style="margin-left: 10px;">
-          <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
-            <el-descriptions-item label="课程名称" span="3" >kooriookami</el-descriptions-item>
-            <el-descriptions-item label="课程编号" span="3">18100000000</el-descriptions-item>
-            <el-descriptions-item label="开始日期" span="3">
-              2022-01-02
-            </el-descriptions-item>
-            <el-descriptions-item label="更新日期" span="3">2022-01-02</el-descriptions-item>
-          </el-descriptions>
-        </el-card>
+        <el-row>
+          <el-card body-style="padding: 0" style="margin-left: 10px;">
+            <el-col :span="8">
+            <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
+              <el-descriptions-item label="课程名称" span="3" >kooriookami</el-descriptions-item>
+              <el-descriptions-item label="课程编号" span="3">18100000000</el-descriptions-item>
+              <el-descriptions-item label="开始日期" span="3">
+                2022-01-02
+              </el-descriptions-item>
+              <el-descriptions-item label="更新日期" span="3">2022-01-02</el-descriptions-item>
+            </el-descriptions>
+            </el-col>
+            <el-col :span="2">
+            <el-button size="small" type="primary" icon="el-icon-delete" @click="handleDelete(subIndex)" style="position: absolute;margin-left: 2%;">
+              更换班级
+            </el-button>
+            </el-col>
+            <el-col :span="6">
+            <el-card style="position: absolute;margin-left: 20%;">
+              <el-input  type="textarea"></el-input>
+            </el-card>
+            </el-col>
+          </el-card>
+        </el-row>
       </el-col>
     </el-row>
 
@@ -71,6 +85,18 @@
           </el-tab-pane>
           <el-tab-pane label="教学团队">教学团队</el-tab-pane>
           <el-tab-pane label="考试作业">
+            <div style="width: 100%;margin:5px;">
+              <el-radio v-model="radio" label="all" size="mini">全部</el-radio>
+              <el-radio v-model="radio" label="notStart" size="mini">未开始</el-radio>
+              <el-radio v-model="radio" label="processing" size="mini" >进行中</el-radio>
+              <el-radio v-model="radio" label="stopped" size="mini" >已结束</el-radio>
+              <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)" style="margin-left: 30%;">
+                新建作业
+              </el-button>
+              <el-button size="small" type="primary" icon="el-icon-delete" @click="handleDelete(subIndex)">
+                语料组库
+              </el-button>
+            </div>
             <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
               <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
                 <el-image
@@ -136,8 +162,18 @@
 
 <script>
 
-import {addCourse,updateCourse,deleteCourse,getCurrentCourseInformation} from '@/api/system/sys_course.js'
+import {
+  addCourse,
+  updateCourse,
+  deleteCourse,
+  getCurrentCourseInformation
+} from '@/api/system/sys_course.js';
+import {
+  getClassInformation
+} from '@/api/system/sys_class.js'
+
 import {getCurrentTimeStr} from "@/lib/utils";
+
 export default {
   name: "course",
 
@@ -150,6 +186,7 @@ export default {
       },
       tableData:[],
       classInfoList:[],
+      currentClass:{},
       dialogTitle:'',
       formObj:{
         id:"",
@@ -195,7 +232,8 @@ export default {
   },
 
   created() {
-    this.getCourseList({id:this.courseId});
+    this.getCourseList();
+    this.getClassList();
   },
 
   methods:{
@@ -217,15 +255,28 @@ export default {
 
     },
 
-    getCourseList(opt){
-      getCurrentCourseInformation(opt).then((res)=>{
+    getCourseList(){
+      getCurrentCourseInformation({id:this.courseId}).then((res)=>{
         this.setData(res);
+      })
+    },
+
+    getClassList(){
+      getClassInformation({id:this.courseId}).then((res)=>{
+        this.setClassData(res);
       })
     },
 
     setData(data){
       if(data){
         this.tableData = data.data;
+      }
+    },
+
+    setClassData(data){
+      if(data){
+        this.classInfoList = data.data.records;
+        this.currentClass = this.classInfoList[0];
       }
     },
 

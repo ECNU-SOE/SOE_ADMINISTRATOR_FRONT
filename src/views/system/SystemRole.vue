@@ -149,7 +149,7 @@
           ],
           roleCode: [
             {required: true, message: '请输入角色编码', trigger: 'blur'},
-            {pattern: /^[A-Za-z0-9]+$/, message: '只能包含英文、数字', trigger: 'blur'}
+            // {pattern: /^[A-Za-z0-9]+$/, message: '只能包含英文、数字', trigger: 'blur'}
           ],
           roleDesc: [
             {required: true, message: '请输入角色描述信息', trigger: 'blur'},

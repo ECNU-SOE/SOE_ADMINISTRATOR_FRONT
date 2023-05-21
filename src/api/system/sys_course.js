@@ -56,7 +56,7 @@ export const deleteCourse = (opt) => {
         data: opt,
         params:{},
         headers:{
-            token:opt.token
+            token:getJwtToken()
         }
     });
 };
