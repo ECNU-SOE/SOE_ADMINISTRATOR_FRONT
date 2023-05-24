@@ -139,8 +139,10 @@
                 pwd:this.loginForm.password
               }).then(res =>{
                 this.$message({message: `注册成功`, type: 'success'});
+                const container = document.querySelector(".container");
+                container.classList.remove("sign-up-mode");
               }).catch(e=>{
-                this.$message({message: `注册失败，原因为${e}`, type: 'error'});
+                this.$message({message: `注册失败，原因为${e.msg}`, type: 'error'});
               })
               },
             getPassword(){

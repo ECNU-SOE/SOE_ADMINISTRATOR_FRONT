@@ -48,11 +48,7 @@
         </el-form-item>
         <el-form-item label="语料组类型">
           <el-select v-model="selections.type" placeholder="请选择" style="width:100%;">
-            <el-option
-                v-for="item in materialGroupOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+            <el-option v-for="item in materialGroupOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -60,12 +56,42 @@
           <el-input v-model="selections.description" ></el-input>
         </el-form-item>
         <el-form-item label="语料组难度">
-          <el-input-number v-model="selections.difficulty"></el-input-number>
+          <el-select v-model="selections.difficulty1" style="width: 45%;">
+            <el-option label="A" value=0>A</el-option>
+            <el-option label="B" value=1>B</el-option>
+            <el-option label="C" value=2>C</el-option>
+            <el-option label="D" value=3>D</el-option>
+            <el-option label="E" value=4>E</el-option>
+            <el-option label="F" value=5>F</el-option>
+            <el-option label="G" value=6>G</el-option>
+            <el-option label="H" value=7>H</el-option>
+            <el-option label="I" value=8>I</el-option>
+            <el-option label="J" value=9>J</el-option>
+          </el-select>
+          <el-select v-model="selections.difficulty2" style="width: 45%;margin-left: 5%;">
+            <el-option value=0>0</el-option>
+            <el-option value=1>1</el-option>
+            <el-option value=2>2</el-option>
+            <el-option value=3>3</el-option>
+            <el-option value=4>4</el-option>
+            <el-option value=5>5</el-option>
+            <el-option value=6>6</el-option>
+            <el-option value=7>7</el-option>
+            <el-option value=8>8</el-option>
+            <el-option value=9>9</el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="公开情况">
-          <el-select v-model="selections.isPublic" >
+          <el-select v-model="selections.isPrivate" >
             <el-option key=0 label="公开" value=1></el-option>
             <el-option key=1 label="私有" value=0></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="修改状态">
+          <el-select v-model="selections.modStatus" >
+            <el-option key=0 label="允许修改" value=0></el-option>
+            <el-option key=1 label="允许创建者修改" value=1></el-option>
+            <el-option key=2 label="不允许创建者修改" value=2></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="开始时间">
@@ -130,7 +156,7 @@
 
 import { showAllLanguageMaterialGroup,deleteLanguageMaterialGroup,getCurrentLanguageMaterialGroup,
   getLanguageMaterial,updateCurrentLanguageMaterialGroup,addTopicInterface,addCurrentLanguageMaterialGroup} from '@/api/system/sys_materialGroup'
-import {getJwtToken} from "@/lib/utils";
+import {getJwtToken,getCurrentTimeStr} from "@/lib/utils";
 
 export default {
   name: "materialGroup",
@@ -144,20 +170,23 @@ export default {
       selectionsObj:{
         id:"",
         title:"",
-        type:"",
+        type:-1,
         description:"",
         difficulty:0,
-        topics:[]
+        difficulty1:0,
+        difficulty2:0,
+        topics:[],
+        modStatus:-1
       },
       materialGroupOptions:[ {
         value: 1,
-        label: '作业'
-      }, {
-        value: 2,
         label: '测试'
       }, {
-        value: 3,
+        value: 2,
         label: '试卷'
+      }, {
+        value: 3,
+        label: '作业'
       }],
       topicObj:{
         id:"",
@@ -242,16 +271,19 @@ export default {
             this.$message({message: "更新成功", type: 'success'});
           }
         }).catch((e)=>{
-          this.$message({message: e.message, type: 'error'});
+          this.$message({message: e.msg, type: 'error'});
         });
       }else {
+        opt.difficulty = opt.difficulty1 + opt.difficulty2;
+        opt.startTime = getCurrentTimeStr(opt.startTime);
+        opt.endTime = getCurrentTimeStr(opt.endTime);
         addCurrentLanguageMaterialGroup(opt).then((e)=>{
           if(e.data){
             this.$message({message: "添加成功", type: 'success'});
             this.getData();
           }
         }).catch((e)=>{
-          this.$message({message: e.message, type: 'error'});
+          this.$message({message: e.msg, type: 'error'});
         });
       }
       this.editGroupVisible = false;
@@ -286,7 +318,7 @@ export default {
       addTopicInterface(this.topicObj).then((res)=>{
         this.$message({message: res.data, type: 'success'});
       }).catch((e)=>{
-        this.$message({message: e.message, type: 'error'});
+        this.$message({message: e.msg, type: 'error'});
       });
       this.closeTopicDialog();
 
@@ -311,11 +343,11 @@ export default {
             this.$message({message: "删除成功", type: 'success'});
             self.getData();
           }else{
-            this.$message({message: `删除失败,原因为${e}`, type: 'error'});
+            this.$message({message: `删除失败`, type: 'error'});
           }
         }).catch((e)=>{
           console.log(e);
-          this.$message({message: `删除失败,原因为${e}`, type: 'error'});
+          this.$message({message: `删除失败,原因为${e.msg}`, type: 'error'});
         });
       })
         .catch((e) => { console.log(e);});

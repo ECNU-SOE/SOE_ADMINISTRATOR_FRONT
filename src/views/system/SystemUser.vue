@@ -89,23 +89,17 @@
                   active-text ="激活"
                   inactive-text = "禁用"
                   v-model="scope.row.enabled"
-                  @change=changeEnabled(scope.$index,scope.row)
-                >
-                </el-switch>
+                  @change=changeEnabled(scope.$index,scope.row)></el-switch>
               </template>
             </el-table-column>
-            <el-table-column prop="mail" label="用户邮箱" width="160" align="center"/>
-<!--            <el-table-column prop="gmtCreate" label="创建时间" width="200" align="center" />-->
+            <el-table-column prop="mail" label="用户邮箱" align="center"/>
+            <el-table-column prop="gmtCreate" label="创建时间" align="center" :formatter="timeFormat"/>
             <el-table-column label="操作" width="300" align="center" fixed="right">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" icon="el-icon-edit" circle
                            @click="handleEdit(scope.$index, scope.row,'修改用户')"/>
                 <el-button size="mini" type="danger" icon="el-icon-delete" circle
                            @click="handleDelete(scope.$index, scope.row)"/>
-                <el-button size="mini" type="success"
-                           @click="resetPwd(scope.$index, scope.row)">
-                  重置密码
-                </el-button>
                 <el-button size="mini" type="success"
                            @click="assignRole(scope.$index, scope.row)">
                   分配角色
@@ -125,7 +119,6 @@
             style="float: right;margin-bottom: 10px">
           </el-pagination>
         </el-card>
-
 
 
         <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible"
@@ -168,16 +161,28 @@
                   <el-input v-model="dialogForm.phone" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="母语" prop="first_language">
+                  <el-input v-model="dialogForm.first_language" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-col>
 
+              <el-col :span="12">
+                <el-form-item label="性别" prop="sex">
+                  <el-radio v-model="radio" label="男" size="mini">男</el-radio>
+                  <el-radio v-model="radio" label="女" size="mini">女</el-radio>
+                  <el-radio v-model="radio" label="未知" size="mini" >未知</el-radio>
+                </el-form-item>
+              </el-col>
             </el-row>
           </el-form>
-          <div slot="footer" class="dialog-footer">
+          <div slot="footer" class="dialog-footer"> <el-button size="mini" type="success" @click="resetPwd()">重置密码</el-button>
             <el-button @click="submitDialogForm()" size="mini" type="primary">确 定</el-button>
             <el-button @click="handleCloseDialog" size="mini">取 消</el-button>
           </div>
         </el-dialog>
-
-
 
 
         <el-dialog :title="roleDialogTitle" :visible.sync="roleDialogVisible">
@@ -200,15 +205,14 @@
 </template>
 
 <script>
-  import {getUsers,updateUser,addUser,deleteUser,resetUserPwd,changeEnabled}
-  from '@/api/system/sys_user'
+  import {getUsers,updateUser,addUser,deleteUser,resetUserPwd,changeEnabled} from '@/api/system/sys_user'
   import {getCheckedRoles,saveCheckedUserRoles} from '@/api/system/sys_role'
   import {getOrgTree} from '@/api/system/sys_org'
   import axios from 'axios'
   import MixinCUD from '@/components/MixinCUD'
   import ElTreeSelect from "@/components/TreeSelect";
   import DictSelect from "@/components/DictSelect";
-
+  import {getCurrentTimeStr} from "@/lib/utils";
   export default {
     name: "SystemUser",
     mixins: [MixinCUD],
@@ -233,6 +237,7 @@
           pageSize: 20,
           total: null
         },
+        radio:"sex",
         filterText: '',
         orgData:[],
         defaultProps: {
@@ -248,6 +253,7 @@
           phone:"",
           email:"",
           orgId:null,
+          first_language:""
         },
         dialogFormRules: {
           username: [
@@ -296,6 +302,9 @@
       }
     },
     methods: {
+      timeFormat(row,col){
+        return getCurrentTimeStr(row.gmtCreate)
+      },
       getData(){
         getUsers(this.userQueryForm,this.pagination)
           .then(res => {
@@ -359,12 +368,12 @@
       validateSelectTree(){
         this.$refs.dialogForm.validateField("orgId");
       },
-      resetPwd(index,row){
+      resetPwd(){
         this.$confirm("确定重置密码为："
           + this.$store.getters.getSysConfigItem("user.init.password")
           + "么？")
         .then(_ => {
-          resetUserPwd(row.phone).then(res => {
+          resetUserPwd(this.dialogForm.phone).then(res => {
             this.$message({message: res.data, type: 'success'})
           });
         });

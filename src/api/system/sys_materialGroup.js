@@ -129,9 +129,11 @@ export const saveAudio = (query) => {
     url: `/corpus-server/api/file/v1/upload`,
     method: 'post',
     data: query,
-    params:{},
+    params:query,
     headers:{
       token:getJwtToken()
     }
   });
 };
+
+

@@ -165,7 +165,7 @@
     <!-- 更换班级弹出框 -->
     <el-dialog title="更换班级" :visible.sync="updateClassVisible" width="30%">
       <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
-        <el-card :class="{active:subIndex === selectIndex}" @click.native="selectClass(subIndex)">
+        <el-card @click.native="selectClass($event,subIndex)">
           <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
             <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
             <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
@@ -195,14 +195,14 @@
         <el-tabs type="border-card" :stretch=true style="width: 35%;">
           <el-tab-pane label="手动导入">
             <el-form :inline="true" :model="formInline" class="demo-form-inline">
-              <el-form-item label="姓名">
+              <el-form-item label="姓名" style="margin-left:5px;">
                 <el-input v-model="formInline.name" placeholder="请输入姓名"></el-input>
               </el-form-item>
               <el-form-item label="手机号">
                 <el-input v-model="formInline.phone" placeholder="请输入手机号"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button size="small" type="primary" icon="el-icon-edit" @click="addStudent()" >查询</el-button>
+                <el-button size="small" type="primary" icon="el-icon-edit" @click="addStudent()" style="margin-left:5px;">查询</el-button>
               </el-form-item>
             </el-form>
             <el-table :data="classInfoList" border style="margin-bottom: 20px;">
@@ -315,6 +315,10 @@ export default {
   created() {
     this.getCourseList();
     this.getClassList();
+  },
+
+  mounted() {
+
   },
 
   methods:{
@@ -445,8 +449,9 @@ export default {
       this.updateClassVisible = true;
     },
 
-    selectClass(){
-
+    selectClass($event,index){
+      $event.currentTarget.className += " active"
+      console.log(index);
     },
 
     addStudent(){
@@ -466,9 +471,8 @@ export default {
   margin-top: 20px;
 }
 
-.active{
-  background-color: #ffffff;
-}
-
+/*.active {*/
+/*  background-color: black;*/
+/*}*/
 
 </style>

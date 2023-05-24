@@ -22,7 +22,7 @@
           </el-col>
             <el-col :span="6">
               <el-form-item label="公开情况">
-                <el-select v-model="formObj.isPublic" :disabled="true">
+                <el-select v-model="formObj.isPrivate" :disabled="true">
                   <el-option
                       v-for="item in publicOptions"
                       :key="item.value"
@@ -86,6 +86,7 @@
           :props="defaultProps"
           default-expand-all
           :expand-on-click-node="false"
+          :filter-node-method="filterOrg"
           @node-click="orgNodeClick"
           :highlight-current="true"
           node-key="id"
@@ -228,14 +229,47 @@
       <el-form-item label="语料组难度">
         <el-input-number v-model="formObj.difficulty"></el-input-number>
       </el-form-item>
+      <el-form-item label="语料组难度">
+        <el-select v-model="formObj.difficulty1" style="width: 45%;">
+          <el-option label="A" value=0>A</el-option>
+          <el-option label="B" value=1>B</el-option>
+          <el-option label="C" value=2>C</el-option>
+          <el-option label="D" value=3>D</el-option>
+          <el-option label="E" value=4>E</el-option>
+          <el-option label="F" value=5>F</el-option>
+          <el-option label="G" value=6>G</el-option>
+          <el-option label="H" value=7>H</el-option>
+          <el-option label="I" value=8>I</el-option>
+          <el-option label="J" value=9>J</el-option>
+        </el-select>
+        <el-select v-model="formObj.difficulty2" style="width: 45%;margin-left: 5%;">
+          <el-option value=0>0</el-option>
+          <el-option value=1>1</el-option>
+          <el-option value=2>2</el-option>
+          <el-option value=3>3</el-option>
+          <el-option value=4>4</el-option>
+          <el-option value=5>5</el-option>
+          <el-option value=6>6</el-option>
+          <el-option value=7>7</el-option>
+          <el-option value=8>8</el-option>
+          <el-option value=9>9</el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="公开情况">
-        <el-select v-model="formObj.isPublic" >
+        <el-select v-model="formObj.isPrivate" >
           <el-option
               v-for="item in publicOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value">
           </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="修改状态">
+        <el-select v-model="formObj.modStatus" >
+          <el-option key=0 label="允许修改" value=0></el-option>
+          <el-option key=1 label="允许创建者修改" value=1></el-option>
+          <el-option key=2 label="不允许创建者修改" value=2></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="开始时间">
@@ -313,7 +347,7 @@
         <el-input v-model="cpsrcdObj.audioUrl" ></el-input>
         <el-upload
             class="upload-demo"
-            action="http://47.101.58.72:8888/user-server/"
+            action=""
             :on-change="audioUrlChange">
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
@@ -335,7 +369,8 @@
 
 <script>
 import {getCurrentLanguageMaterialGroup,addTopicInterface,deleteTopicInterface,updateTopicInterface,
-  updateCpsrcdInterface,deleteCpsrcdInterface,addCpsrcdInterface,getTopicInterface,updateCurrentLanguageMaterialGroup} from '@/api/system/sys_materialGroup';
+  updateCpsrcdInterface,deleteCpsrcdInterface,addCpsrcdInterface,getTopicInterface,updateCurrentLanguageMaterialGroup,saveAudio} from '@/api/system/sys_materialGroup';
+import {getCurrentTimeStr} from "@/lib/utils";
 export default {
   name: "SystemMaterialGroupDetail.vue",
   data() {
@@ -347,7 +382,10 @@ export default {
         description:'',
         type:'',
         difficulty:'',
-        isPublic:'',
+        difficulty1:0,
+        difficulty2:0,
+        modStatus:-1,
+        isPrivate:'',
         startTime:'',
         endTime:'',
         topics:[],
@@ -439,12 +477,6 @@ export default {
   },
   destroyed(){
     console.log(this.$route)
-    // this.$store.commit('removeTab', this.$route.path);
-    // this.$router.push({
-    //   path: this.$store.state.maintabs.maintabs[
-    //   this.$store.state.maintabs.maintabs.length - 1
-    //       ].route
-    // })
   },
   methods:{
 
@@ -485,6 +517,23 @@ export default {
       getCurrentLanguageMaterialGroup(opt).then((res)=>{
         self.formObj = res.data;
         self.formObj.num = res.data.topics && res.data.topics.length || 0;
+        if(self.formObj.endTime){
+          self.formObj.endTime = self.getCurrentTime(self.formObj.endTime);
+        }
+        if(self.formObj.startTime){
+          self.formObj.startTime = self.getCurrentTime(self.formObj.startTime);
+        }
+        if(self.formObj.gmtCreate){
+          self.formObj.gmtCreate = self.getCurrentTime(self.formObj.gmtCreate);
+        }
+        if(self.formObj.gmtModified){
+          self.formObj.gmtModified = self.getCurrentTime(self.formObj.gmtModified);
+        }
+        if(self.formObj.difficulty){
+          self.formObj.difficulty1 = self.formObj.difficulty.charAt(0);
+          self.formObj.difficulty2 = self.formObj.difficulty.charAt(1);
+        }
+
         let score = 100;
         if(self.formObj.num){
           score = 0;
@@ -657,6 +706,7 @@ export default {
     },
 
     saveMaterialGroup(){
+      this.formObj.difficulty = this.formObj.difficulty1 + this.formObj.difficulty2;
       updateCurrentLanguageMaterialGroup(this.formObj).then(()=>{
         this.$message({message: "保存成功", type: 'success'});
         this.getMaterialGroup({id:this.cpsgrpId});
@@ -670,8 +720,25 @@ export default {
       this.editTopic(node);
     },
 
-    audioUrlChange(e){
-      console.log(e);
+    filterOrg(){
+
+    },
+
+    audioUrlChange(file,fileList){
+      let params = new FormData();
+      params.append("file",file.raw);
+      saveAudio(params).then((res)=>{
+        if(res.data){
+          this.cpsrcdObj.audioUrl = res.data
+        }
+      }).catch((e)=>{
+        console.log(e)
+      })
+      console.log(file);
+    },
+
+    getCurrentTime(time){
+      return getCurrentTimeStr(time);
     },
 
     beforeDialogClose(done){
