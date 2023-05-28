@@ -15,11 +15,11 @@
               <el-input v-model="formObj.title" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
-            <el-form-item label="语料组描述">
-              <el-input v-model="formObj.description" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
-            </el-form-item>
-          </el-col>
+            <el-col :span="5">
+              <el-form-item label="开始时间">
+                <el-input v-model="formObj.startTime" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
+              </el-form-item>
+            </el-col>
             <el-col :span="6">
               <el-form-item label="公开情况">
                 <el-select v-model="formObj.isPrivate" :disabled="true">
@@ -34,21 +34,22 @@
             </el-col>
           </el-row>
           <el-row :gutter="120">
+
             <el-col :span="5">
-              <el-form-item label="语料组难度">
-                <el-input-number v-model="formObj.difficulty" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input-number>
+              <el-form-item label="语料组描述">
+                <el-input v-model="formObj.description" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
               </el-form-item>
             </el-col>
-          <el-col :span="5">
-            <el-form-item label="开始时间">
-              <el-input v-model="formObj.startTime" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
-            </el-form-item>
-          </el-col>
           <el-col :span="5">
             <el-form-item label="结束时间">
               <el-input v-model="formObj.endTime" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
             </el-form-item>
           </el-col>
+            <el-col :span="5">
+              <el-form-item label="语料组难度">
+                <el-input-number v-model="formObj.difficulty" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input-number>
+              </el-form-item>
+            </el-col>
             <el-col :span="6">
               <el-form-item label="语料组类型">
                 <el-select v-model="formObj.type" placeholder="请选择" :disabled="true">
@@ -329,17 +330,29 @@
         <el-input-number v-model="cpsrcdObj.cNum"></el-input-number>
       </el-form-item>
       <el-form-item label="评测模式" prop="evalMode">
-        <el-input v-model="cpsrcdObj.evalMode" ></el-input>
+        <el-select v-model="cpsrcdObj.evalMode">
+          <el-option
+              v-for="item in modeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="难度" prop="difficulty">
-        <el-input v-model="cpsrcdObj.difficulty" ></el-input>
+        <el-rate
+            v-model="cpsrcdObj.difficulty"
+            show-score
+            text-color="#ff9900"
+            score-template="">
+        </el-rate>
       </el-form-item>
       <el-form-item label="每字分值" prop="wordWeight">
         <el-input-number v-model="cpsrcdObj.wordWeight"></el-input-number>
       </el-form-item>
-      <el-form-item label="说明" prop="pinyin">
-        <el-input v-model="cpsrcdObj.pinyin" ></el-input>
-      </el-form-item>
+<!--      <el-form-item label="说明" prop="pinyin">-->
+<!--        <el-input v-model="cpsrcdObj.pinyin" ></el-input>-->
+<!--      </el-form-item>-->
       <el-form-item label="评测文本" prop="refText">
         <el-input v-model="cpsrcdObj.refText" type="textarea"></el-input>
       </el-form-item>
@@ -427,6 +440,21 @@ export default {
           label: '私有'
         }
       ],
+      modeOptions:[
+        {
+          value: 1,
+          label: 'read_syllable'
+        }, {
+          value: 2,
+          label: 'read_word'
+        }, {
+          value: 3,
+          label: 'read_sentence'
+        }, {
+          value: 4,
+          label: 'read_chapter'
+        }
+      ],
       materialGroupOptions:[ {
         value: 1,
         label: '作业'
@@ -460,9 +488,6 @@ export default {
         ]
       },
       cpsrcdObjRules:{
-        cNum: [
-          {required: true, message: '请传入cpsrcd次序',trigger:'blur'},
-        ],
         evalMode: [
           {required: true, message: '请传入评测模式',trigger:'blur'},
         ],
@@ -683,6 +708,7 @@ export default {
 
 
     closeCpsrcdId(){
+      this.clearCpsrcdObj();
       this.cpsrcdObj = this.tempCpsrcdObj;
       this.editCpsrcdVisible = false;
     },

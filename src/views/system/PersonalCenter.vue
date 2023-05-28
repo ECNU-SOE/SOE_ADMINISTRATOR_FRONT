@@ -7,8 +7,12 @@
               <span>个人中心</span>
             </div>
             <el-row  style="margin: 5px">
-              <el-col :span="12">用户名：</el-col>
-              <el-col :span="12">{{username}}</el-col>
+              <el-col :span="12">用户姓名：</el-col>
+              <el-col :span="12">{{nickName}}</el-col>
+            </el-row>
+            <el-row  style="margin: 5px">
+              <el-col :span="12">真实姓名：</el-col>
+              <el-col :span="12">{{realName}}</el-col>
             </el-row>
             <el-row  style="margin: 5px">
               <el-col :span="12">电  话： </el-col>
@@ -16,7 +20,15 @@
             </el-row>
             <el-row  style="margin: 5px">
               <el-col :span="12">email：</el-col>
-              <el-col :span="12">{{email}}</el-col>
+              <el-col :span="12">{{mail}}</el-col>
+            </el-row>
+            <el-row  style="margin: 5px">
+              <el-col :span="12">性别：</el-col>
+              <el-col :span="12">{{sex}}</el-col>
+            </el-row>
+            <el-row  style="margin: 5px">
+              <el-col :span="12">母语：</el-col>
+              <el-col :span="12">{{firstLanguage}}</el-col>
             </el-row>
           </el-card>
         </el-col>
@@ -60,9 +72,12 @@
             }
           };
           return {
-            username: "",
+            realName: "",
+            nickName: "",
             phone: "",
-            email: "",
+            mail: "",
+            sex:-1,
+            firstLanguage:null,
             pwdForm: {
               oldPass:'',
               password: '',
@@ -90,10 +105,25 @@
         },
         methods: {
           setData(userinfo){
-              if(userinfo.isok){
-                  this.username = userinfo.data.username
+              if(userinfo.code === 0){
+                  this.realName = userinfo.data.realName
+                  this.nickName = userinfo.data.nickName
                   this.phone = userinfo.data.phone
-                  this.email = userinfo.data.email
+                  this.mail = userinfo.data.mail
+                let newSex = '';
+                  switch (userinfo.data.sex){
+                    case -1:
+                      newSex = "未知";
+                      break;
+                    case 0:
+                      newSex = "男";
+                      break;
+                    case 1:
+                      newSex = "女";
+                      break;
+                  }
+                  this.sex = newSex
+                  this.firstLanguage = userinfo.data.firstLanguage
               }
           },
           submitPwdForm(formName){
@@ -107,7 +137,7 @@
                     this.$message({message: res.data, type: 'success'})
                     this.resetPwdForm(formName)
                   }).catch(err =>{
-                    this.$message.error( err.message)
+                    this.$message.error( err.msg)
                   })
                 });
               }

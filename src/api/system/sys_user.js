@@ -57,7 +57,7 @@ export const getUsers = (queryform,pagination) => {
       // username: queryform.username,
       //目前phone就是username
       phone: queryform.phone,
-      email: queryform.email,
+      mail: queryform.mail,
       enabled: queryform.enabled,
       // createStartTime: queryform.timeRange[0],
       // createEndTime: queryform.timeRange[1],
@@ -152,7 +152,7 @@ export const pwdIsDefault = () => {
 //修改密码
 export const changeUserPwd = (oldPass,newPass) => {
   return jwtServerInstance.request({
-    url:'/system/sysuser/pwd/change',
+    url:`/system/sysuser/pwd/change?oldPass=${oldPass}&newPass=${newPass}`,
     method:'post',
     headers:{
       token:getJwtToken()

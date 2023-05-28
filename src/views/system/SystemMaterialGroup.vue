@@ -23,12 +23,27 @@
     <el-card>
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加语料组</el-button>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" >
-        <el-table-column prop="id" label="语料组标识" align="center"></el-table-column>
-        <el-table-column prop="classId" label="课程标识" align="center"></el-table-column>
-        <el-table-column prop="title" label="语料组主题" align="center"></el-table-column>
+<!--        <el-table-column prop="id" label="语料组标识" align="center"></el-table-column>-->
+<!--        <el-table-column prop="classId" label="课程标识" align="center"></el-table-column>-->
+        <el-table-column prop="title" label="语料组名称" align="center"></el-table-column>
         <el-table-column prop="description" label="语料组描述" align="center"></el-table-column>
-        <el-table-column prop="type" label="语料组类型" align="center"></el-table-column>
-        <el-table-column prop="cpsrcdNum" label="题目数量" align="center"></el-table-column>
+        <el-table-column prop="isPrivate" label="公开状态" align="center">
+          <template slot-scope="scope">
+            {{ statusObj[scope.row.isPrivate]}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" label="语料组类型" align="center">
+          <template slot-scope="scope">
+            {{ typeObj[scope.row.type]}}
+          </template>
+        </el-table-column>
+<!--        <el-table-column prop="cpsrcdNum" label="题目数量" align="center"></el-table-column>-->
+        <el-table-column prop="gmtCreate" label="创建时间" align="center">
+          <template slot-scope="scope">
+            {{ getCurrentTime(scope.row.gmtCreate)}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="creator" label="创建者" align="center"></el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
             <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" circle>
@@ -212,6 +227,15 @@ export default {
       selectionsRules:{
         title:[ {required: true, message: '请输入语料组标题',trigger:'blur'}]
       },
+      statusObj:{
+        0:"公开",
+        1:"私有"
+      },
+      typeObj:{
+        1:"测试",
+        2:"试卷",
+        3:"作业"
+      },
       topicObjRules:{
         tNum: [
           {required: true, message: '请选择topic次序',trigger:'blur'},
@@ -360,6 +384,10 @@ export default {
         let total = data.data.total;
         this.pageTotal = total || 50;
       }
+    },
+
+    getCurrentTime(time){
+      return getCurrentTimeStr(time)
     }
 
   },

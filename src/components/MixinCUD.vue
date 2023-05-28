@@ -50,13 +50,16 @@
           if (valid) {
             this.$confirm("确定提交数据么?")
               .then(_ => {
-                if(this.dialogForm.id){ //有id是更新数据，没有id是新增数据
+                if(this.dialogForm.accountNo){ //有accountNo是更新数据，没有accountNo是新增数据
                   this.updateData();
                 }else {
                   this.addData();
                 }
                 //取消新增或修改也要重置表单
-              }).catch(err => {this.handleCloseDialog();});
+              }).catch(err => {
+                console.log(err);
+                this.handleCloseDialog();
+              });
           } else {
             return false;
           }

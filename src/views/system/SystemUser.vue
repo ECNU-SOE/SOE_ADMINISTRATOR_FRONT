@@ -24,18 +24,18 @@
           <el-form ref="userQueryForm" :model="userQueryForm" label-width="80px">
             <el-row :gutter="20">
               <el-col :span="6">
-                <el-form-item label="用户名称" prop="username">
-                  <el-input v-model="userQueryForm.username" placeholder="请输入用户名称"/>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
                 <el-form-item label="联系电话" prop="phone">
                   <el-input v-model="userQueryForm.phone" placeholder="请输入联系电话"/>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="用户邮箱" prop="email">
-                  <el-input v-model="userQueryForm.email" placeholder="请输入用户邮箱"/>
+                <el-form-item label="用户名称" prop="realName">
+                  <el-input v-model="userQueryForm.realName" placeholder="请输入用户名称"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="用户邮箱" prop="mail">
+                  <el-input v-model="userQueryForm.mail" placeholder="请输入用户邮箱"/>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -79,7 +79,7 @@
 
           <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
             <el-table-column prop="phone" label="手机号" width="120" align="center"/>
-            <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
+            <el-table-column prop="realName" label="用户名称" width="100" align="center"/>
             <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
             <el-table-column prop="sex" label="性别" width="100" align="center"/>
             <el-table-column prop="firstLanguage" label="母语" width="100" align="center"/>
@@ -132,8 +132,8 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="用户名称" prop="username">
-                  <el-input v-model="dialogForm.username" autocomplete="off"></el-input>
+                <el-form-item label="联系电话" prop="phone">
+                  <el-input v-model="dialogForm.phone" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
 
@@ -152,13 +152,13 @@
             </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="用户邮箱" prop="email">
-                  <el-input v-model="dialogForm.email"  label="角色描述"></el-input>
+                <el-form-item label="用户邮箱" prop="mail">
+                  <el-input v-model="dialogForm.mail"  label="角色描述"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="联系电话" prop="phone">
-                  <el-input v-model="dialogForm.phone" autocomplete="off"></el-input>
+                <el-form-item label="用户名称" prop="realName">
+                  <el-input v-model="dialogForm.realName" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -171,9 +171,9 @@
 
               <el-col :span="12">
                 <el-form-item label="性别" prop="sex">
-                  <el-radio v-model="radio" label="男" size="mini">男</el-radio>
-                  <el-radio v-model="radio" label="女" size="mini">女</el-radio>
-                  <el-radio v-model="radio" label="未知" size="mini" >未知</el-radio>
+                  <el-radio v-model="dialogForm.sex" size="mini" :label=0>男</el-radio>
+                  <el-radio v-model="dialogForm.sex" size="mini" :label=1>女</el-radio>
+                  <el-radio v-model="dialogForm.sex" size="mini" :label=-1>未知</el-radio>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -222,12 +222,11 @@
         tableData: [],
         queryFormRefName:"userQueryForm",
         userQueryForm:{
-          username: "",
           phone:"",
           enabled:"",
-          email:"",
+          mail:"",
           orgId:null,
-          nickName:"",
+          realName:"",
           firstLanguage:0,
           sex:0,
           birth:""
@@ -248,25 +247,22 @@
         dialogTitle:"",
         dialogRefName:"dialogForm",
         dialogForm: {
-          id: null,
-          username: "",
+          accountNo: null,
+          realName: "",
           phone:"",
-          email:"",
+          mail:"",
           orgId:null,
           first_language:""
         },
         dialogFormRules: {
-          username: [
-            {required: true, message: '请输入用户名称', trigger: 'blur'},
-          ],
           orgId: [
             {required: true, message: '请选择用户组织', trigger: 'blur'},
           ],
-          email: [
+          mail: [
             {type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur'}
           ],
           phone: [
-            {pattern: /^1[345678]\d{9}$/, message: '目前只支持中国大陆的手机号码', trigger: 'blur'}
+            {required: true,pattern: /^1[345678]\d{9}$/, message: '目前只支持中国大陆的手机号码', trigger: 'blur'}
           ],
         },
         elTreeDisabled:false,
@@ -317,13 +313,17 @@
             this.$message({message: res.data, type: 'success'});
             this.submitQueryForm();//修改之后，重新查询table
             this.handleCloseDialog();
-          })
+          }).catch(err => {
+          this.$message({message: err.message, type: 'error'});
+        })
       },
       addData(){
         addUser(this.dialogForm).then(res => {
           this.$message({message: res.data, type: 'success'});
           this.submitQueryForm();//新增之后，重新查询table
           this.handleCloseDialog();
+        }).catch(err => {
+          this.$message({message: err.message, type: 'error'});
         })
       },
       deleteData(row){
@@ -418,7 +418,7 @@
     beforeRouteEnter(to, from, next) {
       axios.all([
         getUsers(
-          {username:"",phone:"",enabled:"",email:"",orgId:null,timeRange: ["0001-01-01","0001-01-01"]}
+          {realName:"",phone:"",enabled:"",mail:"",orgId:null,timeRange: ["0001-01-01","0001-01-01"]}
           ,{pageNum: 1, pageSize: 20,}
         ),
         getOrgTree({status:null,name:null})])
