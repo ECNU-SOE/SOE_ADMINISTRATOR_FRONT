@@ -79,7 +79,7 @@
 
           <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
             <el-table-column prop="phone" label="手机号" width="120" align="center"/>
-            <el-table-column prop="realName" label="用户名称" width="100" align="center"/>
+            <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
             <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
             <el-table-column prop="sex" label="性别" width="100" align="center"/>
             <el-table-column prop="firstLanguage" label="母语" width="100" align="center"/>

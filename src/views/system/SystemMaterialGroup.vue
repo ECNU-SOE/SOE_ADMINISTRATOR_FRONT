@@ -25,8 +25,27 @@
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" >
 <!--        <el-table-column prop="id" label="语料组标识" align="center"></el-table-column>-->
 <!--        <el-table-column prop="classId" label="课程标识" align="center"></el-table-column>-->
-        <el-table-column prop="title" label="语料组名称" align="center"></el-table-column>
-        <el-table-column prop="description" label="语料组描述" align="center"></el-table-column>
+        <el-table-column prop="title" label="语料组名称" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.title}}
+            <el-popover
+                placement="top-start"
+                title=""
+                width="200"
+                trigger="hover"
+                :content="scope.row.description">
+              <i class="el-icon-info" slot="reference"/>
+            </el-popover>
+          </template>
+        </el-table-column>
+<!--        <el-table-column prop="description" label="语料组描述" align="center"></el-table-column>-->
+        <el-table-column prop="difficulty" label="语料组难度" align="center"></el-table-column>
+        <el-table-column prop="releaseStatus" label="发布状态" align="center"></el-table-column>
+        <el-table-column prop="modStatus" label="修改状态" align="center">
+          <template slot-scope="scope">
+            {{ modObj[scope.row.modStatus]}}
+          </template>
+        </el-table-column>
         <el-table-column prop="isPrivate" label="公开状态" align="center">
           <template slot-scope="scope">
             {{ statusObj[scope.row.isPrivate]}}
@@ -236,6 +255,11 @@ export default {
         2:"试卷",
         3:"作业"
       },
+      modObj:{
+        0:"允许修改",
+        1:"允许创建者修改",
+        2:"不允许创建者修改"
+      },
       topicObjRules:{
         tNum: [
           {required: true, message: '请选择topic次序',trigger:'blur'},
@@ -388,6 +412,10 @@ export default {
 
     getCurrentTime(time){
       return getCurrentTimeStr(time)
+    },
+
+    showDetail(index){
+      console.log(index)
     }
 
   },

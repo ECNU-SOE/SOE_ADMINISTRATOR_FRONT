@@ -202,7 +202,7 @@ export default {
           this.$message({message: "删除成功!", type: 'success'});
           this.getCourseList();
         }).catch((e)=>{
-          this.$message({message: `删除失败，原因为${e}`, type: 'error'});
+          this.$message({message: `删除失败，原因为${e.msg}`, type: 'error'});
         });
       }).catch(() => {});
     },
@@ -225,7 +225,7 @@ export default {
             this.$message({message: "修改成功!", type: 'success'});
             this.getCourseList();
           }).catch((e)=>{
-            this.$message({message: `修改失败，原因为${e}`, type: 'error'});
+            this.$message({message: `修改失败，原因为${e.msg}`, type: 'error'});
           });
         }else {
           addCourse(this.formObj).then((res) => {
@@ -236,7 +236,7 @@ export default {
             this.$message({message: "添加成功!", type: 'success'});
             this.getCourseList();
           }).catch((e)=>{
-            this.$message({message: `添加失败，原因为${e}`, type: 'error'});
+            this.$message({message: `添加失败，原因为${e.msg}`, type: 'error'});
           });
         }
       }

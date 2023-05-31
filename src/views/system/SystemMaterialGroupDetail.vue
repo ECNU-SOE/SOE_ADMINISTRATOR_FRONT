@@ -47,7 +47,7 @@
           </el-col>
             <el-col :span="5">
               <el-form-item label="语料组难度">
-                <el-input-number v-model="formObj.difficulty" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input-number>
+                <el-input v-model="formObj.difficulty" :disabled="true" style="position: absolute;margin-left: 10px;"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
@@ -183,11 +183,11 @@
                       <el-input-number v-model="subItem.wordWeight" :disabled="true" style="position: absolute;"></el-input-number>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="5">
-                    <el-form-item label="标签" prop="tags">
-                      <el-input v-model="subItem.tags" :disabled="true" style="position: absolute;"></el-input>
-                    </el-form-item>
-                  </el-col>
+<!--                  <el-col :span="5">-->
+<!--                    <el-form-item label="标签" prop="tags">-->
+<!--                      <el-input v-model="subItem.tags" :disabled="true" style="position: absolute;"></el-input>-->
+<!--                    </el-form-item>-->
+<!--                  </el-col>-->
                   <el-col :span="7">
                     <el-form-item label="示范音频" prop="audioUrl">
                       <el-input v-model="subItem.audioUrl" :disabled="true" style="position: absolute;"></el-input>
@@ -365,8 +365,29 @@
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
       </el-form-item>
+      <el-form-item label="" prop="">
+        <audio :src="cpsrcdObj.audioUrl" autoplay="autoplay" controls="controls" ref="audio"></audio>
+      </el-form-item>
+
       <el-form-item label="标签" prop="tags">
-        <el-input v-model="cpsrcdObj.tags" ></el-input>
+        <el-tag
+            :key="tag"
+            v-for="tag in cpsrcdObj.tags"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)">
+          {{tag}}
+        </el-tag>
+        <el-input
+            class="input-new-tag"
+            v-if="inputVisible"
+            v-model="inputValue"
+            ref="saveTagInput"
+            size="small"
+            @keyup.enter.native="handleInputConfirm"
+            @blur="handleInputConfirm">
+        </el-input>
+        <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -429,7 +450,7 @@ export default {
         wordWeight:0,
         pinyin:"",
         audioUrl:"",
-        tags:""
+        tags:[]
       },
       publicOptions:[
         {
@@ -465,6 +486,8 @@ export default {
         value: 3,
         label: '试卷'
       }],
+      inputVisible: false,
+      inputValue: '',
       tempTopicObj:{},
       tempCpsrcdObj:{},
       topicTitle:'',
@@ -533,7 +556,7 @@ export default {
         wordWeight:0,
         pinyin:"",
         audioUrl:"",
-        tags:""
+        tags:[]
       }
     },
 
@@ -661,6 +684,9 @@ export default {
       this.clearCpsrcdObj();
       this.cpsrcdObj.topicId = this.topicObj.id;
       this.cpsrcdObj.cpsgrpId = this.cpsgrpId;
+      if(this.cpsrcdObj.tags === null){
+        this.cpsrcdObj.tags = [];
+      }
       this.cpsrcdTitle = "添加子题";
       this.editCpsrcdVisible = true;
     },
@@ -670,6 +696,9 @@ export default {
       this.cpsrcdObj = this.topicObj.subCpsrcds[subIndex];
       this.cpsrcdObj.topicId = this.topicObj.id;
       this.cpsrcdObj.cpsgrpId = this.cpsgrpId;
+      if(this.cpsrcdObj.tags === null){
+        this.cpsrcdObj.tags = [];
+      }
       this.cpsrcdTitle = "修改子题";
       this.editCpsrcdVisible = true;
       this.tempCpsrcdObj = JSON.parse(JSON.stringify(this.cpsrcdObj));
@@ -777,6 +806,26 @@ export default {
 
     beforeRouteEnter(to, from, next) {
       console.log(to);
+    },
+
+    handleClose(tag) {
+      this.cpsrcdObj.tags.splice(this.cpsrcdObj.tags.indexOf(tag), 1);
+    },
+
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.cpsrcdObj.tags.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
     },
 
     beforeRouteLeave(to, from, next){
