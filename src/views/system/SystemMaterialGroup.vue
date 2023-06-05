@@ -40,7 +40,11 @@
         </el-table-column>
 <!--        <el-table-column prop="description" label="语料组描述" align="center"></el-table-column>-->
         <el-table-column prop="difficulty" label="语料组难度" align="center"></el-table-column>
-        <el-table-column prop="releaseStatus" label="发布状态" align="center"></el-table-column>
+        <el-table-column prop="releaseStatus" label="发布状态" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.releaseStatus}}个班级
+          </template>
+        </el-table-column>
         <el-table-column prop="modStatus" label="修改状态" align="center">
           <template slot-scope="scope">
             {{ modObj[scope.row.modStatus]}}

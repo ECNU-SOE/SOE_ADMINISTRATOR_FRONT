@@ -80,8 +80,12 @@
           <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
             <el-table-column prop="phone" label="手机号" width="120" align="center"/>
             <el-table-column prop="nickName" label="用户名称" width="100" align="center"/>
-            <el-table-column prop="realName" label="真实姓名" width="100" align="center"/>
-            <el-table-column prop="sex" label="性别" width="100" align="center"/>
+            <el-table-column prop="realName" label="真实姓名" width="100" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.realName}}
+                <i :class="sexIcon[scope.row.sex]" slot="reference"/>
+              </template>
+            </el-table-column>
             <el-table-column prop="firstLanguage" label="母语" width="100" align="center"/>
             <el-table-column prop="enabled" label="用户状态" width="150" align="center">
               <template slot-scope="scope">
@@ -171,8 +175,8 @@
 
               <el-col :span="12">
                 <el-form-item label="性别" prop="sex">
-                  <el-radio v-model="dialogForm.sex" size="mini" :label=0>男</el-radio>
-                  <el-radio v-model="dialogForm.sex" size="mini" :label=1>女</el-radio>
+                  <el-radio v-model="dialogForm.sex" size="mini" :label=0>女</el-radio>
+                  <el-radio v-model="dialogForm.sex" size="mini" :label=1>男</el-radio>
                   <el-radio v-model="dialogForm.sex" size="mini" :label=-1>未知</el-radio>
                 </el-form-item>
               </el-col>
@@ -227,8 +231,8 @@
           mail:"",
           orgId:null,
           realName:"",
-          firstLanguage:0,
-          sex:0,
+          firstLanguage:null,
+          sex:null,
           birth:""
         },
         pagination:{
@@ -280,7 +284,8 @@
           key: 'id',
           label: 'roleName'
         },
-        roleDatas:[]
+        roleDatas:[],
+        sexIcon:{0:"el-icon-female",1:"el-icon-male"}
       }
     },
     watch: {
@@ -417,10 +422,15 @@
     },
     beforeRouteEnter(to, from, next) {
       axios.all([
-        getUsers(
-          {realName:"",phone:"",enabled:"",mail:"",orgId:null,timeRange: ["0001-01-01","0001-01-01"]}
-          ,{pageNum: 1, pageSize: 20,}
-        ),
+        getUsers({
+              "accountNo": '',
+              "identifyId": '',
+              "nickName": '',
+              "realName": '',
+              "sex": '',
+              "phone": '',
+              "mail": ''
+            },{pageNum:1,pageSize:10}),
         getOrgTree({status:null,name:null})])
       .then(axios.spread(function (res1, res2) {
         // 两个请求都执行完成后，进入该函数

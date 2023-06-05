@@ -47,23 +47,12 @@ export const getUserInfo = () => {
 //用户列表查询接口
 export const getUsers = (queryform,pagination) => {
   return jwtServerInstance.request({
-    url:'/system/sysuser/query',
+    url:`/api/user/v1/list?cur=${pagination.pageNum}&size=${pagination.pageSize}`,
     method:'post',
     headers:{
       token:getJwtToken()
     },
-    data:qs.stringify({
-      orgId: queryform.orgId,
-      // username: queryform.username,
-      //目前phone就是username
-      phone: queryform.phone,
-      mail: queryform.mail,
-      enabled: queryform.enabled,
-      // createStartTime: queryform.timeRange[0],
-      // createEndTime: queryform.timeRange[1],
-      pageNum: pagination.pageNum,
-      pageSize: pagination.pageSize
-    })
+    data:queryform
   })
 }
 
