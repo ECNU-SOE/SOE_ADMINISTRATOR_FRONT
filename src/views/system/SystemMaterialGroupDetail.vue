@@ -5,6 +5,11 @@
     <el-col :span="5" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);min-height: 500px;margin-top: 1%;">
       <el-form :model="formObj">
         <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
+          <el-form-item>
+            <el-button type="primary" size="small"
+                       @click="editMaterialGroupVisible=true" icon="el-icon-edit" class="updateMg">
+              修改</el-button>
+          </el-form-item>
           <el-descriptions title="语料组信息" :columns="3"  v-model="formObj">
             <el-descriptions-item label="语料组标识" span="3" >{{formObj.id}}</el-descriptions-item>
             <el-descriptions-item label="语料组名称" span="3">{{ formObj.title}}<i class="el-icon-info" slot="reference"/></el-descriptions-item>
@@ -14,11 +19,6 @@
             <el-descriptions-item label="创建时间" span="3">{{this.getCurrentTime(formObj.gmtCreate)}}</el-descriptions-item>
             <el-descriptions-item label="更新时间" span="3">{{this.getCurrentTime(formObj.gmtModified)}}</el-descriptions-item>
           </el-descriptions>
-          <el-form-item>
-            <el-button type="primary" size="small"
-                       @click="editMaterialGroupVisible=true" icon="el-icon-edit" class="updateMg">
-              修改</el-button>
-          </el-form-item>
         </el-card>
       </el-form>
       <el-form ref="roleQueryForm" :model="formObj" style="margin-top: 2%;">
@@ -809,6 +809,6 @@ export default {
 .updateMg{
   position: absolute;
   margin-left: 55%;
-  margin-top: -140%;
+  margin-top: 5%;
 }
 </style>
