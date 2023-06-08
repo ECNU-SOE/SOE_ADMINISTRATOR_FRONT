@@ -2,20 +2,17 @@
 <div>
 
   <el-row>
-    <el-col :span="4" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);min-height: 500px;margin-top: 1%;">
+    <el-col :span="5" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);min-height: 500px;margin-top: 1%;">
       <el-form :model="formObj">
         <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-descriptions title="语料组信息" :columns="3"  v-model="formObj">
             <el-descriptions-item label="语料组标识" span="3" >{{formObj.id}}</el-descriptions-item>
             <el-descriptions-item label="语料组名称" span="3">{{ formObj.title}}<i class="el-icon-info" slot="reference"/></el-descriptions-item>
-            <el-descriptions-item label="开始时间" span="3">
-              {{this.getCurrentTime(formObj.startTime)}}
-            </el-descriptions-item>
-            <el-descriptions-item label="结束时间" span="3">{{this.getCurrentTime(formObj.endTime)}}</el-descriptions-item>
             <el-descriptions-item label="公开情况" span="3">{{publicObj[formObj.isPrivate]}}</el-descriptions-item>
             <el-descriptions-item label="语料组描述" span="3">{{formObj.description}}</el-descriptions-item>
             <el-descriptions-item label="语料组难度" span="3">{{formObj.difficulty}}</el-descriptions-item>
-            <el-descriptions-item label="语料组类型" span="3">{{materialGroupObj[formObj.type]}}</el-descriptions-item>
+            <el-descriptions-item label="创建时间" span="3">{{this.getCurrentTime(formObj.gmtCreate)}}</el-descriptions-item>
+            <el-descriptions-item label="更新时间" span="3">{{this.getCurrentTime(formObj.gmtModified)}}</el-descriptions-item>
           </el-descriptions>
           <el-form-item>
             <el-button type="primary" size="small"
@@ -28,7 +25,7 @@
         <el-card>
         <el-form-item :label="'题数'+ formObj.num + '，总分'+formObj.wholeScore" >
           <el-button type="primary" size="small"
-                     @click="addTopic()" icon="el-icon-circle-plus-outline" style="margin-left: 20px;">
+                     @click="addTopic()" icon="el-icon-circle-plus-outline" style="margin-left: 5%;position:absolute;">
             新增</el-button>
         </el-form-item>
           <el-tree
@@ -46,7 +43,7 @@
         </el-card>
       </el-form>
     </el-col>
-    <el-col :span="19" style="margin-left: 2%;margin-top: 1%;">
+    <el-col :span="18" style="margin-left: 2%;margin-top: 1%;">
         <el-card>
           <el-form>
             <el-form-item label="大题信息" prop="cpsgrpId" style="margin-left: 40%">
@@ -148,21 +145,8 @@
       <el-form-item label="语料组标题" prop="title">
         <el-input v-model="formObj.title" ></el-input>
       </el-form-item>
-      <el-form-item label="语料组类型">
-        <el-select v-model="formObj.type" placeholder="请选择" style="width:100%;">
-          <el-option
-              v-for="item in materialGroupOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="语料组描述">
-        <el-input v-model="formObj.description" ></el-input>
-      </el-form-item>
-      <el-form-item label="语料组难度">
-        <el-input-number v-model="formObj.difficulty"></el-input-number>
+        <el-input v-model="formObj.description" type="textarea"></el-input>
       </el-form-item>
       <el-form-item label="语料组难度">
         <el-select v-model="formObj.difficulty1" style="width: 45%;">
@@ -202,24 +186,13 @@
       </el-form-item>
       <el-form-item label="修改状态">
         <el-select v-model="formObj.modStatus" >
-          <el-option key=0 label="允许修改" value=0></el-option>
-          <el-option key=1 label="允许创建者修改" value=1></el-option>
-          <el-option key=2 label="不允许创建者修改" value=2></el-option>
+           <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+          </el-option>
         </el-select>
-      </el-form-item>
-      <el-form-item label="开始时间">
-        <el-date-picker
-            v-model="formObj.startTime"
-            type="date"
-            placeholder="选择日期" style="width: 100%;">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间">
-        <el-date-picker
-            v-model="formObj.endTime"
-            type="date"
-            placeholder="选择日期" style="width: 100%;">
-        </el-date-picker>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -432,6 +405,17 @@ export default {
           label: 'read_chapter'
         }
       ],
+      statusOptions:[
+      {
+                value: 0,
+                label: '允许修改'
+              }, {
+                value: 1,
+                label: '允许创建者修改'
+              }, {
+                value: 2,
+                label: '不允许创建者修改'
+              }],
       currentAudioUrl:"",
       modeObj:{
         1: 'read_syllable', 2: 'read_word', 3: 'read_sentence',4:"read_chapter"

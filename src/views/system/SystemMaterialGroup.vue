@@ -25,7 +25,7 @@
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" >
 <!--        <el-table-column prop="id" label="语料组标识" align="center"></el-table-column>-->
 <!--        <el-table-column prop="classId" label="课程标识" align="center"></el-table-column>-->
-        <el-table-column prop="title" label="语料组名称" align="center">
+        <el-table-column prop="title" label="语料组名称" align="center" width="200" >
           <template slot-scope="scope">
             {{ scope.row.title}}
             <el-popover
@@ -84,14 +84,8 @@
         <el-form-item label="语料组标题" prop="title">
           <el-input v-model="selections.title" ></el-input>
         </el-form-item>
-        <el-form-item label="语料组类型">
-          <el-select v-model="selections.type" placeholder="请选择" style="width:100%;">
-            <el-option v-for="item in materialGroupOptions" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="语料组描述">
-          <el-input v-model="selections.description" ></el-input>
+          <el-input v-model="selections.description" type="textarea"></el-input>
         </el-form-item>
         <el-form-item label="语料组难度">
           <el-select v-model="selections.difficulty1" style="width: 45%;">
@@ -121,8 +115,8 @@
         </el-form-item>
         <el-form-item label="公开情况">
           <el-select v-model="selections.isPrivate" >
-            <el-option key=0 label="公开" value=1></el-option>
-            <el-option key=1 label="私有" value=0></el-option>
+            <el-option key=1 label="私有" value=1></el-option>
+            <el-option key=0 label="公开" value=0></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="修改状态">
@@ -131,20 +125,6 @@
             <el-option key=1 label="允许创建者修改" value=1></el-option>
             <el-option key=2 label="不允许创建者修改" value=2></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="开始时间">
-          <el-date-picker
-              v-model="selections.startTime"
-              type="date"
-              placeholder="选择日期" style="width: 100%;">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间">
-          <el-date-picker
-              v-model="selections.endTime"
-              type="date"
-              placeholder="选择日期" style="width: 100%;">
-          </el-date-picker>
         </el-form-item>
       </el-form>
       <template #footer>
