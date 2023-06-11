@@ -11,10 +11,9 @@
               修改</el-button>
           </el-form-item>
           <el-descriptions title="语料组信息" :columns="3"  v-model="formObj">
-            <el-descriptions-item label="语料组标识" span="3" >{{formObj.id}}</el-descriptions-item>
-            <el-descriptions-item label="语料组名称" span="3">{{ formObj.title}}<i class="el-icon-info" slot="reference"/></el-descriptions-item>
-            <el-descriptions-item label="公开情况" span="3">{{publicObj[formObj.isPrivate]}}</el-descriptions-item>
+            <el-descriptions-item label="语料组名称" span="3">{{ formObj.title}}</el-descriptions-item>
             <el-descriptions-item label="语料组描述" span="3">{{formObj.description}}</el-descriptions-item>
+            <el-descriptions-item label="公开情况" span="3">{{publicObj[formObj.isPrivate]}}</el-descriptions-item>
             <el-descriptions-item label="语料组难度" span="3">{{formObj.difficulty}}</el-descriptions-item>
             <el-descriptions-item label="创建时间" span="3">{{this.getCurrentTime(formObj.gmtCreate)}}</el-descriptions-item>
             <el-descriptions-item label="更新时间" span="3">{{this.getCurrentTime(formObj.gmtModified)}}</el-descriptions-item>
@@ -23,70 +22,82 @@
       </el-form>
       <el-form ref="roleQueryForm" :model="formObj" style="margin-top: 2%;">
         <el-card>
-        <el-form-item :label="'题数'+ formObj.num + '，总分'+formObj.wholeScore" >
+        <el-form-item :label="'题型：(题数'+ formObj.num + '，总分'+formObj.wholeScore + ')'" >
           <el-button type="primary" size="small"
                      @click="addTopic()" icon="el-icon-circle-plus-outline" style="margin-left: 5%;position:absolute;">
             新增</el-button>
         </el-form-item>
-          <el-tree
-              class="filter-tree"
-              :data="formObj.topics"
-              :props="defaultProps"
-              default-expand-all
-              :expand-on-click-node="false"
-              :filter-node-method="filterOrg"
-              @node-click="orgNodeClick"
-              :highlight-current="true"
-              node-key="id"
-              ref="topicQueryTree">
-          </el-tree>
+          <el-row>
+            <el-col  :span="16">
+              <el-tree
+                  class="filter-tree"
+                  :data="formObj.topics"
+                  :props="defaultProps"
+                  default-expand-all
+                  :expand-on-click-node="false"
+                  :filter-node-method="filterOrg"
+                  @node-click="orgNodeClick"
+                  :highlight-current="true"
+                  node-key="id"
+                  ref="topicQueryTree">
+              </el-tree>
+            </el-col>
+            <el-col  :span="6" style="margin-left: 2%;">
+              <div v-for="(subItem,subIndex) in formObj.topics" :key="subIndex">
+                <el-button size="mini" type="primary" icon="el-icon-edit" circle @click="updateTopic(subIndex)" >
+                </el-button>
+                <el-button size="mini" type="danger" icon="el-icon-delete" circle @click="deleteTopic(subIndex)" >
+                </el-button>
+              </div>
+            </el-col>
+          </el-row>
         </el-card>
       </el-form>
     </el-col>
     <el-col :span="18" style="margin-left: 2%;margin-top: 1%;">
-        <el-card>
-          <el-form>
-            <el-form-item label="大题信息" prop="cpsgrpId" style="margin-left: 40%">
-            </el-form-item>
-            <el-row :gutter="120">
-            <el-col :span="7">
-              <el-form-item label="次序" prop="tNum">
-                <el-input-number v-model="topicObj.tNum" :disabled="true"></el-input-number>
-              </el-form-item>
-            </el-col>
-              <el-col :span="7">
-                <el-form-item label="大题名称" prop="title">
-                  <el-input v-model="topicObj.title"  :disabled="true" style="position: absolute;"></el-input>
-                </el-form-item>
-              </el-col>
-            <el-col :span="7" style="margin-left: 5%;">
-              <el-button size="small" type="primary" icon="el-icon-edit" @click="updateTopic()" >
-                修改
-              </el-button>
-              <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteTopic()">
-                删除
-              </el-button>
-            </el-col>
-            </el-row>
-            <el-row :gutter="120">
-              <el-col :span="7">
-                <el-form-item label="难度" prop="difficulty" >
-                  <el-input-number v-model="topicObj.difficulty" :disabled="true"></el-input-number>
-                </el-form-item>
-              </el-col>
-              <el-col :span="7">
-                <el-form-item label="大题分值" prop="score">
-                  <el-input v-model="topicObj.score"  :disabled="true"  style="position: absolute;"></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="7">
-                <el-form-item label="说明" prop="description">
-                  <el-input v-model="topicObj.description"  :disabled="true"  style="position: absolute;"></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-        </el-card>
+<!--        <el-card>-->
+<!--          <el-form>-->
+<!--            <el-form-item label="大题信息" prop="cpsgrpId" style="margin-left: 40%">-->
+<!--            </el-form-item>-->
+<!--            <el-row :gutter="120">-->
+<!--            <el-col :span="7">-->
+<!--              <el-form-item label="次序" prop="tNum">-->
+<!--                <el-input-number v-model="topicObj.tNum" :disabled="true"></el-input-number>-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
+<!--              <el-col :span="7">-->
+<!--                <el-form-item label="大题名称" prop="title">-->
+<!--                  <el-input v-model="topicObj.title"  :disabled="true" style="position: absolute;"></el-input>-->
+<!--                </el-form-item>-->
+<!--              </el-col>-->
+<!--            <el-col :span="7" style="margin-left: 5%;">-->
+<!--              <el-button size="small" type="primary" icon="el-icon-edit" @click="updateTopic()" >-->
+<!--                修改-->
+<!--              </el-button>-->
+<!--              <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteTopic()">-->
+<!--                删除-->
+<!--              </el-button>-->
+<!--            </el-col>-->
+<!--            </el-row>-->
+<!--            <el-row :gutter="120">-->
+<!--              <el-col :span="7">-->
+<!--                <el-form-item label="难度" prop="difficulty" >-->
+<!--                  <el-input-number v-model="topicObj.difficulty" :disabled="true"></el-input-number>-->
+<!--                </el-form-item>-->
+<!--              </el-col>-->
+<!--              <el-col :span="7">-->
+<!--                <el-form-item label="大题分值" prop="score">-->
+<!--                  <el-input v-model="topicObj.score"  :disabled="true"  style="position: absolute;"></el-input>-->
+<!--                </el-form-item>-->
+<!--              </el-col>-->
+<!--              <el-col :span="7">-->
+<!--                <el-form-item label="说明" prop="description">-->
+<!--                  <el-input v-model="topicObj.description"  :disabled="true"  style="position: absolute;"></el-input>-->
+<!--                </el-form-item>-->
+<!--              </el-col>-->
+<!--            </el-row>-->
+<!--          </el-form>-->
+<!--        </el-card>-->
         <el-card style="margin-top: 1%; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-form>
             <el-form-item>
@@ -231,13 +242,25 @@
   </el-dialog>
 
 
-  <el-dialog :title="cpsrcdTitle" class="editGroups" :visible.sync="editCpsrcdVisible" width="30%" :show-close=false>
-    <el-form label-width="120px" :rules="cpsrcdObjRules" :model="cpsrcdObj">
-      <el-form-item label="cpsrcd次序" prop="cNum">
-        <el-input-number v-model="cpsrcdObj.cNum"></el-input-number>
+  <el-dialog :title="cpsrcdTitle" class="editGroups" :visible.sync="editCpsrcdVisible" width="40%" :show-close=false>
+    <el-form label-width="120px" :rules="cpsrcdObjRules" :model="tempCpsrcdObj">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="子题顺序" prop="cNum">
+            <el-input-number v-model="tempCpsrcdObj.cNum"></el-input-number>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="本题分值" prop="wordWeight">
+            <el-input-number v-model="tempCpsrcdObj.wordWeight"></el-input-number>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label="题目类型" prop="wordWeight">
+        <el-input v-model="tempCpsrcdObj.type"></el-input>
       </el-form-item>
       <el-form-item label="评测模式" prop="evalMode">
-        <el-select v-model="cpsrcdObj.evalMode">
+        <el-select v-model="tempCpsrcdObj.evalMode">
           <el-option
               v-for="item in modeOptions"
               :key="item.value"
@@ -246,27 +269,24 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="难度" prop="difficulty">
+      <el-form-item label="本题难度" prop="difficulty">
         <el-rate
-            v-model="cpsrcdObj.difficulty"
+            v-model="tempCpsrcdObj.difficulty"
             show-score
             text-color="#ff9900"
             score-template="">
         </el-rate>
       </el-form-item>
-      <el-form-item label="每字分值" prop="wordWeight">
-        <el-input-number v-model="cpsrcdObj.wordWeight"></el-input-number>
-      </el-form-item>
 
       <el-form-item label="评测文本" prop="refText">
-        <el-input v-model="cpsrcdObj.refText" type="textarea"></el-input>
+        <el-input v-model="tempCpsrcdObj.refText" type="textarea"></el-input>
       </el-form-item>
       <el-form-item label="文本拼音" prop="pinyin">
-        <el-input v-model="cpsrcdObj.pinyin" type="textarea"></el-input>
+        <el-input v-model="tempCpsrcdObj.pinyin" type="textarea"></el-input>
         <el-button class="button-new-tag" size="small" @click="productPinYin" type="primary">生成</el-button>
       </el-form-item>
       <el-form-item label="示范音频" prop="audioUrl">
-        <el-input v-model="cpsrcdObj.audioUrl" ></el-input>
+        <el-input v-model="tempCpsrcdObj.audioUrl" ></el-input>
         <el-upload
             class="upload-demo"
             action=""
@@ -275,13 +295,13 @@
         </el-upload>
       </el-form-item>
       <el-form-item label="" prop="">
-        <audio :src="cpsrcdObj.audioUrl" autoplay="autoplay" controls="controls" ref="audio"></audio>
+        <audio :src="tempCpsrcdObj.audioUrl" autoplay="autoplay" controls="controls" ref="audio"></audio>
       </el-form-item>
 
       <el-form-item label="标签" prop="tags">
         <el-tag
             :key="tag"
-            v-for="tag in cpsrcdObj.tags"
+            v-for="tag in tempCpsrcdObj.tags"
             closable
             :disable-transitions="false"
             @close="handleClose(tag)">
@@ -553,12 +573,9 @@ export default {
       })
     },
 
-    updateTopic(){
-      if(!this.topicObj.id){
-        this.$alert("请先选择大题，方可修改此大题")
-        return;
-      }
-      this.tempTopicObj = JSON.parse(JSON.stringify(this.topicObj));
+    updateTopic(idx){
+      let tempObj = this.formObj.topics[idx];
+      this.tempTopicObj = JSON.parse(JSON.stringify(tempObj));
       this.topicTitle = '修改大题'
       this.editGroupVisible = true;
     },
@@ -590,12 +607,8 @@ export default {
       this.tempTopicObj = this.topicObj;
     },
 
-    deleteTopic(){
-      let tempObj = this.topicObj;
-      if(!this.topicObj.id){
-        this.$alert("请先选择大题，方可删除此大题")
-        return;
-      }
+    deleteTopic(idx){
+      let tempObj = this.formObj.topics[idx];
       this.$confirm('确认删除当前大题吗？')
           .then(_ => {
             deleteTopicInterface(tempObj).then((res)=>{
@@ -612,7 +625,6 @@ export default {
     },
 
     closeTopic(){
-      this.topicObj = this.tempTopicObj;
       this.editGroupVisible = false;
     },
 
@@ -632,17 +644,16 @@ export default {
     },
 
     updateCpsrcdId(subIndex){
-      this.clearCpsrcdObj();
-      this.cpsrcdObj = this.topicObj.subCpsrcds[subIndex];
-      this.cpsrcdObj.topicId = this.topicObj.id;
-      this.cpsrcdObj.cpsgrpId = this.cpsgrpId;
-      if(this.cpsrcdObj.tags === null){
-        this.cpsrcdObj.tags = [];
+      let tempObj = this.topicObj.subCpsrcds[subIndex];
+      tempObj.topicId = this.topicObj.id;
+      tempObj.cpsgrpId = this.cpsgrpId;
+      if(tempObj.tags === null){
+        tempObj.tags = [];
       }
       this.cpsrcdTitle = "修改子题";
-      this.cpsrcdObj.pinyin = pinyin(this.cpsrcdObj.refText,{"toneType":"num"});
+      tempObj.pinyin = pinyin(tempObj.refText,{"toneType":"num"});
+      this.tempCpsrcdObj = JSON.parse(JSON.stringify(tempObj));
       this.editCpsrcdVisible = true;
-      this.tempCpsrcdObj = JSON.parse(JSON.stringify(this.cpsrcdObj));
     },
 
     saveCpsrcdId(){
@@ -658,6 +669,7 @@ export default {
             getTopicInterface({id:self.topicObj.id}).then((res)=>{
               this.topicObj = res.data;
             });
+            this.cpsrcdObj = this.tempCpsrcdObj;
           }
         }).catch((e)=>{
           console.log(e);
@@ -670,18 +682,16 @@ export default {
             getTopicInterface({id:self.topicObj.id}).then((res)=>{
               this.topicObj = res.data;
             });
+            this.cpsrcdObj = this.tempCpsrcdObj;
           }
         }).catch((e) => {
           console.log(e);
         });
       }
-      this.tempCpsrcdObj = this.cpsrcdObj;
     },
 
 
     closeCpsrcdId(){
-      this.clearCpsrcdObj();
-      // this.cpsrcdObj = this.tempCpsrcdObj;
       this.editCpsrcdVisible = false;
     },
 
@@ -727,7 +737,7 @@ export default {
       params.append("file",file.raw);
       saveAudio(params).then((res)=>{
         if(res.data){
-          this.cpsrcdObj.audioUrl = res.data
+          this.tempCpsrcdObj.audioUrl = res.data
         }
       }).catch((e)=>{
         console.log(e)
@@ -752,7 +762,7 @@ export default {
     },
 
     handleClose(tag) {
-      this.cpsrcdObj.tags.splice(this.cpsrcdObj.tags.indexOf(tag), 1);
+      this.tempCpsrcdObj.tags.splice(this.tempCpsrcdObj.tags.indexOf(tag), 1);
     },
 
     showInput() {
@@ -811,4 +821,5 @@ export default {
   margin-left: 55%;
   margin-top: 5%;
 }
+
 </style>
