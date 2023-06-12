@@ -29,26 +29,31 @@
             新增</el-button>
         </el-form-item>
           <el-row>
-            <el-col  :span="16">
-              <el-tree
-                  class="filter-tree"
-                  :data="formObj.topics"
-                  :props="defaultProps"
-                  default-expand-all
-                  :expand-on-click-node="false"
-                  :filter-node-method="filterOrg"
-                  @node-click="orgNodeClick"
-                  :highlight-current="true"
-                  node-key="id"
-                  ref="topicQueryTree">
-              </el-tree>
-            </el-col>
-            <el-col  :span="6" style="margin-left: 2%;">
+            <el-col  :span="24">
               <div v-for="(subItem,subIndex) in formObj.topics" :key="subIndex">
-                <el-button size="mini" type="primary" icon="el-icon-edit" circle @click="updateTopic(subIndex)" >
-                </el-button>
-                <el-button size="mini" type="danger" icon="el-icon-delete" circle @click="deleteTopic(subIndex)" >
-                </el-button>
+                <el-button-group style="width: 100%;margin-bottom: 5px;">
+                  <el-button type="primary" style="width: 70%;overflow: hidden;text-overflow: ellipsis;"  @click="chooseTopic(subIndex)">
+                    <el-popover
+                        placement="top-start"
+                        width="200"
+                        trigger="hover">
+                      <el-descriptions title="语料组信息" :columns="3">
+                        <el-descriptions-item label="题型名称" span="3">{{ subItem.title}}</el-descriptions-item>
+                        <el-descriptions-item label="本题分值" span="3">{{subItem.score}}</el-descriptions-item>
+                        <el-descriptions-item label="题型描述" span="3">{{subItem.description}}</el-descriptions-item>
+                        <el-descriptions-item label="小题数量" span="3">{{subItem.subCpsrcds.length}}</el-descriptions-item>
+                      </el-descriptions>
+                      <i class="el-icon-info" slot="reference"/>
+                    </el-popover>
+                    <label style="overflow: hidden;">
+                      {{subIndex+1}}.{{subItem.title}}(分值:{{subItem.score}},题数:{{subItem.subCpsrcds.length}})
+                    </label>
+                  </el-button>
+                  <el-button size="mini" type="primary" icon="el-icon-edit" @click="updateTopic(subIndex)" style="height: 40px;">
+                  </el-button>
+                  <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteTopic(subIndex)" style="height: 40px;">
+                  </el-button>
+                </el-button-group>
               </div>
             </el-col>
           </el-row>
@@ -56,49 +61,6 @@
       </el-form>
     </el-col>
     <el-col :span="18" style="margin-left: 2%;margin-top: 1%;">
-<!--        <el-card>-->
-<!--          <el-form>-->
-<!--            <el-form-item label="大题信息" prop="cpsgrpId" style="margin-left: 40%">-->
-<!--            </el-form-item>-->
-<!--            <el-row :gutter="120">-->
-<!--            <el-col :span="7">-->
-<!--              <el-form-item label="次序" prop="tNum">-->
-<!--                <el-input-number v-model="topicObj.tNum" :disabled="true"></el-input-number>-->
-<!--              </el-form-item>-->
-<!--            </el-col>-->
-<!--              <el-col :span="7">-->
-<!--                <el-form-item label="大题名称" prop="title">-->
-<!--                  <el-input v-model="topicObj.title"  :disabled="true" style="position: absolute;"></el-input>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--            <el-col :span="7" style="margin-left: 5%;">-->
-<!--              <el-button size="small" type="primary" icon="el-icon-edit" @click="updateTopic()" >-->
-<!--                修改-->
-<!--              </el-button>-->
-<!--              <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteTopic()">-->
-<!--                删除-->
-<!--              </el-button>-->
-<!--            </el-col>-->
-<!--            </el-row>-->
-<!--            <el-row :gutter="120">-->
-<!--              <el-col :span="7">-->
-<!--                <el-form-item label="难度" prop="difficulty" >-->
-<!--                  <el-input-number v-model="topicObj.difficulty" :disabled="true"></el-input-number>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--              <el-col :span="7">-->
-<!--                <el-form-item label="大题分值" prop="score">-->
-<!--                  <el-input v-model="topicObj.score"  :disabled="true"  style="position: absolute;"></el-input>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--              <el-col :span="7">-->
-<!--                <el-form-item label="说明" prop="description">-->
-<!--                  <el-input v-model="topicObj.description"  :disabled="true"  style="position: absolute;"></el-input>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--            </el-row>-->
-<!--          </el-form>-->
-<!--        </el-card>-->
         <el-card style="margin-top: 1%; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-form>
             <el-form-item>
@@ -216,22 +178,25 @@
   </el-dialog>
 
   <!-- 编辑查看语料组弹出框 -->
-  <el-dialog :title="topicTitle" class="editGroups" :visible.sync="editGroupVisible" width="30%" :show-close=false>
+  <el-dialog :title="topicTitle" class="editGroups" :visible.sync="editGroupVisible" :show-close=false>
     <el-form label-width="120px" :rules="topicObjRules" :model="topicObj">
-      <el-form-item label="topic次序" prop="tNum">
-        <el-input-number v-model="topicObj.tNum"></el-input-number>
-      </el-form-item>
-      <el-form-item label="大题名称" prop="title">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="题型序号" prop="tNum">
+            <el-input-number v-model="topicObj.tNum"></el-input-number>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="本题分值" prop="score">
+            <el-input-number v-model="topicObj.score" ></el-input-number>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label="题型名称" prop="title">
         <el-input v-model="topicObj.title" ></el-input>
       </el-form-item>
-      <el-form-item label="大题分值" prop="score">
-        <el-input v-model="topicObj.score" ></el-input>
-      </el-form-item>
-      <el-form-item label="难度" prop="difficulty">
-        <el-input-number v-model="topicObj.difficulty"></el-input-number>
-      </el-form-item>
-      <el-form-item label="说明" prop="description">
-        <el-input v-model="topicObj.description" ></el-input>
+      <el-form-item label="题型描述" prop="description">
+        <el-input v-model="topicObj.description" type="textarea"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -449,7 +414,10 @@ export default {
       inputVisible: false,
       inputValue: '',
       tempTopicObj:{},
-      tempCpsrcdObj:{},
+      tempCpsrcdObj:{
+        cNum:0,
+        wordWeight:0.5
+      },
       topicTitle:'',
       cpsrcdTitle:'',
       materialGroupTitle:'修改语料组信息',
@@ -726,8 +694,8 @@ export default {
       })
     },
 
-    orgNodeClick(node){
-      this.editTopic(node);
+    chooseTopic(idx){
+      this.editTopic(this.formObj.topics[idx]);
     },
 
     filterOrg(){
@@ -803,15 +771,6 @@ export default {
       this.inputValue = '';
     },
 
-    beforeRouteLeave(to, from, next){
-      let targetName = this.$route.path
-      this.$store.commit('removeTab', targetName);
-      this.$router.push({
-        path: this.$store.state.maintabs.maintabs[
-        this.$store.state.maintabs.maintabs.length - 1
-            ].route
-      })
-    }
 
   }
 }

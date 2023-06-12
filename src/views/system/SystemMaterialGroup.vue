@@ -42,7 +42,10 @@
         <el-table-column prop="difficulty" label="语料组难度" align="center"></el-table-column>
         <el-table-column prop="releaseStatus" label="发布状态" align="center">
           <template slot-scope="scope">
-            {{ releaseStatusFunc(scope.row.releaseStatus)}}
+            <el-button style="text-decoration: underline;border-style: none;outline:none;background-color: transparent" @click="handleClassList(scope.$index, scope.row)">
+              {{ releaseStatusFunc(scope.row.releaseStatus)}}
+            </el-button>
+
           </template>
         </el-table-column>
         <el-table-column prop="modStatus" label="修改状态" align="center">
@@ -169,6 +172,28 @@
       </template>
     </el-dialog>
 
+
+    <!-- 查看班级弹出框 -->
+    <el-dialog title="查看班级列表" :visible.sync="showClassVisible" width="30%">
+      <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
+        <el-card>
+          <el-descriptions title="班级信息" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
+            <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
+            <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
+            <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
+            <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
+            <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{subItem.gmtModified}}</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="showClassVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveEdit">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -217,6 +242,7 @@ export default {
         difficulty:0,
         description:""
       },
+      classInfoList:[],
       materialQueryForm:{
         classId: "",
         title:"",
@@ -226,6 +252,14 @@ export default {
       editGroupVisible:false,
       editMaterialVisible:false,
       editTopicVisible:false,
+      showClassVisible:false,
+      contentStyle:{
+        "text-align":"center;"
+      },
+      labelStyle:{
+        "text-align":"center;",
+        "margin-left":"5px"
+      },
       materialsList:[],
       tempList:[],
       token:getJwtToken(),
@@ -412,8 +446,9 @@ export default {
       return getCurrentTimeStr(time)
     },
 
-    showDetail(index){
-      console.log(index)
+    handleClassList(index){
+
+      this.showClassVisible = true;
     }
 
   },
