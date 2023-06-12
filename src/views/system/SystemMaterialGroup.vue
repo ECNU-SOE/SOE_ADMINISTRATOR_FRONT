@@ -42,7 +42,7 @@
         <el-table-column prop="difficulty" label="语料组难度" align="center"></el-table-column>
         <el-table-column prop="releaseStatus" label="发布状态" align="center">
           <template slot-scope="scope">
-            {{ scope.row.releaseStatus}}个班级
+            {{ releaseStatusFunc(scope.row.releaseStatus)}}
           </template>
         </el-table-column>
         <el-table-column prop="modStatus" label="修改状态" align="center">
@@ -55,11 +55,11 @@
             {{ statusObj[scope.row.isPrivate]}}
           </template>
         </el-table-column>
-        <el-table-column prop="type" label="语料组类型" align="center">
-          <template slot-scope="scope">
-            {{ typeObj[scope.row.type]}}
-          </template>
-        </el-table-column>
+<!--        <el-table-column prop="type" label="语料组类型" align="center">-->
+<!--          <template slot-scope="scope">-->
+<!--            {{ typeObj[scope.row.type]}}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
 <!--        <el-table-column prop="cpsrcdNum" label="题目数量" align="center"></el-table-column>-->
         <el-table-column prop="gmtCreate" label="创建时间" align="center">
           <template slot-scope="scope">
@@ -69,6 +69,8 @@
         <el-table-column prop="creator" label="创建者" align="center"></el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
+            <el-button size="mini" type="primary" icon="el-icon-document-copy" @click="handleCopy(scope.$index, scope.row)" circle>
+            </el-button>
             <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" circle>
             </el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete"
@@ -339,6 +341,10 @@ export default {
       this.editGroupVisible = true;
     },
 
+    handleCopy(){
+
+    },
+
     handleEdit(index, row){
       let id = this.tableData[index].id;
       sessionStorage.setItem("cpsrcdId",id)
@@ -359,6 +365,14 @@ export default {
     closeTopicDialog(){
       this.editGroupVisible = true;
       this.editTopicVisible = false;
+    },
+
+    releaseStatusFunc(idx){
+      if(idx === 0){
+        return `未使用`
+      }else {
+        return `${idx}个班级`
+      }
     },
 
 

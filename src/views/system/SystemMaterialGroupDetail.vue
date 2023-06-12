@@ -15,6 +15,7 @@
             <el-descriptions-item label="语料组描述" span="3">{{formObj.description}}</el-descriptions-item>
             <el-descriptions-item label="公开情况" span="3">{{publicObj[formObj.isPrivate]}}</el-descriptions-item>
             <el-descriptions-item label="语料组难度" span="3">{{formObj.difficulty}}</el-descriptions-item>
+            <el-descriptions-item label="创建者" span="3">{{formObj.creator}}</el-descriptions-item>
             <el-descriptions-item label="创建时间" span="3">{{this.getCurrentTime(formObj.gmtCreate)}}</el-descriptions-item>
             <el-descriptions-item label="更新时间" span="3">{{this.getCurrentTime(formObj.gmtModified)}}</el-descriptions-item>
           </el-descriptions>
@@ -291,11 +292,11 @@
             class="upload-demo"
             action=""
             :on-change="audioUrlChange">
-          <el-button size="small" type="primary">点击上传</el-button>
+          <el-button size="small" type="primary" :loading="loadingStatus">点击上传</el-button>
         </el-upload>
       </el-form-item>
       <el-form-item label="" prop="">
-        <audio :src="tempCpsrcdObj.audioUrl" autoplay="autoplay" controls="controls" ref="audio"></audio>
+        <audio :src="tempCpsrcdObj.audioUrl" controls="controls" ref="audio"></audio>
       </el-form-item>
 
       <el-form-item label="标签" prop="tags">
@@ -369,6 +370,7 @@ export default {
         subCpsrcds: 'subCpsrcds',
         label: 'title'
       },
+      loadingStatus:false,
       publicOptions:[
         {
           value: 1,
@@ -733,14 +735,17 @@ export default {
     },
 
     audioUrlChange(file,fileList){
+      this.loadingStatus = true;
       let params = new FormData();
       params.append("file",file.raw);
       saveAudio(params).then((res)=>{
         if(res.data){
-          this.tempCpsrcdObj.audioUrl = res.data
+          this.tempCpsrcdObj.audioUrl = res.data;
+          this.loadingStatus = false;
         }
       }).catch((e)=>{
         console.log(e)
+        this.loadingStatus = false;
       })
       console.log(file);
     },
@@ -784,13 +789,15 @@ export default {
     },
 
     productPinYin(){
-      this.cpsrcdObj.pinyin = pinyin(this.cpsrcdObj.refText,{"toneType":"num"});
+      let tempObj = JSON.parse(JSON.stringify(this.tempCpsrcdObj));
+      tempObj.pinyin = pinyin(tempObj.refText,{"toneType":"num"});
+      this.tempCpsrcdObj = JSON.parse(JSON.stringify(tempObj));
     },
 
     handleInputConfirm() {
       let inputValue = this.inputValue;
       if (inputValue) {
-        this.cpsrcdObj.tags.push(inputValue);
+        this.tempCpsrcdObj.tags.push(inputValue);
       }
       this.inputVisible = false;
       this.inputValue = '';
