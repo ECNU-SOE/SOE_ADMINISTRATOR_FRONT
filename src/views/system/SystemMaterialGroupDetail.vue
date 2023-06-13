@@ -41,12 +41,12 @@
                         <el-descriptions-item label="题型名称" span="3">{{ subItem.title}}</el-descriptions-item>
                         <el-descriptions-item label="本题分值" span="3">{{subItem.score}}</el-descriptions-item>
                         <el-descriptions-item label="题型描述" span="3">{{subItem.description}}</el-descriptions-item>
-                        <el-descriptions-item label="小题数量" span="3">{{subItem.subCpsrcds.length}}</el-descriptions-item>
+                        <el-descriptions-item label="小题数量" span="3">{{getCurrentNum(subItem.subCpsrcds)}}</el-descriptions-item>
                       </el-descriptions>
                       <i class="el-icon-info" slot="reference"/>
                     </el-popover>
                     <label style="overflow: hidden;">
-                      {{subIndex+1}}.{{subItem.title}}(分值:{{subItem.score}},题数:{{subItem.subCpsrcds.length}})
+                      {{subIndex+1}}.{{subItem.title}}(分值:{{subItem.score}},题数:{{getCurrentNum(subItem.subCpsrcds)}})
                     </label>
                   </el-button>
                   <el-button size="mini" type="primary" icon="el-icon-edit" @click="updateTopic(subIndex)" style="height: 40px;">
@@ -179,24 +179,24 @@
 
   <!-- 编辑查看语料组弹出框 -->
   <el-dialog :title="topicTitle" class="editGroups" :visible.sync="editGroupVisible" :show-close=false>
-    <el-form label-width="120px" :rules="topicObjRules" :model="topicObj">
+    <el-form label-width="120px" :rules="topicObjRules" :model="tempTopicObj">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="题型序号" prop="tNum">
-            <el-input-number v-model="topicObj.tNum"></el-input-number>
+            <el-input-number v-model="tempTopicObj.tNum"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="本题分值" prop="score">
-            <el-input-number v-model="topicObj.score" ></el-input-number>
+            <el-input-number v-model="tempTopicObj.score" ></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="题型名称" prop="title">
-        <el-input v-model="topicObj.title" ></el-input>
+        <el-input v-model="tempTopicObj.title" ></el-input>
       </el-form-item>
       <el-form-item label="题型描述" prop="description">
-        <el-input v-model="topicObj.description" type="textarea"></el-input>
+        <el-input v-model="tempTopicObj.description" type="textarea"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -256,7 +256,8 @@
         <el-upload
             class="upload-demo"
             action=""
-            :on-change="audioUrlChange">
+            :on-change="audioUrlChange"
+            :show-file-list="false">
           <el-button size="small" type="primary" :loading="loadingStatus">点击上传</el-button>
         </el-upload>
       </el-form-item>
@@ -364,19 +365,6 @@ export default {
         difficulty:0,
         description:""
       },
-      cpsrcdObj:{
-        id:"",
-        cpsgrpId:"",
-        topicId:"",
-        cNum:"",
-        evalMode:0,
-        refText:"",
-        difficulty:-1,
-        wordWeight:0,
-        pinyin:"",
-        audioUrl:"",
-        tags:[]
-      },
       modeOptions:[
         {
           value: 1,
@@ -416,7 +404,8 @@ export default {
       tempTopicObj:{},
       tempCpsrcdObj:{
         cNum:0,
-        wordWeight:0.5
+        wordWeight:0.5,
+        tags:[]
       },
       topicTitle:'',
       cpsrcdTitle:'',
@@ -459,7 +448,7 @@ export default {
   methods:{
 
     clearTopicObj(){
-      this.topicObj={
+      this.tempTopicObj={
         id:"",
         cpsgrpId:this.cpsgrpId,
         tNum:0,
@@ -467,7 +456,16 @@ export default {
         score:"",
         difficulty:0,
         description:""
-      }
+      },
+          this.topicObj={
+            id:"",
+            cpsgrpId:this.cpsgrpId,
+            tNum:0,
+            title:"",
+            score:"",
+            difficulty:0,
+            description:""
+          }
     },
 
     clearTopicsList(){
@@ -475,12 +473,12 @@ export default {
     },
 
     clearCpsrcdObj(){
-      this.cpsrcdObj = {
+      this.tempCpsrcdObj = {
         id:"",
         cpsgrpId:"",
         topicId:"",
         cNum:"",
-        evalMode:0,
+        evalMode:1,
         refText:"",
         difficulty:-1,
         wordWeight:0,
@@ -552,22 +550,24 @@ export default {
 
     saveTopic(){
       this.editGroupVisible = false;
-      if(this.topicObj.id){
-        updateTopicInterface(this.topicObj).then((res)=>{
+      if(this.tempTopicObj.id){
+        updateTopicInterface(this.tempTopicObj).then((res)=>{
           if(res.data){
             this.$message({message: "更新成功", type: 'success'});
             this.clearTopicsList();
             this.getMaterialGroup({id:this.cpsgrpId});
+            this.topicObj = this.tempTopicObj;
           }
         }).catch((e)=>{
           console.log(e);
         });
       }else {
-        addTopicInterface(this.topicObj).then((res)=>{
+        addTopicInterface(this.tempTopicObj).then((res)=>{
           if(res.data){
             this.$message({message: "新增成功", type: 'success'});
             this.clearTopicsList();
             this.getMaterialGroup({id:this.cpsgrpId});
+            this.topicObj = this.tempTopicObj;
           }
         }).catch((e)=>{
           console.log(e);
@@ -604,10 +604,10 @@ export default {
         return;
       }
       this.clearCpsrcdObj();
-      this.cpsrcdObj.topicId = this.topicObj.id;
-      this.cpsrcdObj.cpsgrpId = this.cpsgrpId;
-      if(this.cpsrcdObj.tags === null){
-        this.cpsrcdObj.tags = [];
+      this.tempCpsrcdObj.topicId = this.topicObj.id;
+      this.tempCpsrcdObj.cpsgrpId = this.cpsgrpId;
+      if(this.tempCpsrcdObj.tags === null){
+        this.tempCpsrcdObj.tags = [];
       }
       this.cpsrcdTitle = "添加子题";
       this.editCpsrcdVisible = true;
@@ -629,9 +629,8 @@ export default {
     saveCpsrcdId(){
       this.editCpsrcdVisible = false;
       let self = this;
-      let tempObj = JSON.parse(JSON.stringify(this.cpsrcdObj));
-      tempObj.tags = tempObj.tags.join(",");
-      if(this.cpsrcdObj.id){
+      let tempObj = JSON.parse(JSON.stringify(this.tempCpsrcdObj));
+      if(tempObj.id){
         updateCpsrcdInterface(tempObj).then((res)=>{
           if(res.data){
             this.$message({message: "更新成功", type: 'success'});
@@ -639,7 +638,6 @@ export default {
             getTopicInterface({id:self.topicObj.id}).then((res)=>{
               this.topicObj = res.data;
             });
-            this.cpsrcdObj = this.tempCpsrcdObj;
           }
         }).catch((e)=>{
           console.log(e);
@@ -652,7 +650,6 @@ export default {
             getTopicInterface({id:self.topicObj.id}).then((res)=>{
               this.topicObj = res.data;
             });
-            this.cpsrcdObj = this.tempCpsrcdObj;
           }
         }).catch((e) => {
           console.log(e);
@@ -698,8 +695,12 @@ export default {
       this.editTopic(this.formObj.topics[idx]);
     },
 
-    filterOrg(){
-
+    getCurrentNum(subCpsrcds){
+      if(subCpsrcds && subCpsrcds.length){
+        return subCpsrcds.length;
+      }else {
+        return 0;
+      }
     },
 
     audioUrlChange(file,fileList){
