@@ -2,7 +2,7 @@
 <div>
 
   <el-row>
-    <el-col :span="5" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);min-height: 500px;margin-top: 1%;">
+    <el-col :span="6" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);min-height: 500px;margin-top: 1%;">
       <el-form :model="formObj">
         <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-form-item>
@@ -37,7 +37,7 @@
         <el-card>
         <el-form-item :label="'题型：(题数'+ formObj.num + '，总分'+formObj.wholeScore + ')'" >
           <el-button type="primary" size="small"
-                     @click="addTopic()" icon="el-icon-circle-plus-outline" style="margin-left: 5%;position:absolute;">
+                     @click="addTopic()" icon="el-icon-circle-plus-outline" style="margin-left: 4%;position:absolute;">
             新增</el-button>
         </el-form-item>
           <el-row>
@@ -61,9 +61,9 @@
                       {{subIndex+1}}.{{subItem.title}}(分值:{{subItem.score}},题数:{{getCurrentNum(subItem.subCpsrcds)}})
                     </label>
                   </el-button>
-                  <el-button size="mini" type="primary" icon="el-icon-edit" @click="updateTopic(subIndex)" style="height: 40px;">
+                  <el-button size="mini" type="primary" icon="el-icon-edit" @click="updateTopic(subIndex)" style="height: 40px;width:17%;">
                   </el-button>
-                  <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteTopic(subIndex)" style="height: 40px;">
+                  <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteTopic(subIndex)" style="height: 40px;width:17%;">
                   </el-button>
                 </el-button-group>
               </div>
@@ -72,7 +72,7 @@
         </el-card>
       </el-form>
     </el-col>
-    <el-col :span="18" style="margin-left: 2%;margin-top: 1%;">
+    <el-col :span="17" style="margin-left: 2%;margin-top: 1%;">
         <el-card style="margin-top: 1%; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-form>
             <el-form-item>
