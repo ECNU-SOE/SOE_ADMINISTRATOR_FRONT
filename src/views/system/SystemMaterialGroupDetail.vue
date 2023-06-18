@@ -11,10 +11,22 @@
               修改</el-button>
           </el-form-item>
           <el-descriptions title="语料组信息" :columns="3"  v-model="formObj">
-            <el-descriptions-item label="语料组名称" span="3">{{ formObj.title}}</el-descriptions-item>
-            <el-descriptions-item label="语料组描述" span="3">{{formObj.description}}</el-descriptions-item>
+            <el-descriptions-item label="语料组名称" span="3">
+              <template>
+                {{ formObj.title}}
+                <el-popover
+                    placement="right"
+                    title=""
+                    width="200"
+                    trigger="hover"
+                    :content="formObj.description">
+                  <i class="el-icon-info" slot="reference"/>
+                </el-popover>
+              </template></el-descriptions-item>
+<!--            <el-descriptions-item label="语料组描述" span="3">{{formObj.description}}</el-descriptions-item>-->
             <el-descriptions-item label="公开情况" span="3">{{publicObj[formObj.isPrivate]}}</el-descriptions-item>
             <el-descriptions-item label="语料组难度" span="3">{{formObj.difficulty}}</el-descriptions-item>
+            <el-descriptions-item label="修改状态" span="3">{{statusObj[formObj.modStatus]}}</el-descriptions-item>
             <el-descriptions-item label="创建者" span="3">{{formObj.creator}}</el-descriptions-item>
             <el-descriptions-item label="创建时间" span="3">{{this.getCurrentTime(formObj.gmtCreate)}}</el-descriptions-item>
             <el-descriptions-item label="更新时间" span="3">{{this.getCurrentTime(formObj.gmtModified)}}</el-descriptions-item>
@@ -29,10 +41,10 @@
             新增</el-button>
         </el-form-item>
           <el-row>
-            <el-col  :span="24">
+            <el-col  :span="24" style="height:300px;overflow-y: auto;">
               <div v-for="(subItem,subIndex) in formObj.topics" :key="subIndex">
                 <el-button-group style="width: 100%;margin-bottom: 5px;">
-                  <el-button type="primary" style="width: 70%;overflow: hidden;text-overflow: ellipsis;"  @click="chooseTopic(subIndex)">
+                  <el-button type="primary" style="width: 65%;overflow: hidden;text-overflow: ellipsis;"  @click="chooseTopic(subIndex)">
                     <el-popover
                         placement="top-start"
                         width="200"
@@ -68,46 +80,54 @@
                 新增子题
               </el-button>
             </el-form-item>
-            <div v-for="(subItem,subIndex) in topicObj.subCpsrcds" :key="subIndex">
-              <el-card style="margin-top: 5px;">
-                <el-row>
-                  <el-col  :span="6">
-                  <el-descriptions title="子题信息" :columns="3">
-                    <el-descriptions-item label="次序" span="3">{{subItem.cNum}}</el-descriptions-item>
-                    <el-descriptions-item label="评测模式" span="3">{{ modeObj[subItem.evalMode]}}</el-descriptions-item>
-                    <el-descriptions-item label="每字分数" span="3">{{subItem.wordWeight}}</el-descriptions-item>
-                    <el-descriptions-item label="难度" span="3">
-                      <el-rate
-                          v-model="subItem.difficulty"
-                          show-score
-                          disabled
-                          text-color="#ff9900"
-                          score-template="">
-                      </el-rate>
-                    </el-descriptions-item>
-                    <el-descriptions-item label="标签" span="3">{{subItem.tags}}</el-descriptions-item>
-                  </el-descriptions>
-                  </el-col>
-                  <el-col :span="6">
-                    <label>评测文本</label>
-                    <el-button size="small" type="primary" icon="el-icon-caret-right" @click="playAudio(subIndex)" style="margin-left: 5%;">
-                      播放音频
+            <div style="height:600px;overflow-y: auto;">
+              <div v-for="(subItem,subIndex) in topicObj.subCpsrcds" :key="subIndex">
+                <el-card style="margin-top: 5px;">
+                  <el-row>
+                    <el-col  :span="6">
+                      <el-descriptions title="子题信息" :columns="3">
+                        <el-descriptions-item label="次序" span="3">{{subItem.cNum}}</el-descriptions-item>
+                        <el-descriptions-item label="本题分值" span="3">{{subItem.wordWeight}}</el-descriptions-item>
+                        <el-descriptions-item label="题目类型" span="3">{{subItem.type}}</el-descriptions-item>
+                        <el-descriptions-item label="评测模式" span="3">{{ modeObj[subItem.evalMode]}}</el-descriptions-item>
+                        <el-descriptions-item label="难度" span="3">
+                          <el-rate
+                              v-model="subItem.difficulty"
+                              show-score
+                              disabled
+                              text-color="#ff9900"
+                              score-template="">
+                          </el-rate>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="标签" span="3">
+                          <template v-for="(tagItem,tagIndex) in subItem.tags">
+                            <el-tag>{{tagItem}}</el-tag>
+                          </template>
+                        </el-descriptions-item>
+                      </el-descriptions>
+                    </el-col>
+                    <el-col :span="6">
+                      <label>评测文本</label>
+                      <el-button size="small" type="primary" icon="el-icon-caret-right" @click="playAudio(subIndex)" style="margin-left: 5%;">
+                        播放音频
+                      </el-button>
+                      <el-input type="textarea" v-model="subItem.refText" :disabled="true" style="margin-top: 2%;" :rows="8"></el-input>
+                    </el-col>
+                    <el-col :span="6" style="margin-left: 2%;">
+                      <label>文本拼音</label>
+                      <el-input type="textarea" v-model="subItem.pinyin" :disabled="true" style="margin-top: 5%;" :rows="8"></el-input>
+                    </el-col>
+                    <el-button size="small" type="primary" icon="el-icon-edit" @click="updateCpsrcdId(subIndex)" style="margin-left: 2%;">
+                      修改
                     </el-button>
-                    <el-input type="textarea" v-model="subItem.refText" :disabled="true" style="margin-top: 2%;" :rows="8"></el-input>
-                  </el-col>
-                  <el-col :span="6" style="margin-left: 2%;">
-                    <label>文本拼音</label>
-                    <el-input type="textarea" v-model="subItem.pinyin" :disabled="true" style="margin-top: 5%;" :rows="8"></el-input>
-                  </el-col>
-                  <el-button size="small" type="primary" icon="el-icon-edit" @click="updateCpsrcdId(subIndex)" style="margin-left: 2%;">
-                    修改
-                  </el-button>
-                  <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCpsrcdId(subIndex)">
-                    删除
-                  </el-button>
-                </el-row>
-              </el-card>
+                    <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCpsrcdId(subIndex)">
+                      删除
+                    </el-button>
+                  </el-row>
+                </el-card>
+              </div>
             </div>
+
           </el-form>
         </el-card>
     </el-col>
@@ -222,7 +242,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="题目类型" prop="wordWeight">
+      <el-form-item label="题目类型" prop="type">
         <el-input v-model="tempCpsrcdObj.type"></el-input>
       </el-form-item>
       <el-form-item label="评测模式" prop="evalMode">
@@ -380,6 +400,7 @@ export default {
           label: 'read_chapter'
         }
       ],
+      statusObj:{0: '允许修改', 1: '允许创建者修改', 2: '不允许创建者修改'},
       statusOptions:[
       {
                 value: 0,
@@ -398,7 +419,7 @@ export default {
       materialGroupObj: {
         1: '作业', 2: '测试', 3: '试卷'
       },
-      publicObj:{1:'公开',0:'私有'},
+      publicObj:{0:'公开',1:'私有'},
       inputVisible: false,
       inputValue: '',
       tempTopicObj:{},
