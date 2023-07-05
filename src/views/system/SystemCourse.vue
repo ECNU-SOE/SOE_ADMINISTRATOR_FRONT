@@ -186,6 +186,7 @@ export default {
 
     handleEdit(index, row){
       let id = this.tableData[index].id;
+      sessionStorage.setItem("courseId",id);
       this.$router.push({path:"/home/syscoursedetail",query:{id}})
     },
 

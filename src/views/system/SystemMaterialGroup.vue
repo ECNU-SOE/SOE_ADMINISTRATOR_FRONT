@@ -447,7 +447,6 @@ export default {
     },
 
     handleClassList(index){
-
       this.showClassVisible = true;
     }
 

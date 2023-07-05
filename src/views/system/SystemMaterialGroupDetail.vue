@@ -1,13 +1,12 @@
 <template>
 <div>
-
   <el-row>
     <el-col :span="6" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);min-height: 500px;margin-top: 1%;">
       <el-form :model="formObj">
         <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-form-item>
             <el-button type="primary" size="small"
-                       @click="editMaterialGroupVisible=true" icon="el-icon-edit" class="updateMg">
+                       @click="editMaterialGroup()" icon="el-icon-edit" class="updateMg">
               修改</el-button>
           </el-form-item>
           <el-descriptions title="语料组信息" :columns="3"  v-model="formObj">
@@ -23,7 +22,6 @@
                   <i class="el-icon-info" slot="reference"/>
                 </el-popover>
               </template></el-descriptions-item>
-<!--            <el-descriptions-item label="语料组描述" span="3">{{formObj.description}}</el-descriptions-item>-->
             <el-descriptions-item label="公开情况" span="3">{{publicObj[formObj.isPrivate]}}</el-descriptions-item>
             <el-descriptions-item label="语料组难度" span="3">{{formObj.difficulty}}</el-descriptions-item>
             <el-descriptions-item label="修改状态" span="3">{{statusObj[formObj.modStatus]}}</el-descriptions-item>
@@ -73,14 +71,14 @@
       </el-form>
     </el-col>
     <el-col :span="17" style="margin-left: 2%;margin-top: 1%;">
-        <el-card style="margin-top: 1%; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
+        <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
           <el-form>
             <el-form-item>
               <el-button size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addCpsrcdId()">
                 新增子题
               </el-button>
             </el-form-item>
-            <div style="height:600px;overflow-y: auto;">
+            <div style="height:800px;overflow-y: auto;">
               <div v-for="(subItem,subIndex) in topicObj.subCpsrcds" :key="subIndex">
                 <el-card style="margin-top: 5px;">
                   <el-row>
@@ -135,27 +133,27 @@
 
 
   <el-dialog :title="materialGroupTitle" class="editGroups" :visible.sync="editMaterialGroupVisible" width="30%">
-    <el-form label-width="120px" :rules="formObjRules" :model="formObj">
+    <el-form label-width="120px" :rules="formObjRules" :model="tempFormObj">
       <el-form-item label="语料组标题" prop="title">
-        <el-input v-model="formObj.title" ></el-input>
+        <el-input v-model="tempFormObj.title" ></el-input>
       </el-form-item>
       <el-form-item label="语料组描述">
-        <el-input v-model="formObj.description" type="textarea"></el-input>
+        <el-input v-model="tempFormObj.description" type="textarea"></el-input>
       </el-form-item>
       <el-form-item label="语料组难度">
-        <el-select v-model="formObj.difficulty1" style="width: 45%;">
-          <el-option label="A" value=0>A</el-option>
-          <el-option label="B" value=1>B</el-option>
-          <el-option label="C" value=2>C</el-option>
-          <el-option label="D" value=3>D</el-option>
-          <el-option label="E" value=4>E</el-option>
-          <el-option label="F" value=5>F</el-option>
-          <el-option label="G" value=6>G</el-option>
-          <el-option label="H" value=7>H</el-option>
-          <el-option label="I" value=8>I</el-option>
-          <el-option label="J" value=9>J</el-option>
+        <el-select v-model="tempFormObj.difficulty1" style="width: 45%;">
+          <el-option value="A">A</el-option>
+          <el-option value="B">B</el-option>
+          <el-option value="C" >C</el-option>
+          <el-option value="D" >D</el-option>
+          <el-option value="E" >E</el-option>
+          <el-option value="F" >F</el-option>
+          <el-option value="G" >G</el-option>
+          <el-option value="H" >H</el-option>
+          <el-option value="I" >I</el-option>
+          <el-option value="J" >J</el-option>
         </el-select>
-        <el-select v-model="formObj.difficulty2" style="width: 45%;margin-left: 5%;">
+        <el-select v-model="tempFormObj.difficulty2" style="width: 45%;margin-left: 5%;">
           <el-option value=0>0</el-option>
           <el-option value=1>1</el-option>
           <el-option value=2>2</el-option>
@@ -169,7 +167,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="公开情况">
-        <el-select v-model="formObj.isPrivate" >
+        <el-select v-model="tempFormObj.isPrivate" >
           <el-option
               v-for="item in publicOptions"
               :key="item.value"
@@ -179,7 +177,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="修改状态">
-        <el-select v-model="formObj.modStatus" >
+        <el-select v-model="tempFormObj.modStatus" >
            <el-option
               v-for="item in statusOptions"
               :key="item.value"
@@ -352,6 +350,7 @@ export default {
         num:0,
         wholeScore:100
       },
+      tempFormObj:{},
       defaultProps: {
         subCpsrcds: 'subCpsrcds',
         label: 'title'
@@ -419,7 +418,7 @@ export default {
       materialGroupObj: {
         1: '作业', 2: '测试', 3: '试卷'
       },
-      publicObj:{0:'公开',1:'私有'},
+      publicObj:{1:'公开',0:'私有'},
       inputVisible: false,
       inputValue: '',
       tempTopicObj:{},
@@ -544,6 +543,11 @@ export default {
       });
     },
 
+    editMaterialGroup(){
+      this.tempFormObj = JSON.parse(JSON.stringify(this.formObj));
+      this.editMaterialGroupVisible = true;
+    },
+
     handleSearch(){
       this.getMaterialGroup({id:this.cpsgrpId});
     },
@@ -635,7 +639,7 @@ export default {
     },
 
     updateCpsrcdId(subIndex){
-      let tempObj = this.topicObj.subCpsrcds[subIndex];
+      let tempObj = JSON.parse(JSON.stringify(this.topicObj.subCpsrcds[subIndex]));
       tempObj.topicId = this.topicObj.id;
       tempObj.cpsgrpId = this.cpsgrpId;
       if(tempObj.tags === null){
@@ -643,7 +647,7 @@ export default {
       }
       this.cpsrcdTitle = "修改子题";
       tempObj.pinyin = pinyin(tempObj.refText,{"toneType":"num"});
-      this.tempCpsrcdObj = JSON.parse(JSON.stringify(tempObj));
+      this.tempCpsrcdObj = tempObj;
       this.editCpsrcdVisible = true;
     },
 
@@ -702,8 +706,8 @@ export default {
     },
 
     saveMaterialGroup(){
-      this.formObj.difficulty = this.formObj.difficulty1 + this.formObj.difficulty2;
-      updateCurrentLanguageMaterialGroup(this.formObj).then(()=>{
+      this.tempFormObj.difficulty = this.tempFormObj.difficulty1 + this.tempFormObj.difficulty2;
+      updateCurrentLanguageMaterialGroup(this.tempFormObj).then(()=>{
         this.$message({message: "保存成功", type: 'success'});
         this.getMaterialGroup({id:this.cpsgrpId});
         this.editMaterialGroupVisible = false;

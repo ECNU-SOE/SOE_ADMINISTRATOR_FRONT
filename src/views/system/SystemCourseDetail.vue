@@ -11,6 +11,7 @@
               <el-rate
                 v-model="value"
                 show-score
+                disabled
                 text-color="#ff9900"
                 score-template="">
             </el-rate>
@@ -343,6 +344,8 @@ export default {
     getCourseList(){
       getCurrentCourseInformation({id:this.courseId}).then((res)=>{
         this.setData(res);
+      }).catch(e=>{
+        console.log(e.msg)
       })
     },
 
