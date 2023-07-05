@@ -71,14 +71,14 @@
       </el-form>
     </el-col>
     <el-col :span="17" style="margin-left: 2%;margin-top: 1%;">
-        <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);">
+        <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);height:800px;overflow-y: auto;">
           <el-form>
             <el-form-item>
               <el-button size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addCpsrcdId()">
                 新增子题
               </el-button>
             </el-form-item>
-            <div style="height:800px;overflow-y: auto;">
+            <div>
               <div v-for="(subItem,subIndex) in topicObj.subCpsrcds" :key="subIndex">
                 <el-card style="margin-top: 5px;">
                   <el-row>
