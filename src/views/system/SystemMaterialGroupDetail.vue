@@ -71,7 +71,7 @@
       </el-form>
     </el-col>
     <el-col :span="17" style="margin-left: 2%;margin-top: 1%;">
-        <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);height:800px;overflow-y: auto;">
+        <el-card style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);height:750px;overflow-y: auto;">
           <el-form>
             <el-form-item>
               <el-button size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addCpsrcdId()">
@@ -460,7 +460,7 @@ export default {
     }
   },
   created() {
-    this.getMaterialGroup({id:this.cpsgrpId});
+    this.getMaterialGroup({id:this.cpsgrpId,created:true});
   },
   destroyed(){
     console.log(this.$route)
@@ -538,6 +538,9 @@ export default {
           }
         }
         self.formObj.wholeScore = score
+        if(opt.created){
+          self.chooseTopic(0);
+        }
       }).catch((e)=>{
         console.log(e);
       });

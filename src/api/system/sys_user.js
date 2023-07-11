@@ -56,6 +56,19 @@ export const getUsers = (queryform,pagination) => {
   })
 }
 
+//用户列表查询接口
+export const getCurrentUsers = (queryForm) => {
+  return jwtServerInstance.request({
+    url:`/api/user/v1/info_list`,
+    method:'post',
+    headers:{
+      token:getJwtToken()
+    },
+    data:queryForm
+  })
+}
+
+
 //更新sys_user的一条数据记录
 export const updateUser = (userForm) => {
   return jwtServerInstance.request({

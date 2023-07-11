@@ -26,22 +26,27 @@
       <el-form style="white-space: nowrap;">
         <div v-for="(subItem,subIndex) in tableData" :key="subIndex">
           <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
-            <el-image
-                style="width: 100px; height: 100px;position: absolute;margin-left: 30%;margin-top: 4%;scale: 1.6;"
-                :src="subItem.picture || url"></el-image>
-            <el-descriptions title="课程信息" :contentStyle="contentStyle" :labelStyle="labelStyle">
-              <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
-              <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
-              <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-              <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{getCurrentTime(subItem.gmtCreate)}}</el-descriptions-item>
-              <el-descriptions-item label="修改时间" prop="gmtModified" span="3">{{getCurrentTime(subItem.gmtModified)}}</el-descriptions-item>
-            </el-descriptions>
-            <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
-              修改
-            </el-button>
-            <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(subIndex)">
-              删除
-            </el-button>
+            <el-row>
+              <el-col :span="10">
+                <el-image
+                    style="margin-top: 5%"
+                    :src="subItem.picture || url"></el-image>
+              </el-col>
+              <el-col :span="12" style="margin-left: 3%;margin-top: 2%">
+                <el-descriptions :title="subItem.name" :contentStyle="contentStyle" :labelStyle="labelStyle">
+                  <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
+                  <el-descriptions-item label="课程难度" prop="description" span="3">{{subItem.level || '-1(未知)'}}</el-descriptions-item>
+                  <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{getCurrentTime(subItem.gmtCreate)}}</el-descriptions-item>
+                  <el-descriptions-item label="修改时间" prop="gmtModified" span="3">{{getCurrentTime(subItem.gmtModified)}}</el-descriptions-item>
+                </el-descriptions>
+                <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
+                  修改
+                </el-button>
+                <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(subIndex)">
+                  删除
+                </el-button>
+              </el-col>
+            </el-row>
           </el-card>
         </div>
       </el-form>
@@ -186,7 +191,9 @@ export default {
 
     handleEdit(index, row){
       let id = this.tableData[index].id;
+      let name = this.tableData[index].name;
       sessionStorage.setItem("courseId",id);
+      sessionStorage.setItem("courseName",name);
       this.$router.push({path:"/home/syscoursedetail",query:{id}})
     },
 
