@@ -10,7 +10,7 @@
               :on-success="updateClassPic"
               :before-upload="beforeUpload">
             <el-image
-                style="margin: 5%;height: 150px;scale: 1.2;"
+                style="margin: 5%;height: 150px;"
                 :src="pictureUrl"></el-image>
           </el-upload>
         </el-col>
@@ -25,14 +25,14 @@
           </el-descriptions>
         </el-col>
         <el-col :span="1">
-          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:1%;margin-left: -10%;">
+          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:2%;margin-left: -13%;">
             更换班级
           </el-button>
         </el-col>
-        <el-col :span="7" style="margin-left: 5%;">
+        <el-col :span="8" style="margin-left: 5%;">
           <el-card style="margin-top: 8%;">
             <el-input  type="textarea" :autosize="{ minRows: 6}" disabled placeholder="班级公告："></el-input>
-            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -7%;margin-top: 10%;">发布公告</el-button>
+            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -10%;margin-top: 12%;">发布公告</el-button>
           </el-card>
         </el-col>
       </el-card>
@@ -41,14 +41,14 @@
       <el-tab-pane label="用户管理">
         <div style="margin: 5px;height: 40px;">
           <label style="margin: 5px;">共{{classMembersNum}}人</label>
-          <el-button size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addStudent()" style="position: absolute;margin-left: 50%;height: 40px;">
+          <el-button size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addStudent()" style="position: absolute;margin-left: 45%;height: 40px;">
             添加学生
           </el-button>
-          <el-button size="small" type="primary" icon="el-icon-upload2" @click="exportXls()" style="position: absolute;margin-left: 60%;height: 40px;">
+          <el-button size="small" type="primary" icon="el-icon-upload2" @click="exportXls()" style="position: absolute;margin-left: 57%;height: 40px;">
             导出名单
           </el-button>
-          <el-input  class="selectStudent" style="position: absolute;width: 15%;margin-left: 70%;border-radius: 15px;!important;" placeholder="请输入学号或者姓名"></el-input>
-          <el-button size="mini" type="text" icon="el-icon-search" @click="exportXls()" style="position: absolute;margin-left: 86%;height: 40px;"/>
+          <el-input  class="selectStudent" style="position: absolute;width: 20%;margin-left: 70%;border-radius: 15px;!important;" placeholder="请输入学号或者姓名"></el-input>
+          <el-button size="mini" type="text" icon="el-icon-search" @click="exportXls()" style="position: absolute;margin-left: 90%;height: 40px;"/>
         </div>
         <el-table :data="classMembers" border style="margin: 10px 0px 10px 10px;" border stripe>
 <!--          <el-table-column prop="id" label="序号" align="center"/>-->
@@ -65,7 +65,7 @@
               {{ memberType[scope.row.rtype]}}
             </template>
           </el-table-column>
-          <el-table-column prop="gmtCreate" label="加入时间" align="center">
+          <el-table-column prop="gmtCreate" label="加入时间" align="center" width="200px">
             <template slot-scope="scope">
               {{ getCurrentTime(scope.row.gmtCreate)}}
             </template>

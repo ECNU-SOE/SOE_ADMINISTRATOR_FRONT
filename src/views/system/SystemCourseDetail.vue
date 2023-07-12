@@ -11,7 +11,7 @@
               :on-success="updateClassPic"
               :before-upload="beforeUpload">
             <el-image
-                style="height: 150px;margin-bottom: 20%;scale: 1.4;"
+                style="height: 150px;margin-bottom: 20%;scale: 1.2;"
                 :src="tableData.picture || url" @click="updateClassPic()"></el-image>
           </el-upload>
           <el-descriptions title="" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle" v-model="tableData">
@@ -41,7 +41,7 @@
           <el-radio v-model="radio" label="4" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;text-align: center;">数据统计</el-radio>
         </el-card>
       </el-col>
-      <el-col :span="16" style="margin-left: 1%;">
+      <el-col :span="17" style="margin-left: 1%;">
         <classSet v-if="radio === '2'"></classSet>
         <div v-if="radio === '2'"></div>
       </el-col>
