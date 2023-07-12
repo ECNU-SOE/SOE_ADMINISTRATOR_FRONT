@@ -37,7 +37,7 @@
         </el-col>
       </el-card>
     </el-row>
-    <el-tabs type="border-card" style="width: 59%;margin-top:1%;" :stretch=true>
+    <el-tabs type="border-card" style="width: 101%;margin-top: 1%;position: relative;" :stretch=true>
       <el-tab-pane label="用户管理">
         <div style="margin: 5px;height: 40px;">
           <label style="margin: 5px;">共{{classMembersNum}}人</label>
