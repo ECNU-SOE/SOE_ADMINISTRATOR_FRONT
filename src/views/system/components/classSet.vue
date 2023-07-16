@@ -25,14 +25,14 @@
           </el-descriptions>
         </el-col>
         <el-col :span="1">
-          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:2%;margin-left: -13%;">
+          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:1%;margin-left: -17%;">
             更换班级
           </el-button>
         </el-col>
         <el-col :span="8" style="margin-left: 5%;">
           <el-card style="margin-top: 8%;">
             <el-input  type="textarea" :autosize="{ minRows: 6}" disabled placeholder="班级公告："></el-input>
-            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -10%;margin-top: 12%;">发布公告</el-button>
+            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -7%;margin-top: 9%;">发布公告</el-button>
           </el-card>
         </el-col>
       </el-card>

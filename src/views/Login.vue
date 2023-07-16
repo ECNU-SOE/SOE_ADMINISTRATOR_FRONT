@@ -4,7 +4,7 @@
       <div class="signin-signup">
         <form action="" class="sign-in-form">
           <h2 class="title">SOE</h2>
-          <h2 class="title">后台管理系统</h2>
+          <h2 class="title systemTitle">后台管理系统</h2>
           <div class="input-field">
             <i class="fa fa-user"></i>
             <input type="text" v-model="loginForm.username" placeholder="Username">
@@ -24,7 +24,7 @@
         </form>
 
         <form action="" class="sign-up-form">
-          <h2 class="title">用户注册</h2>
+          <h2 class="title systemTitle">用户注册</h2>
           <div class="input-field">
             <i class="fa fa-user"></i>
             <input type="text" placeholder="userName" v-model="loginForm.username">
@@ -205,7 +205,7 @@
   .signin-signup{
     position: absolute;
     top: 50%;
-    left: 75%;
+    left: 50%;
     /* 作用是什么 */
     transform: translate(-50%,-50%);
     width: 50%;
@@ -239,29 +239,33 @@
     opacity: 0;
   }
 
+  .systemTitle{
+    width: 2.667rem;
+    text-align: center;
+  }
+
   .title{
-    font-size: 2.2rem;
+    font-size: 0.2rem;
     color: #444;
     margin-bottom: 10px;
   }
 
   .input-field{
-    max-width: 300px;
-    width: 100%;
+    width: 1.5rem;
     height: 55px;
     background-color: #f0f0f0;
     margin: 10px 0;
     border-radius: 55px;
     display: grid;
     grid-template-columns: 15% 85%;
-    padding: 0 .4rem;
+    padding: 0 .1rem;
   }
 
   .input-field i{
     text-align: center;
     line-height: 55px;
     color: #acacac;
-    font-size: 1.1rem;
+    font-size: 0.12rem;
   }
 
   .input-field input{
@@ -270,7 +274,7 @@
     border: none;
     line-height: 1;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 0.1rem;
     color: #333;
   }
 
@@ -357,7 +361,7 @@
   .panel h3{
     font-weight: 600;
     line-height: 1;
-    font-size: 1.5rem;
+    font-size: 0.14rem;
   }
 
   .panel p{
@@ -372,17 +376,17 @@
     width: 130px;
     height: 41px;
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.1rem;
   }
 
   .left-panel{
     pointer-events: all;
-    padding: 3rem 17% 2rem 12%;
+    padding: 0rem 17% 1.5rem 0rem;
   }
 
   .right-panel{
     pointer-events: none;
-    padding: 3rem 12% 2rem 17%;
+    padding: 1rem 12% 2rem 17%;
   }
 
   .image{
@@ -419,7 +423,7 @@
   }
 
   .container.sign-up-mode .signin-signup{
-    left: 25%;
+    left: 3%;
   }
 
   .container.sign-up-mode form.sign-in-form{
@@ -471,6 +475,7 @@
       align-items: center;
       padding: 2.5rem 8%;
     }
+
 
     .image{
       width: 200px;

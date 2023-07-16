@@ -3,6 +3,7 @@
                :value="myVModel"
                :placeholder="placeholder">
       <el-option v-for="option in this.$store.state.system.sysdict"
+                 :key="option.itemValue"
                  v-if="option.groupCode === groupCode"
                  :label="option.itemName"
                  :value="option.itemValue"/>
