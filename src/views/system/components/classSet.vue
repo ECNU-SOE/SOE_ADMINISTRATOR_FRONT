@@ -4,7 +4,7 @@
       <el-card body-style="padding: 0" >
         <el-col :span="6">
           <el-upload
-              style="width:100%;text-align: center;margin-top: 7%;"
+              style="width:100%;text-align: center;margin-top: 0.2rem;"
               action=""
               :show-file-list="false"
               :on-success="updateClassPic"
@@ -24,14 +24,14 @@
           </el-descriptions>
         </el-col>
         <el-col :span="1">
-          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:0.15rem;right: 3rem;">
+          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:0.15rem;right: 2.5rem;">
             更换班级
           </el-button>
         </el-col>
         <el-col :span="8" style="margin-left: 0.2rem;">
           <el-card style="margin-top: 0.2rem;">
             <el-input  type="textarea" :autosize="{ minRows: 6}" disabled placeholder="班级公告："></el-input>
-            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -0.45rem;margin-top: 0.55rem;">发布公告</el-button>
+            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -0.55rem;margin-top: 0.65rem;">发布公告</el-button>
           </el-card>
         </el-col>
       </el-card>
@@ -140,7 +140,7 @@
       </div>
       <template #footer>
                 <span class="dialog-footer">
-                    <label style="margin-right: 20%;">共有{{classNum}}个课程班</label>
+                    <label style="margin-right: 20%;font-size:0.1rem;">共有{{classNum}}个课程班</label>
                     <el-button @click="updateClassVisible = false">取 消</el-button>
                     <el-button type="primary" @click="handleSaveClass">确 定</el-button>
                 </span>
@@ -150,18 +150,25 @@
     <!-- 添加学生弹出框 -->
     <el-dialog title="添加学生" :visible.sync="addStudentVisible" width="38%">
       <div style="min-height: 2.667rem;">
-        <el-tabs type="border-card" :stretch=true style="width: 35%;">
+        <el-tabs type="border-card" :stretch=true style="width: 35%;position:relative;width:101%;">
           <el-tab-pane label="手动导入">
             <el-form :inline="true" :model="formInline" class="demo-form-inline" style="margin-top: 0.1rem;">
-              <el-form-item label="姓名" style="margin-left:0.1rem;">
-                <el-input v-model="formInline.name" placeholder="请输入姓名"></el-input>
-              </el-form-item>
-              <el-form-item label="手机号">
-                <el-input v-model="formInline.phone" placeholder="请输入手机号"></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button size="small" type="primary" icon="el-icon-edit" @click="getCurrentStudent()" style="margin-left:0.1rem;">查询</el-button>
-              </el-form-item>
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item class="nameInput" label="姓名" style="margin-left:0.02rem;">
+                            <el-input v-model="formInline.name" placeholder="请输入姓名"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item class="phoneInput" label="手机号">
+                            <el-input v-model="formInline.phone" placeholder="请输入手机号"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3">
+                        <el-form-item>
+                        <el-button size="small" type="primary" icon="el-icon-edit" @click="getCurrentStudent()" style="margin-left:0.02rem;">查询</el-button>
+                    </el-form-item></el-col>
+                </el-row>
             </el-form>
             <div style="margin-bottom: 0.25rem;max-height: 2rem;overflow-y: auto;">
               <div v-for="(subItem,subIndex) in usersList" :key="subIndex">
@@ -238,6 +245,9 @@ export default {
       pictureUrl:"https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
       contentStyle:{
         // "text-align":"center"
+        "overflow":"hidden",
+        "text-overflow":"ellipsis",
+        "white-space":"nowrap"
       },
       contentItemStyle:{
 
@@ -482,12 +492,12 @@ export default {
 
 .userNum{
   margin: 0.05rem;
-  font-size: 1.6em;
+  font-size: 1.2em;
 }
 
 .addStudentCls{
   position: absolute;
-  right: 2.2rem;
+  right: 2.3rem;
   height: 0.2rem;
 }
 
@@ -509,16 +519,24 @@ export default {
   border-radius: 0.1rem    /*输入框圆角值*/
 }
 
+.nameInput>>>.el-form-item__content{
+width:calc(100% - 0.3rem);
+}
+
+.phoneInput>>>.el-form-item__content{
+width:calc(100% - 0.4rem);
+}
+
 .selectStudent {
   position: absolute;
   width: 20%;
-  right: 0.23rem;
+  right: 0.3rem;
   border-radius: 0.1rem;
 }
 
 .searchStudent{
   position: absolute;
-  right: 0.12rem;
+  right: 0.15rem;
   height: 0.2rem;
 }
 
