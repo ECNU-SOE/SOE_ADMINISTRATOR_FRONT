@@ -3,15 +3,15 @@
 
     <el-row>
       <el-col :span="6">
-        <el-card body-style="padding: 0" style="margin-left: 10px;">
+        <el-card body-style="padding: 0" style="margin-left: 0.06rem;">
           <el-upload
-              style="width:100%;text-align: center;margin-top: 15%;"
+              style="width:100%;text-align: center;margin-top: 0.25rem;"
               action=""
               :show-file-list="false"
               :on-success="updateClassPic"
               :before-upload="beforeUpload">
             <el-image
-                style="height: 150px;margin-bottom: 20%;scale: 1.2;"
+                style="height: 0.8rem;margin-bottom: 0.15rem;scale: 1.2;"
                 :src="tableData.picture || url" @click="updateClassPic()"></el-image>
           </el-upload>
           <el-descriptions title="" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle" v-model="tableData">
@@ -34,11 +34,11 @@
             <el-descriptions-item label="修改日期" span="3">{{this.getCurrentTime(tableData.gmtModified)}}</el-descriptions-item>
           </el-descriptions>
         </el-card>
-        <el-card style="margin-left: 10px;">
-          <el-radio v-model="radio" label="1" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;text-align: center;">课程设置</el-radio>
-          <el-radio v-model="radio" label="2" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;text-align: center;">班级管理</el-radio>
-          <el-radio v-model="radio" label="3" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;text-align: center;">资料管理</el-radio>
-          <el-radio v-model="radio" label="4" border size="medium" style="display: block;margin-top: 20px;width: 80%;margin-left:30px;height: 50px;text-align: center;">数据统计</el-radio>
+        <el-card style="margin-left: 0.05rem;">
+          <el-radio v-model="radio" label="1" border size="medium" style="display: block;margin-top: 0.1rem;width: 80%;margin-left:0.15rem;height: 0.25rem;text-align: center;">课程设置</el-radio>
+          <el-radio v-model="radio" label="2" border size="medium" style="display: block;margin-top: 0.1rem;width: 80%;margin-left:0.15rem;height: 0.25rem;text-align: center;">班级管理</el-radio>
+          <el-radio v-model="radio" label="3" border size="medium" style="display: block;margin-top: 0.1rem;width: 80%;margin-left:0.15rem;height: 0.25rem;text-align: center;">资料管理</el-radio>
+          <el-radio v-model="radio" label="4" border size="medium" style="display: block;margin-top: 0.1rem;width: 80%;margin-left:0.15rem;height: 0.25rem;text-align: center;">数据统计</el-radio>
         </el-card>
       </el-col>
       <el-col :span="17" style="margin-left: 1%;">
@@ -46,38 +46,6 @@
         <div v-if="radio === '2'"></div>
       </el-col>
     </el-row>
-
-    <el-dialog :title="dialogTitle" :visible.sync="editVisible" width="30%">
-      <el-form label-width="120px" :rules="formObjRules" :model="formObj">
-        <el-form-item label="课程名字" prop="name">
-          <el-input v-model="formObj.name" ></el-input>
-        </el-form-item>
-        <el-form-item label="课程描述">
-          <el-input v-model="formObj.description" ></el-input>
-        </el-form-item>
-        <el-form-item label="创建时间">
-          <el-date-picker
-              v-model="formObj.gmtCreate"
-              type="date"
-              placeholder="选择日期" style="width: 100%;">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="修改时间">
-          <el-date-picker
-              v-model="formObj.gmtModified"
-              type="date"
-              placeholder="选择日期" style="width: 100%;">
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="editVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="saveEdit">确 定</el-button>
-                </span>
-      </template>
-    </el-dialog>
-
   </div>
 </template>
 

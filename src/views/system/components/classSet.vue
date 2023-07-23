@@ -9,12 +9,11 @@
               :show-file-list="false"
               :on-success="updateClassPic"
               :before-upload="beforeUpload">
-            <el-image
-                style="margin: 5%;height: 150px;"
+            <el-image class="classPic"
                 :src="pictureUrl"></el-image>
           </el-upload>
         </el-col>
-        <el-col :span="8" style="margin-left: 20px;margin-top:20px;">
+        <el-col class="classDesc" :span="8">
           <el-descriptions title="" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
             <el-descriptions-item label="班级名称" prop="name" span="3" >{{currentClass.name}}</el-descriptions-item>
             <el-descriptions-item label="班级编号" prop="id" span="3">{{currentClass.id}}</el-descriptions-item>
@@ -25,32 +24,32 @@
           </el-descriptions>
         </el-col>
         <el-col :span="1">
-          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:1%;margin-left: -17%;">
+          <el-button size="small" type="primary" icon="el-icon-refresh" @click="updateClass()" style="position: absolute;margin-top:0.15rem;right: 3rem;">
             更换班级
           </el-button>
         </el-col>
-        <el-col :span="8" style="margin-left: 5%;">
-          <el-card style="margin-top: 8%;">
+        <el-col :span="8" style="margin-left: 0.2rem;">
+          <el-card style="margin-top: 0.2rem;">
             <el-input  type="textarea" :autosize="{ minRows: 6}" disabled placeholder="班级公告："></el-input>
-            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -7%;margin-top: 9%;">发布公告</el-button>
+            <el-button  size="mini" type="primary" @click="handleUpdateClassInfo($event)" style="position: absolute;margin-left: -0.45rem;margin-top: 0.55rem;">发布公告</el-button>
           </el-card>
         </el-col>
       </el-card>
     </el-row>
     <el-tabs type="border-card" style="width: 101%;margin-top: 1%;position: relative;" :stretch=true>
       <el-tab-pane label="用户管理">
-        <div style="margin: 5px;height: 40px;">
-          <label style="margin: 5px;">共{{classMembersNum}}人</label>
-          <el-button size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addStudent()" style="position: absolute;margin-left: 45%;height: 40px;">
+        <div class="userCls">
+          <label class="userNum">共{{classMembersNum}}人</label>
+          <el-button class="addStudentCls" size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addStudent()">
             添加学生
           </el-button>
-          <el-button size="small" type="primary" icon="el-icon-upload2" @click="exportXls()" style="position: absolute;margin-left: 57%;height: 40px;">
+          <el-button class="exportXlsCls" size="small" type="primary" icon="el-icon-upload2" @click="exportXls()">
             导出名单
           </el-button>
-          <el-input  class="selectStudent" style="position: absolute;width: 20%;margin-left: 70%;border-radius: 15px;!important;" placeholder="请输入学号或者姓名"></el-input>
-          <el-button size="mini" type="text" icon="el-icon-search" @click="exportXls()" style="position: absolute;margin-left: 90%;height: 40px;"/>
+          <el-input  class="selectStudent" placeholder="请输入学号或者姓名"></el-input>
+          <el-button class="searchStudent" size="mini" type="text" icon="el-icon-search" @click="searchStudent()"/>
         </div>
-        <el-table :data="classMembers" border style="margin: 10px 0px 10px 10px;" border stripe>
+        <el-table :data="classMembers" border class="userTable" stripe>
 <!--          <el-table-column prop="id" label="序号" align="center"/>-->
           <el-table-column prop="realName" label="姓名" align="center">
             <template slot-scope="scope">
@@ -80,7 +79,7 @@
       </el-tab-pane>
       <el-tab-pane label="教学团队">教学团队</el-tab-pane>
       <el-tab-pane label="考试作业">
-        <div style="width: 100%;margin:5px;">
+        <div style="width: 100%;margin:0.1rem;">
           <el-radio v-model="radio" label="all" size="mini">全部</el-radio>
           <el-radio v-model="radio" label="notStart" size="mini">未开始</el-radio>
           <el-radio v-model="radio" label="processing" size="mini" >进行中</el-radio>
@@ -94,11 +93,7 @@
         </div>
         <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
           <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
-            <el-image
-                style="width: 100px; height: 100px;position: absolute;margin-left: 30%;margin-top: 4%;scale: 1.6;"
-                :src="pictureUrl"></el-image>
-            <el-descriptions title="课程信息" :contentStyle="contentStyle" :labelStyle="labelStyle">
-              <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
+            <el-descriptions :title="subItem.name" :contentStyle="contentStyle" :labelStyle="labelStyle">
               <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
               <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
               <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
@@ -120,10 +115,10 @@
 
     <!-- 更换班级弹出框 -->
     <el-dialog title="更换班级" :visible.sync="updateClassVisible" width="30%">
-      <div style="max-height: 500px;overflow-y: auto;">
+      <div style="max-height: 2.667rem;overflow-y: auto;">
         <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex" style="width: 99%;">
           <el-row>
-              <el-card @click.native="selectClass($event,subIndex)" style="margin: 5px;">
+              <el-card @click.native="selectClass($event,subIndex)" style="margin: 0.1rem 0.1rem 0 0.1rem;">
                 <el-col :span="21">
                   <el-descriptions :title="subItem.name" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
                     <el-descriptions-item label="授课教师" prop="id" span="3" label-class-name="my-content" content-class-name="my-content">{{subItem.teacher}}</el-descriptions-item>
@@ -137,7 +132,7 @@
               </el-card>
           </el-row>
         </div>
-        <el-card @click.native="handleAddClass()" style="width: 97%;margin-left: 5px;">
+        <el-card @click.native="handleAddClass()" style="width: 91%;margin: 0.1rem 0 0 0.1rem;">
         <span class="el-icon-plus" >
          新建班级
         </span>
@@ -154,21 +149,21 @@
 
     <!-- 添加学生弹出框 -->
     <el-dialog title="添加学生" :visible.sync="addStudentVisible" width="38%">
-      <div style="min-height: 500px;">
+      <div style="min-height: 2.667rem;">
         <el-tabs type="border-card" :stretch=true style="width: 35%;">
           <el-tab-pane label="手动导入">
-            <el-form :inline="true" :model="formInline" class="demo-form-inline" style="margin-top: 2%;">
-              <el-form-item label="姓名" style="margin-left:5px;">
+            <el-form :inline="true" :model="formInline" class="demo-form-inline" style="margin-top: 0.1rem;">
+              <el-form-item label="姓名" style="margin-left:0.1rem;">
                 <el-input v-model="formInline.name" placeholder="请输入姓名"></el-input>
               </el-form-item>
               <el-form-item label="手机号">
                 <el-input v-model="formInline.phone" placeholder="请输入手机号"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button size="small" type="primary" icon="el-icon-edit" @click="getCurrentStudent()" style="margin-left:5px;">查询</el-button>
+                <el-button size="small" type="primary" icon="el-icon-edit" @click="getCurrentStudent()" style="margin-left:0.1rem;">查询</el-button>
               </el-form-item>
             </el-form>
-            <div style="margin-bottom: 20px;max-height: 400px;overflow-y: auto;">
+            <div style="margin-bottom: 0.25rem;max-height: 2rem;overflow-y: auto;">
               <div v-for="(subItem,subIndex) in usersList" :key="subIndex">
                 <el-row>
                   <el-card style="margin-top: 1%;width: 96%; float: left;margin-left: 2%;margin-bottom: 1%;">
@@ -206,11 +201,11 @@
     <!-- 添加学生弹出框 -->
     <el-dialog title="新建班级" :visible.sync="addClassVisible" width="30%" :show-close=false>
       <div>
-        <el-form  label-width="120px" :rules="newClassRules" :model="newClass">
+        <el-form  label-width="1rem" :rules="newClassRules" :model="newClass">
           <el-form-item>
             所属班级:{{newClass.courseName}}
           </el-form-item>
-          <el-form-item label="班级名称" prop="name" style="margin-left:5px;width: 70%;">
+          <el-form-item label="班级名称" prop="name" style="width: 70%;">
             <el-input v-model="newClass.name" placeholder="请输入班级名称"></el-input>
           </el-form-item>
         </el-form>
@@ -320,8 +315,10 @@ export default {
 
     handleSaveClass(){
       let tempClass = JSON.parse(JSON.stringify(this.choseClass));
-      this.currentClass = tempClass;
-      this.showClassInfo(tempClass);
+      if(Object.keys(tempClass).length){
+        this.currentClass = tempClass;
+        this.showClassInfo(tempClass);
+      }
       this.updateClassVisible = false;
     },
 
@@ -456,6 +453,10 @@ export default {
 
     handleUpdateClassInfo(){
 
+    },
+
+    searchStudent(){
+
     }
 
   }
@@ -463,6 +464,38 @@ export default {
 </script>
 
 <style scoped>
+
+.classPic {
+  margin: 5%;
+  height: 0.8rem;
+}
+
+.classDesc{
+  margin-left: 0.18rem;
+  margin-top:0.18rem;
+}
+
+.userCls{
+  margin: 0.05rem;
+  height: 0.2rem
+}
+
+.userNum{
+  margin: 0.05rem;
+  font-size: 1.6em;
+}
+
+.addStudentCls{
+  position: absolute;
+  right: 2.2rem;
+  height: 0.2rem;
+}
+
+.exportXlsCls{
+  position: absolute;
+  right: 1.6rem;
+  height: 0.2rem;
+}
 
 .active {
   background-color: skyblue;
@@ -473,7 +506,24 @@ export default {
 }
 
 .selectStudent>>>.el-input__inner{
-  border-radius: 15px;    /*输入框圆角值*/
+  border-radius: 0.1rem    /*输入框圆角值*/
+}
+
+.selectStudent {
+  position: absolute;
+  width: 20%;
+  right: 0.23rem;
+  border-radius: 0.1rem;
+}
+
+.searchStudent{
+  position: absolute;
+  right: 0.12rem;
+  height: 0.2rem;
+}
+
+.userTable{
+  margin: 0.05rem 0 0.05rem 0.05rem
 }
 
 </style>
