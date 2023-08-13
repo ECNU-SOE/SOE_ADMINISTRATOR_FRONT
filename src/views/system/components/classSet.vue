@@ -36,8 +36,8 @@
         </el-col>
       </el-card>
     </el-row>
-    <el-tabs type="border-card" style="width: 101%;margin-top: 1%;position: relative;" :stretch=true>
-      <el-tab-pane label="用户管理">
+    <el-tabs type="border-card" style="width: 101%;margin-top: 1%;position: relative;" :stretch=true  @tab-click="handleSelectTabs" v-model="tabSelect">
+      <el-tab-pane label="学生管理" name="student">
         <div class="userCls">
           <label class="userNum">共{{classMembersNum}}人</label>
           <el-button class="addStudentCls" size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addStudent()">
@@ -77,40 +77,187 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="教学团队">教学团队</el-tab-pane>
-      <el-tab-pane label="考试作业">
-        <div style="width: 100%;margin:0.1rem;">
-          <el-radio v-model="radio" label="all" size="mini">全部</el-radio>
-          <el-radio v-model="radio" label="notStart" size="mini">未开始</el-radio>
-          <el-radio v-model="radio" label="processing" size="mini" >进行中</el-radio>
-          <el-radio v-model="radio" label="stopped" size="mini" >已结束</el-radio>
-          <el-button size="small" type="primary" icon="el-icon-edit" @click="handleAddJob()" style="margin-left: 30%;">
-            新建作业
-          </el-button>
-          <el-button size="small" type="primary" icon="el-icon-delete" @click="handleMaterialGroup()">
-            语料组库
-          </el-button>
+      <el-tab-pane label="教学团队" name="teacher">教学团队</el-tab-pane>
+      <el-tab-pane label="考试作业" name="test">
+        <div v-if="classDetail === false">
+          <div style="width: 100%;margin:0.1rem;">
+            <el-radio v-model="radio" label="all" size="mini">全部</el-radio>
+            <el-radio v-model="radio" label="notStart" size="mini">未开始</el-radio>
+            <el-radio v-model="radio" label="processing" size="mini" >进行中</el-radio>
+            <el-radio v-model="radio" label="stopped" size="mini" >已结束</el-radio>
+            <el-button size="small" type="primary" icon="el-icon-edit" @click="handleAddJob()" style="margin-left: 30%;">
+              新建作业
+            </el-button>
+            <el-button size="small" type="primary" icon="el-icon-delete" @click="handleMaterialGroup()">
+              语料组库
+            </el-button>
+          </div>
+          <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
+            <el-card style="margin-top: 1%;width: 30%; float: left;margin-left: 2%;margin-bottom: 1%;">
+              <el-descriptions :title="subItem.name" :contentStyle="contentStyle" :labelStyle="labelStyle">
+                <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
+                <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
+                <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
+                <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{subItem.gmtModified}}</el-descriptions-item>
+              </el-descriptions>
+              <el-button size="small" type="primary" @click="handleUpdate(subIndex)">
+                修改
+              </el-button>
+              <el-button size="small" type="primary" @click="handleGetDetail(subIndex)">
+                查看
+              </el-button>
+            </el-card>
+          </div>
         </div>
-        <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
-          <el-card style="margin-top: 1%;width: 47%; float: left;margin-left: 2%;margin-bottom: 1%;">
-            <el-descriptions :title="subItem.name" :contentStyle="contentStyle" :labelStyle="labelStyle">
-              <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
-              <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-              <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
-              <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{subItem.gmtModified}}</el-descriptions-item>
-            </el-descriptions>
-            <el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(subIndex)">
-              修改
+       <div v-else>
+
+       </div>
+      </el-tab-pane>
+      <el-tab-pane label="话题讨论" name="topic">
+        <div v-if="topicDetail === false">
+          <div class="userCls">
+            <label class="userNum">共{{topicNum}}个话题</label>
+            <el-dropdown>
+              <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-s-unfold"></i>时间顺序</span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>时间顺序</el-dropdown-item>
+                <el-dropdown-item>时间倒序</el-dropdown-item>
+                <el-dropdown-item>按点赞数</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button size="small" type="primary" icon="el-icon-edit" @click="handleAddTopic()" style="position:absolute;right: 1rem;">
+              新建话题
             </el-button>
-            <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(subIndex)">
-              删除
+          </div>
+          <div style="overflow: auto;max-height: 2.2rem;margin-bottom: 0.1rem;">
+            <div v-for="(subItem,subIndex) in topicInfoList" :key="subIndex">
+              <el-card style="margin-top: 1%;float: left;width:95%;margin-left: 2%;margin-bottom: 0.1rem;">
+                <el-row>
+                  <el-col :span="4">
+                    <el-image :src="pictureUrl" style="width:0.8rem;"></el-image>
+                  </el-col>
+                  <el-col :span="17">
+                    <el-descriptions title="" :contentStyle="contentStyle" :labelStyle="labelItemStyle">
+                      <el-descriptions-item label="话题发布者" prop="gmtCreate" >{{subItem.publisher}}</el-descriptions-item>
+                      <el-descriptions-item label="发布时间" prop="gmtModified" >{{getCurrentTime(subItem.releaseTime)}}</el-descriptions-item>
+                    </el-descriptions>
+                    <el-row style="padding:0.1rem 0rem 0rem 0.2rem;">
+                      <el-descriptions :title="subItem.discussTitle" :contentStyle="contentStyle">
+                        <el-descriptions-item label="内容" prop="discussContent" span="3">{{subItem.discussContent}}</el-descriptions-item>
+                      </el-descriptions>
+                    </el-row>
+                  </el-col>
+                  <el-col :span="2">
+                    <el-dropdown @command="handleTopicSelect($event,subIndex)">
+                      <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command="top">置顶</el-dropdown-item>
+                        <el-dropdown-item command="forward">转发</el-dropdown-item>
+                        <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                        <el-dropdown-item command="delete">删除</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </el-col>
+                </el-row>
+              </el-card>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div>
+            <el-button size="small" type="primary" icon="el-icon-arrow-left" @click="handleReturnTopic()" style="margin: 0.1rem 0 0 0.2rem;">
+              返回
             </el-button>
-          </el-card>
+          </div>
+          <div style="overflow: auto;max-height: 2.2rem;margin-bottom: 0.1rem;">
+            <el-card style="margin-top: 1%;float: left;width:95%;margin-left: 2%;">
+              <el-row>
+                <el-col :span="4">
+                  <el-image :src="pictureUrl" style="width:0.8rem;"></el-image>
+                </el-col>
+                <el-col :span="17">
+                  <div style="text-align: center;font-size: 0.12rem;font-weight: bold;">{{currentTopic.discussTitle}}</div>
+                  <el-descriptions title="" :contentStyle="contentStyle" :labelStyle="labelItemStyle">
+                    <el-descriptions-item label="话题发布者" prop="gmtCreate" >{{currentTopic.publisher}}</el-descriptions-item>
+                    <el-descriptions-item label="发布时间" prop="gmtModified" >{{getCurrentTime(currentTopic.releaseTime)}}</el-descriptions-item>
+                  </el-descriptions>
+                </el-col>
+                <el-col :span="3">
+                  <i class="iconfont">&#xe83f;</i>
+                  <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.5);padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
+                  <el-dropdown @command="handleTopicSelect($event,subIndex)">
+                    <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item command="top">置顶</el-dropdown-item>
+                      <el-dropdown-item command="forward">转发</el-dropdown-item>
+                      <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                      <el-dropdown-item command="delete">删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </el-col>
+              </el-row>
+            </el-card>
+          </div>
+          <div style="height: 0.18rem;">
+            <label class="replyLabel">共{{currentTopic.replyNumber}}条评论</label>
+            <el-dropdown style="padding-left: 0.2rem;">
+              <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-s-unfold"></i>时间顺序</span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>时间顺序</el-dropdown-item>
+                <el-dropdown-item>时间倒序</el-dropdown-item>
+                <el-dropdown-item>按点赞数</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-radio-group v-model="radio" @change="changeDiscussList">
+              <el-radio label="all" size="mini"  style="padding-left: 0.2rem;">所有评论</el-radio>
+              <el-radio label="currentClass" size="mini">本班评论</el-radio>
+            </el-radio-group>
+            <label style="padding: 0.2rem">已发布{{currentTopic.publishClassesNum}}个班级</label>
+            <el-button size="small" type="primary" icon="el-icon-edit" @click="handleAddDiscuss()" style="position:absolute;right: 1rem;">
+              评论
+            </el-button>
+          </div>
+          <div>
+            <div v-for="(subItem,subIndex) in topicReply" :key="subIndex">
+              <el-card style="margin-top: 1%;float: left;width:95%;margin-left: 2%;margin-bottom: 0.1rem;">
+                <el-row>
+                  <el-col :span="4">
+                    <el-image :src="pictureUrl" style="width:0.8rem;"></el-image>
+                  </el-col>
+                  <el-col :span="17">
+                    <el-descriptions title="" :contentStyle="contentStyle" :labelStyle="labelItemStyle">
+                      <el-descriptions-item label="回复" prop="gmtCreate" >{{subItem.publisher}}</el-descriptions-item>
+                      <el-descriptions-item label="时间" prop="gmtModified" >{{getCurrentTime(subItem.releaseTime)}}</el-descriptions-item>
+                      <el-descriptions-item  prop="gmtModified" >{{subIndex+1}}楼</el-descriptions-item>
+                    </el-descriptions>
+                    <el-row style="padding:0.1rem 0rem 0rem 0.2rem;">
+                      <el-descriptions :title="subItem.discussContent" :contentStyle="contentStyle">
+                        <el-descriptions-item label="内容" prop="discussContent" span="3">{{subItem.discussContent}}</el-descriptions-item>
+                      </el-descriptions>
+                    </el-row>
+                  </el-col>
+                  <el-col :span="3">
+                    <i class="iconfont">&#xe83f;</i>
+                    <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.5);padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
+                    <el-dropdown @command="handleTopicSelect($event,subIndex)">
+                      <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command="top">置顶</el-dropdown-item>
+                        <el-dropdown-item command="forward">转发</el-dropdown-item>
+                        <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                        <el-dropdown-item command="delete">删除</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </el-col>
+                </el-row>
+              </el-card>
+            </div>
+          </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="班级讨论">班级讨论</el-tab-pane>
-      <el-tab-pane label="资料管理">资料管理</el-tab-pane>
-      <el-tab-pane label="班级设置">班级设置</el-tab-pane>
+
+      <el-tab-pane label="资料管理" name="resource">资料管理</el-tab-pane>
+      <el-tab-pane label="班级设置" name="class">班级设置</el-tab-pane>
     </el-tabs>
 
     <!-- 更换班级弹出框 -->
@@ -225,19 +372,94 @@
       </template>
     </el-dialog>
 
+    <el-dialog title="新建主题" :visible.sync="addTopicVisible" width="30%" :show-close=false>
+      <div>
+        <el-form  label-width="0.5rem" :model="tempTopicObj">
+          <el-row>
+            <el-col :span="20">
+              <el-form-item label="话题标题" prop="discussTitle">
+                <el-input v-model="tempTopicObj.discussTitle" placeholder="请输入话题标题"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="20">
+              <el-form-item label="话题内容" prop="discussTest">
+                <el-input type="textarea" v-model="tempTopicObj.discussTest" placeholder="请输入话题内容"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="20">
+              <el-form-item label="自由发言" prop="audioUrl">
+                <el-input v-model="tempTopicObj.audioUrl" ></el-input>
+                <el-upload
+                    class="upload-demo"
+                    action=""
+                    :on-change="audioUrlChange"
+                    :show-file-list="false">
+                  <el-button size="small" type="primary" :loading="loadingStatus">点击上传</el-button>
+                </el-upload>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="addTopicVisible=false">取 消</el-button>
+                    <el-button type="primary" @click="handleSaveAddTopic">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
+    <el-dialog title="回复" :visible.sync="addDiscussVisible" width="30%" :show-close=false>
+      <div>
+        <el-form  label-width="0.5rem" :model="tempTopicObj">
+          <el-row>
+            <el-col :span="20">
+              <el-form-item label="回复几楼" prop="discussTest">
+                <el-input-number  v-model="tempTopicObj.parentId" placeholder="1"></el-input-number>
+              </el-form-item>
+            </el-col>
+            <el-col :span="20">
+              <el-form-item label="回复内容" prop="discussTest">
+                <el-input v-model="tempTopicObj.discussTest" placeholder="请输入话题内容"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="20">
+              <el-form-item label="自由发言" prop="audioUrl">
+                <el-input v-model="tempTopicObj.audioUrl" ></el-input>
+                <el-upload
+                    class="upload-demo"
+                    action=""
+                    :on-change="audioUrlChange"
+                    :show-file-list="false">
+                  <el-button size="small" type="primary" :loading="loadingStatus">点击上传</el-button>
+                </el-upload>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="addDiscussVisible=false">取 消</el-button>
+                    <el-button type="primary" @click="handleSaveAddDiscuss">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import {getUsers,getCurrentUsers} from '@/api/system/sys_user'
-import {getClassInformation,getClassMembers,addClass,addClassMembers} from "@/api/system/sys_class";
+import {getClassInformation,getClassMembers,addClass,addClassMembers,getTopicInformation,
+  getTopicReply,insertTopic,replyDiscuss,topTopic,forwardTopic,getClassDiscussInfo} from "@/api/system/sys_class";
 import {getCurrentTimeStr} from "@/lib/utils";
 
 export default {
   name: "classSet",
 
   created() {
-    this.getClassList();
+    this.handleSelectTabs();
   },
   data(){
     return {
@@ -253,26 +475,42 @@ export default {
 
       },
       labelItemStyle:{
-
+        "text-align":"center;",
+        "margin-left":"0.2rem"
       },
       labelStyle:{
         "text-align":"center;",
         "margin-left":"5px"
       },
       classInfoList:[],
+      topicInfoList:[],
       currentClass:{},
+      currentTopic:{},
+      tempTopicObj:{
+        discussTest:"",
+        discussTitle:""
+      },
+      topicReply:[],
       choseClass:{},
-      radio:"tabs",
+      radio:"all",
       classRadio:-1,
       formInline:{
         name:'',
         phone:''
       },
+      loadingStatus:false,
       updateClassVisible:false,
       addStudentVisible:false,
       addClassVisible:false,
+      addTopicVisible:false,
+      addDiscussVisible:false,
+      topicDetail:false,
+      //话题详情显示与否标志
+      classDetail:false,
+      //课程详情显示与否标志
       classMembers:[],
       classNum:0,
+      topicNum:0,
       classMembersNum:0,
       selectUserList:[],
       sexIcon:{0:"el-icon-female",1:"el-icon-male"},
@@ -281,7 +519,8 @@ export default {
       newClassRules:{
         name:[{required: true, message: '请输入班级名字',trigger:'blur'}]
       },
-      usersList:[]
+      usersList:[],
+      tabSelect:"student"
     }
   },
 
@@ -320,6 +559,12 @@ export default {
     getClassList(){
       getClassInformation({courseId:this.courseId}).then((res)=>{
         this.setClassData(res);
+      })
+    },
+
+    getTopicList(){
+      getTopicInformation({classId:this.currentClass.id,pageNum:1,pageSize:10}).then((res)=>{
+        this.setTopicData(res);
       })
     },
 
@@ -378,8 +623,24 @@ export default {
 
     },
 
-    handleMaterialGroup(){
+    handleAddTopic(){
+      this.tempTopicObj = {
+        discussTest:"",
+        discussTitle:""
+      }
+      this.addTopicVisible = true;
+    },
 
+    handleAddDiscuss(){
+      this.tempTopicObj = {
+        discussTest:"",
+        discussTitle:""
+      }
+      this.addDiscussVisible = true;
+    },
+
+    handleMaterialGroup(){
+      this.$router.push({path:"/home/sysmaterialgroup"})
     },
 
     handleSaveStudent(){
@@ -430,6 +691,13 @@ export default {
       }
     },
 
+    setTopicData(data){
+      if(data){
+        this.topicInfoList = data.data.records;
+        this.topicNum = this.topicInfoList.length;
+      }
+    },
+
     beforeUpload(){
 
     },
@@ -467,6 +735,121 @@ export default {
 
     searchStudent(){
 
+    },
+
+    handleUpdate(){
+
+    },
+
+    handleGetDetail(){
+      this.classDetail = true;
+
+    },
+
+
+    handleSelectTabs(){
+      switch(this.tabSelect){
+        case "student":
+        default:
+          this.getClassList();
+          break;
+        case "teacher":
+          break;
+        case "topic":
+          this.getTopicList();
+          break;
+
+      }
+
+    },
+
+    handleTopicSelect(operation,idx){
+      this.currentTopic = this.topicInfoList[idx];
+      switch (operation){
+        case"top":
+          topTopic({discussId:this.currentTopic.discussId}).then((res)=>{
+            if(res.data){
+              this.$message({message: `置顶成功`, type: 'success'});
+            }
+          }).catch((e)=>{
+            this.$message({message: `置顶失败，原因为:${e.msg}`, type: 'error'});
+            console.log(e);
+          });
+          break;
+        case"forward":
+          forwardTopic({forwardId:this.currentTopic.discussId,classId:this.currentClass.id,discussTest:'又得改代码，难顶'}).then((res)=>{
+            if(res.data){
+              this.$message({message: `转发成功`, type: 'success'});
+            }
+          }).catch((e)=>{
+            this.$message({message: `转发失败，原因为:${e.msg}`, type: 'error'});
+            console.log(e);
+          });
+            break;
+        case"edit":
+          getTopicReply({discussId:this.currentTopic.discussId}).then((res)=>{
+            this.topicReply = res.data.records;
+          }).catch();
+          this.topicDetail = true;
+          break;
+        case"delete":
+          break;
+      }
+    },
+
+    handleReturnTopic(){
+      this.topicDetail = false;
+      this.handleSelectTabs();
+    },
+
+    audioUrlChange(){
+
+    },
+
+    handleSaveAddTopic(){
+      let obj = Object.assign({audioUrl:[]},this.tempTopicObj,{classId:this.currentClass.id})
+      insertTopic(obj).then((res)=>{
+        if(res.code === 0){
+          this.$message({message: "新增话题成功!", type: 'success'});
+          this.getTopicList();
+        }
+      }).catch((e)=>{
+        this.$message({message: `新增话题失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
+      });
+      this.addTopicVisible = false;
+    },
+
+    handleSaveAddDiscuss(){
+      let obj = Object.assign({audioUrl:[]},this.tempTopicObj,{classId:this.currentClass.id})
+      replyDiscuss(obj).then((res)=>{
+        if(res.code === 0){
+          this.$message({message: "回复成功!", type: 'success'});
+          this.getTopicList();
+        }
+      }).catch((e)=>{
+        this.$message({message: `回复失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
+      });
+      this.addDiscussVisible = false;
+    },
+
+    changeDiscussList(value){
+      if(value === "currentClass"){
+        let obj = Object.assign({},{classId:this.currentClass.id})
+        getClassDiscussInfo(obj).then((res)=>{
+          if(res.code === 0){
+            this.topicReply = res.data.records;
+          }
+        }).catch((e)=>{
+          this.$message({message: `回复失败，原因为:${e.msg}`, type: 'error'});
+          console.log(e);
+        });
+      }else {
+        getTopicReply({discussId:this.currentTopic.discussId}).then((res)=>{
+          this.topicReply = res.data.records;
+        }).catch();
+      }
     }
 
   }
@@ -543,5 +926,19 @@ width:calc(100% - 0.4rem);
 .userTable{
   margin: 0.05rem 0 0.05rem 0.05rem
 }
+
+.icon, .iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.replyLabel{
+  padding-left: 0.2rem;
+}
+
 
 </style>

@@ -97,3 +97,90 @@ export const addClassMembers = (opt) => {
     });
 };
 
+export const getTopicInformation  = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/getDiscussInfo?classId=${query.classId}&pageNum=${query.pageNum || 1}&pageSize=${query.pageSize || 10}`,
+        method: 'get',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+export const getTopicReply  = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/getReplyInfoByCurrent?discussId=${query.discussId}&&pageNum=${query.pageNum || 1}&pageSize=${query.pageSize || 10}`,
+        method: 'get',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+export const insertTopic = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/addDiscuss`,
+        method: 'post',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+export const replyDiscuss = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/reply`,
+        method: 'post',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+export const topTopic = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/topDiscuss?discussId=${query.discussId}`,
+        method: 'get',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+export const forwardTopic = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/forward`,
+        method: 'post',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+export const getClassDiscussInfo = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/getDiscussInfo?classId=${query.classId}&pageNum=${query.pageNum || 1}&pageSize=${query.pageSize || 10}`,
+        method: 'get',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+
+
+
