@@ -110,7 +110,11 @@
           </div>
         </div>
        <div v-else>
-
+         <div>
+           <el-button size="small" type="primary" icon="el-icon-arrow-left" @click="handleReturnTopic()" style="margin: 0.1rem 0 0 0.2rem;" >
+             返回
+           </el-button>
+         </div>
        </div>
       </el-tab-pane>
       <el-tab-pane label="话题讨论" name="topic">
@@ -159,6 +163,10 @@
                     </el-dropdown>
                   </el-col>
                 </el-row>
+                <div style="left: 5rem;position: relative;">
+                  <i class="iconfont icon-unChoseLike"  v-on:click="chooseLike($event,subIndex)">{{subItem.likeCount}}</i>
+                  <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.2);font-size: 0.083rem;padding-right: 0.02rem"></i>{{subItem.replyNumber}}</span>
+                </div>
               </el-card>
             </div>
           </div>
@@ -168,6 +176,7 @@
             <el-button size="small" type="primary" icon="el-icon-arrow-left" @click="handleReturnTopic()" style="margin: 0.1rem 0 0 0.2rem;">
               返回
             </el-button>
+
           </div>
           <div style="overflow: auto;max-height: 2.2rem;margin-bottom: 0.1rem;">
             <el-card style="margin-top: 1%;float: left;width:95%;margin-left: 2%;">
@@ -180,11 +189,14 @@
                   <el-descriptions title="" :contentStyle="contentStyle" :labelStyle="labelItemStyle">
                     <el-descriptions-item label="话题发布者" prop="gmtCreate" >{{currentTopic.publisher}}</el-descriptions-item>
                     <el-descriptions-item label="发布时间" prop="gmtModified" >{{getCurrentTime(currentTopic.releaseTime)}}</el-descriptions-item>
+                    <el-form-item label="" prop="">
+                      <audio :src="currentTopic.audioUrl" controls="controls" ref="audio"></audio>
+                    </el-form-item>
                   </el-descriptions>
                 </el-col>
                 <el-col :span="3">
-                  <i class="iconfont">&#xe83f;</i>
-                  <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.5);padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
+                  <i class="iconfont icon-unChoseLike" v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
+                  <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="font-size: 0.083rem;padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
                   <el-dropdown @command="handleTopicSelect($event,subIndex)">
                     <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
                     <el-dropdown-menu slot="dropdown">
@@ -232,13 +244,15 @@
                     </el-descriptions>
                     <el-row style="padding:0.1rem 0rem 0rem 0.2rem;">
                       <el-descriptions :title="subItem.discussContent" :contentStyle="contentStyle">
-                        <el-descriptions-item label="内容" prop="discussContent" span="3">{{subItem.discussContent}}</el-descriptions-item>
+                        <el-form-item label="" prop="">
+                          <audio :src="subItem.audioUrl" controls="controls" ref="audio"></audio>
+                        </el-form-item>
                       </el-descriptions>
                     </el-row>
                   </el-col>
                   <el-col :span="3">
-                    <i class="iconfont">&#xe83f;</i>
-                    <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.5);padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
+                    <i class="iconfont icon-unChoseLike"  v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
+                    <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.2);font-size: 0.083rem;padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
                     <el-dropdown @command="handleTopicSelect($event,subIndex)">
                       <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
                       <el-dropdown-menu slot="dropdown">
@@ -387,7 +401,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="20">
-              <el-form-item label="自由发言" prop="audioUrl">
+              <el-form-item label="语音输入" prop="audioUrl">
                 <el-input v-model="tempTopicObj.audioUrl" ></el-input>
                 <el-upload
                     class="upload-demo"
@@ -414,17 +428,12 @@
         <el-form  label-width="0.5rem" :model="tempTopicObj">
           <el-row>
             <el-col :span="20">
-              <el-form-item label="回复几楼" prop="discussTest">
-                <el-input-number  v-model="tempTopicObj.parentId" placeholder="1"></el-input-number>
-              </el-form-item>
-            </el-col>
-            <el-col :span="20">
               <el-form-item label="回复内容" prop="discussTest">
-                <el-input v-model="tempTopicObj.discussTest" placeholder="请输入话题内容"></el-input>
+                <el-input type="textarea" v-model="tempTopicObj.discussTest" placeholder="请输入话题内容"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="20">
-              <el-form-item label="自由发言" prop="audioUrl">
+              <el-form-item label="语音输入" prop="audioUrl">
                 <el-input v-model="tempTopicObj.audioUrl" ></el-input>
                 <el-upload
                     class="upload-demo"
@@ -452,7 +461,7 @@
 <script>
 import {getUsers,getCurrentUsers} from '@/api/system/sys_user'
 import {getClassInformation,getClassMembers,addClass,addClassMembers,getTopicInformation,
-  getTopicReply,insertTopic,replyDiscuss,topTopic,forwardTopic,getClassDiscussInfo} from "@/api/system/sys_class";
+  getTopicReply,insertTopic,replyDiscuss,topTopic,forwardTopic,getClassDiscussInfo,addLikes} from "@/api/system/sys_class";
 import {getCurrentTimeStr} from "@/lib/utils";
 
 export default {
@@ -768,8 +777,9 @@ export default {
       switch (operation){
         case"top":
           topTopic({discussId:this.currentTopic.discussId}).then((res)=>{
-            if(res.data){
+            if(res.code=== 0){
               this.$message({message: `置顶成功`, type: 'success'});
+              this.getTopicList();
             }
           }).catch((e)=>{
             this.$message({message: `置顶失败，原因为:${e.msg}`, type: 'error'});
@@ -778,7 +788,7 @@ export default {
           break;
         case"forward":
           forwardTopic({forwardId:this.currentTopic.discussId,classId:this.currentClass.id,discussTest:'又得改代码，难顶'}).then((res)=>{
-            if(res.data){
+            if(es.code=== 0){
               this.$message({message: `转发成功`, type: 'success'});
             }
           }).catch((e)=>{
@@ -799,6 +809,7 @@ export default {
 
     handleReturnTopic(){
       this.topicDetail = false;
+      this.currentTopic = {};
       this.handleSelectTabs();
     },
 
@@ -820,12 +831,24 @@ export default {
       this.addTopicVisible = false;
     },
 
+    getReplyInfo(){
+      let obj = Object.assign({},{classId:this.currentClass.id})
+      getClassDiscussInfo(obj).then((res)=>{
+        if(res.code === 0){
+          this.topicReply = res.data.records;
+        }
+      }).catch((e)=>{
+        this.$message({message: `回复失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
+      });
+    },
+
     handleSaveAddDiscuss(){
-      let obj = Object.assign({audioUrl:[]},this.tempTopicObj,{classId:this.currentClass.id})
+      let obj = Object.assign({audioUrl:[]},this.tempTopicObj,{parentId:this.currentTopic.discussId,classId: this.currentClass.id})
       replyDiscuss(obj).then((res)=>{
         if(res.code === 0){
           this.$message({message: "回复成功!", type: 'success'});
-          this.getTopicList();
+          // this.getReplyInfo();
         }
       }).catch((e)=>{
         this.$message({message: `回复失败，原因为:${e.msg}`, type: 'error'});
@@ -836,20 +859,37 @@ export default {
 
     changeDiscussList(value){
       if(value === "currentClass"){
-        let obj = Object.assign({},{classId:this.currentClass.id})
-        getClassDiscussInfo(obj).then((res)=>{
-          if(res.code === 0){
-            this.topicReply = res.data.records;
-          }
-        }).catch((e)=>{
-          this.$message({message: `回复失败，原因为:${e.msg}`, type: 'error'});
-          console.log(e);
-        });
+        this.getReplyInfo();
       }else {
         getTopicReply({discussId:this.currentTopic.discussId}).then((res)=>{
           this.topicReply = res.data.records;
         }).catch();
       }
+    },
+
+    chooseLike(e,index){
+      let flag = false;//区分点赞还是取消点赞
+      if(e.target && e.target.className.indexOf('icon-unChoseLike') === -1){
+        e.target.className = e.target.className.replaceAll('icon-chooseLike','icon-unChoseLike');
+        let num = parseInt(e.target.innerText);
+        e.target.innerText = num >= 1 ? (num-1).toString() : '0';
+      }else {
+        e.target.className = e.target.className.replaceAll('icon-unChoseLike','icon-chooseLike');
+        let num = parseInt(e.target.innerText);
+        e.target.innerText = (num+1).toString();
+      }
+      let discussId = '';
+      if(!this.currentTopic.discussId && index !== undefined){
+        discussId = this.topicInfoList[index].discussId
+      }else {
+        discussId = this.currentTopic.discussId || '';
+      }
+      addLikes({discussId}).then((res)=>{
+        console.log(res);
+      }).catch((e)=>{
+        this.$message({message: `点赞接口调用失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
+      });
     }
 
   }
@@ -925,15 +965,6 @@ width:calc(100% - 0.4rem);
 
 .userTable{
   margin: 0.05rem 0 0.05rem 0.05rem
-}
-
-.icon, .iconfont {
-  font-family:"iconfont" !important;
-  font-size:16px;
-  font-style:normal;
-  -webkit-font-smoothing: antialiased;
-  -webkit-text-stroke-width: 0.2px;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 .replyLabel{

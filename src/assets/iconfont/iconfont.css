@@ -1,0 +1,26 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 4208857 */
+  src: url('iconfont.woff2?t=1691930764793') format('woff2'),
+       url('iconfont.woff?t=1691930764793') format('woff'),
+       url('iconfont.ttf?t=1691930764793') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-unChoseLike:before {
+  content: "\e83f";
+  cursor:pointer;
+}
+
+.icon-chooseLike:before {
+  content: "\e85c";
+  cursor:pointer;
+  color:red;
+}
+

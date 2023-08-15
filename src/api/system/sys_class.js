@@ -181,6 +181,18 @@ export const getClassDiscussInfo = (query) => {
     });
 };
 
+export const addLikes = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/addLikes?discussId=${query.discussId}`,
+        method: 'get',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
 
 
 
