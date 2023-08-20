@@ -43,7 +43,6 @@
       </el-col>
       <el-col :span="17" style="margin-left: 1%;">
         <classSet v-if="radio === '2'"></classSet>
-        <div v-if="radio === '2'"></div>
       </el-col>
     </el-row>
   </div>

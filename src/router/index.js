@@ -45,6 +45,9 @@ router.beforeEach((to,from,next) => {
         })
         setJwtToken(res.data)
       }
+    }).catch(()=>{
+      next({name: 'login'})
+      setJwtToken('') //清空token
     })
   }else{//每次去到登录页面都刷新一下，清除token
     next()

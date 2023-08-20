@@ -22,6 +22,8 @@ export const refreshToken = () => {
   return jwtServerInstance.request({
     url:'/refreshtoken',
     method:'get',
+    data:{},
+    params:{},
     headers:{
       token:getJwtToken()
     }

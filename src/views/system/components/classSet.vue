@@ -79,43 +79,7 @@
       </el-tab-pane>
       <el-tab-pane label="教学团队" name="teacher">教学团队</el-tab-pane>
       <el-tab-pane label="考试作业" name="test">
-        <div v-if="classDetail === false">
-          <div style="width: 100%;margin:0.1rem;">
-            <el-radio v-model="radio" label="all" size="mini">全部</el-radio>
-            <el-radio v-model="radio" label="notStart" size="mini">未开始</el-radio>
-            <el-radio v-model="radio" label="processing" size="mini" >进行中</el-radio>
-            <el-radio v-model="radio" label="stopped" size="mini" >已结束</el-radio>
-            <el-button size="small" type="primary" icon="el-icon-edit" @click="handleAddJob()" style="margin-left: 30%;">
-              新建作业
-            </el-button>
-            <el-button size="small" type="primary" icon="el-icon-delete" @click="handleMaterialGroup()">
-              语料组库
-            </el-button>
-          </div>
-          <div v-for="(subItem,subIndex) in classInfoList" :key="subIndex">
-            <el-card style="margin-top: 1%;width: 30%; float: left;margin-left: 2%;margin-bottom: 1%;">
-              <el-descriptions :title="subItem.name" :contentStyle="contentStyle" :labelStyle="labelStyle">
-                <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
-                <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-                <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
-                <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{subItem.gmtModified}}</el-descriptions-item>
-              </el-descriptions>
-              <el-button size="small" type="primary" @click="handleUpdate(subIndex)">
-                修改
-              </el-button>
-              <el-button size="small" type="primary" @click="handleGetDetail(subIndex)">
-                查看
-              </el-button>
-            </el-card>
-          </div>
-        </div>
-       <div v-else>
-         <div>
-           <el-button size="small" type="primary" icon="el-icon-arrow-left" @click="handleReturnTopic()" style="margin: 0.1rem 0 0 0.2rem;" >
-             返回
-           </el-button>
-         </div>
-       </div>
+        <testJob></testJob>
       </el-tab-pane>
       <el-tab-pane label="话题讨论" name="topic">
         <div v-if="topicDetail === false">
@@ -463,10 +427,11 @@ import {getUsers,getCurrentUsers} from '@/api/system/sys_user'
 import {getClassInformation,getClassMembers,addClass,addClassMembers,getTopicInformation,
   getTopicReply,insertTopic,replyDiscuss,topTopic,forwardTopic,getClassDiscussInfo,addLikes} from "@/api/system/sys_class";
 import {getCurrentTimeStr} from "@/lib/utils";
+import testJob from "@/views/system/components/testJob";
 
 export default {
   name: "classSet",
-
+  components:{testJob},
   created() {
     this.handleSelectTabs();
   },
@@ -514,8 +479,6 @@ export default {
       addTopicVisible:false,
       addDiscussVisible:false,
       topicDetail:false,
-      //话题详情显示与否标志
-      classDetail:false,
       //课程详情显示与否标志
       classMembers:[],
       classNum:0,
@@ -628,10 +591,6 @@ export default {
       this.addStudentVisible = true;
     },
 
-    handleAddJob(){
-
-    },
-
     handleAddTopic(){
       this.tempTopicObj = {
         discussTest:"",
@@ -646,10 +605,6 @@ export default {
         discussTitle:""
       }
       this.addDiscussVisible = true;
-    },
-
-    handleMaterialGroup(){
-      this.$router.push({path:"/home/sysmaterialgroup"})
     },
 
     handleSaveStudent(){
@@ -746,14 +701,6 @@ export default {
 
     },
 
-    handleUpdate(){
-
-    },
-
-    handleGetDetail(){
-      this.classDetail = true;
-
-    },
 
 
     handleSelectTabs(){
