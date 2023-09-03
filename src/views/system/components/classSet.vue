@@ -36,7 +36,7 @@
         </el-col>
       </el-card>
     </el-row>
-    <el-tabs type="border-card" style="width: 101%;margin-top: 0.05rem;position: relative;height: calc(100vh - 2.1rem);overflow: auto;" :stretch=true  @tab-click="handleSelectTabs" v-model="tabSelect">
+    <el-tabs type="border-card" style="width: 101%;margin-top: 0.05rem;position: relative;height: calc(100vh - 2rem);overflow: auto;" :stretch=true  @tab-click="handleSelectTabs" v-model="tabSelect">
       <el-tab-pane label="学生管理" name="student">
         <div class="userCls">
           <label class="userNum">共{{classMembersNum}}人</label>
@@ -110,9 +110,16 @@
                       <el-descriptions-item label="发布时间" prop="gmtModified" >{{getCurrentTime(subItem.releaseTime)}}</el-descriptions-item>
                     </el-descriptions>
                     <el-row style="padding:0.1rem 0rem 0rem 0.2rem;">
-                      <el-descriptions :title="subItem.discussTitle" :contentStyle="contentStyle">
-                        <el-descriptions-item label="内容" prop="discussContent" span="3">{{subItem.discussContent}}</el-descriptions-item>
-                      </el-descriptions>
+                      <el-col :span="12">
+                        <el-descriptions :title="subItem.discussTitle" :contentStyle="contentStyle">
+                          <el-descriptions-item label="内容" prop="discussContent" span="3">{{subItem.discussContent}}</el-descriptions-item>
+                        </el-descriptions>
+                      </el-col>
+                      <el-col :span="10">
+                        <div v-if="subItem.audioList && subItem.audioList[0]">
+                          <audio :src="subItem.audioList[0]" controls="controls" ref="audio"></audio>
+                        </div>
+                      </el-col>
                     </el-row>
                   </el-col>
                   <el-col :span="2">
@@ -153,10 +160,10 @@
                   <el-descriptions title="" :contentStyle="contentStyle" :labelStyle="labelItemStyle">
                     <el-descriptions-item label="话题发布者" prop="gmtCreate" >{{currentTopic.publisher}}</el-descriptions-item>
                     <el-descriptions-item label="发布时间" prop="gmtModified" >{{getCurrentTime(currentTopic.releaseTime)}}</el-descriptions-item>
-                    <el-form-item label="" prop="">
-                      <audio :src="currentTopic.audioUrl" controls="controls" ref="audio"></audio>
-                    </el-form-item>
                   </el-descriptions>
+                  <div v-if="currentTopic.audioList && currentTopic.audioList[0]" style="margin-left: 1.4rem">
+                    <audio :src="currentTopic.audioList[0]" controls="controls" ref="audio"></audio>
+                  </div>
                 </el-col>
                 <el-col :span="3">
                   <i class="iconfont icon-unChoseLike" v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
@@ -208,10 +215,12 @@
                     </el-descriptions>
                     <el-row style="padding:0.1rem 0rem 0rem 0.2rem;">
                       <el-descriptions :title="subItem.discussContent" :contentStyle="contentStyle">
-                        <el-form-item label="" prop="">
-                          <audio :src="subItem.audioUrl" controls="controls" ref="audio"></audio>
-                        </el-form-item>
                       </el-descriptions>
+                      <el-col :span="10">
+                        <div v-if="subItem.audioList && subItem.audioList[0]">
+                          <audio :src="subItem.audioList[0]" controls="controls" ref="audio"></audio>
+                        </div>
+                      </el-col>
                     </el-row>
                   </el-col>
                   <el-col :span="3">
