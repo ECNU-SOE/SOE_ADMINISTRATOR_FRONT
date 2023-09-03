@@ -276,7 +276,7 @@
             this.submitQueryForm();//删除之后，重新查询table
             this.$message({message: res.data, type: 'success'});
           }).catch(err => {
-            this.$message({message: err.message, type: 'error'});
+            this.$message({message: err.msg, type: 'error'});
           })
         });
       },

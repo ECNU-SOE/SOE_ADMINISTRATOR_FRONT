@@ -117,7 +117,7 @@
                 }).catch(err => {
                     this.$message({message: `登录失败，请验证账号密码之后重新登录`, type: 'error'});
                     this.loginForm.errorMsg = err.message;
-                    this.loginForm.errorVisible = true;
+                    // this.loginForm.errorVisible = true;
                 });
             },
             registerUserName(){

@@ -168,8 +168,8 @@
             </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="母语" prop="first_language">
-                  <el-input v-model="dialogForm.first_language" autocomplete="off"></el-input>
+                <el-form-item label="母语" prop="firstLanguage">
+                  <el-input v-model="dialogForm.firstLanguage" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
 
@@ -315,20 +315,20 @@
       updateData(){
         updateUser(this.dialogForm)
           .then(res => {
-            this.$message({message: res.data, type: 'success'});
+            this.$message({message: '修改成功', type: 'success'});
             this.submitQueryForm();//修改之后，重新查询table
             this.handleCloseDialog();
           }).catch(err => {
-          this.$message({message: err.message, type: 'error'});
+          this.$message({message: err.msg, type: 'error'});
         })
       },
       addData(){
         addUser(this.dialogForm).then(res => {
-          this.$message({message: res.data, type: 'success'});
+          this.$message({message: '添加成功', type: 'success'});
           this.submitQueryForm();//新增之后，重新查询table
           this.handleCloseDialog();
         }).catch(err => {
-          this.$message({message: err.message, type: 'error'});
+          this.$message({message: err.msg, type: 'error'});
         })
       },
       deleteData(row){
@@ -337,9 +337,9 @@
             deleteUser(row.accountNo)
               .then(res => {
                 this.submitQueryForm();//删除之后，重新查询table
-                this.$message({message: res.data, type: 'success'});
+                this.$message({message: res.msg, type: 'success'});
               }).catch(err => {
-              this.$message({message: err.message, type: 'error'});
+              this.$message({message: err.msg, type: 'error'});
             })
           });
       },

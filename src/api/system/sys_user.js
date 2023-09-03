@@ -74,7 +74,7 @@ export const getCurrentUsers = (queryForm) => {
 //更新sys_user的一条数据记录
 export const updateUser = (userForm) => {
   return jwtServerInstance.request({
-    url:'/system/sysuser/update',
+    url:'/api/user/v1/update',
     method:'post',
     headers:{
       token:getJwtToken()

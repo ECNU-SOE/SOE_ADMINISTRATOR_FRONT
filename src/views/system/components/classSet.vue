@@ -99,7 +99,7 @@
           </div>
           <div style="overflow: auto;max-height: 2.2rem;margin-bottom: 0.1rem;">
             <div v-for="(subItem,subIndex) in topicInfoList" :key="subIndex">
-              <el-card style="margin-top: 1%;float: left;width:95%;margin-left: 2%;margin-bottom: 0.1rem;">
+              <el-card style="float: left;width:95%;margin-left: 2%;margin-bottom: 0.02rem;">
                 <el-row>
                   <el-col :span="4">
                     <el-image :src="pictureUrl" style="width:0.8rem;"></el-image>
@@ -129,7 +129,7 @@
                 </el-row>
                 <div style="left: 5rem;position: relative;">
                   <i class="iconfont icon-unChoseLike"  v-on:click="chooseLike($event,subIndex)">{{subItem.likeCount}}</i>
-                  <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.2);font-size: 0.083rem;padding-right: 0.02rem"></i>{{subItem.replyNumber}}</span>
+                  <span style="padding: 0.12rem;font-size: 0.08333rem;font-style: normal;"><i class="el-icon-chat-round" style="transform: scale(1.2);padding-right: 0.02rem"></i>{{subItem.replyNumber}}</span>
                 </div>
               </el-card>
             </div>
@@ -160,7 +160,7 @@
                 </el-col>
                 <el-col :span="3">
                   <i class="iconfont icon-unChoseLike" v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
-                  <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="font-size: 0.083rem;padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
+                  <span style="padding: 0.12rem;font-size: 0.08333rem;font-style: normal;"><i class="el-icon-chat-round" style="padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
                   <el-dropdown @command="handleTopicSelect($event,subIndex)">
                     <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
                     <el-dropdown-menu slot="dropdown">
@@ -194,8 +194,8 @@
             </el-button>
           </div>
           <div>
-            <div v-for="(subItem,subIndex) in topicReply" :key="subIndex">
-              <el-card style="margin-top: 1%;float: left;width:95%;margin-left: 2%;margin-bottom: 0.1rem;">
+            <div v-for="(subItem,subIndex) in topicReply" :key="subIndex" style="margin-bottom: 0.02rem;">
+              <el-card style="float: left;width:95%;margin-left: 2%;margin-bottom: 0.02rem;">
                 <el-row>
                   <el-col :span="4">
                     <el-image :src="pictureUrl" style="width:0.8rem;"></el-image>
@@ -216,7 +216,7 @@
                   </el-col>
                   <el-col :span="3">
                     <i class="iconfont icon-unChoseLike"  v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
-                    <span style="padding: 0.12rem;"><i class="el-icon-chat-round" style="transform: scale(1.2);font-size: 0.083rem;padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
+                    <span style="padding: 0.12rem;font-size: 0.08333rem;font-style: normal;"><i class="el-icon-chat-round" style="transform: scale(1.2);padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
                     <el-dropdown @command="handleTopicSelect($event,subIndex)">
                       <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
                       <el-dropdown-menu slot="dropdown">
