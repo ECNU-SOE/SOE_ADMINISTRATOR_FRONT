@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row>
+    <el-row style="height: 1.3rem;">
       <el-card body-style="padding: 0" >
         <el-col :span="6">
           <el-upload
@@ -36,7 +36,7 @@
         </el-col>
       </el-card>
     </el-row>
-    <el-tabs type="border-card" style="width: 101%;margin-top: 1%;position: relative;" :stretch=true  @tab-click="handleSelectTabs" v-model="tabSelect">
+    <el-tabs type="border-card" style="width: 101%;margin-top: 0.02rem;position: relative;height: calc(100vh - 2rem);overflow: auto;" :stretch=true  @tab-click="handleSelectTabs" v-model="tabSelect">
       <el-tab-pane label="学生管理" name="student">
         <div class="userCls">
           <label class="userNum">共{{classMembersNum}}人</label>
