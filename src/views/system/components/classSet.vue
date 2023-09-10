@@ -79,18 +79,18 @@
       </el-tab-pane>
       <el-tab-pane label="教学团队" name="teacher">教学团队</el-tab-pane>
       <el-tab-pane label="考试作业" name="test">
-        <testJob></testJob>
+        <testJob :testJobData="testJobData" ref="testJob"></testJob>
       </el-tab-pane>
       <el-tab-pane label="话题讨论" name="topic">
         <div v-if="topicDetail === false">
           <div class="userCls">
             <label class="userNum">共{{topicNum}}个话题</label>
-            <el-dropdown>
-              <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-s-unfold"></i>时间顺序</span>
+            <el-dropdown @command="handleTopicSort">
+              <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-s-unfold"></i>{{sortType}}</span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>时间顺序</el-dropdown-item>
-                <el-dropdown-item>时间倒序</el-dropdown-item>
-                <el-dropdown-item>按点赞数</el-dropdown-item>
+                <el-dropdown-item command="0">时间倒序</el-dropdown-item>
+                <el-dropdown-item command="1">时间顺序</el-dropdown-item>
+                <el-dropdown-item command="2">按点赞数</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <el-button size="small" type="primary" icon="el-icon-edit" @click="handleAddTopic()" style="position:absolute;right: 1rem;">
@@ -135,7 +135,7 @@
                   </el-col>
                 </el-row>
                 <div style="left: 5rem;position: relative;">
-                  <i class="iconfont icon-unChoseLike"  v-on:click="chooseLike($event,subIndex)">{{subItem.likeCount}}</i>
+                  <i :class="classSetFuc(subItem.isLike)"  v-on:click="chooseLike($event,subIndex)">{{subItem.likeCount}}</i>
                   <span style="padding: 0.12rem;font-size: 0.08333rem;font-style: normal;"><i class="el-icon-chat-round" style="transform: scale(1.2);padding-right: 0.02rem"></i>{{subItem.replyNumber}}</span>
                 </div>
               </el-card>
@@ -166,7 +166,7 @@
                   </div>
                 </el-col>
                 <el-col :span="3">
-                  <i class="iconfont icon-unChoseLike" v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
+                  <i :class="classSetFuc(currentTopic.isLike)" v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
                   <span style="padding: 0.12rem;font-size: 0.08333rem;font-style: normal;"><i class="el-icon-chat-round" style="padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
                   <el-dropdown @command="handleTopicSelect($event,subIndex)">
                     <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
@@ -224,7 +224,7 @@
                     </el-row>
                   </el-col>
                   <el-col :span="3">
-                    <i class="iconfont icon-unChoseLike"  v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
+                    <i :class="classSetFuc(currentTopic.isLike)"  v-on:click="chooseLike">{{currentTopic.likeCount}}</i>
                     <span style="padding: 0.12rem;font-size: 0.08333rem;font-style: normal;"><i class="el-icon-chat-round" style="transform: scale(1.2);padding-right: 0.02rem"></i>{{currentTopic.replyNumber}}</span>
                     <el-dropdown @command="handleTopicSelect($event,subIndex)">
                       <span class="el-dropdown-link"><i class="el-icon-more"></i></span>
@@ -428,14 +428,42 @@
       </template>
     </el-dialog>
 
+    <el-dialog title="更新身份信息" :visible.sync="updateStudentInfoVisible" width="30%" :show-close=false>
+      <div>
+        <el-form  label-width="0.5rem" :model="currentMemInfo">
+          <el-row>
+            <el-col :span="20">
+              <el-form-item label="成员类型">
+                <el-select v-model="currentMemInfo.rtype">
+                  <el-option
+                      v-for="item in memberList"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="updateStudentInfoVisible=false">取 消</el-button>
+                    <el-button type="primary" @click="handleSaveUpdateMember">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import {getUsers,getCurrentUsers} from '@/api/system/sys_user'
-import {getClassInformation,getClassMembers,addClass,addClassMembers,getTopicInformation,
-  getTopicReply,insertTopic,replyDiscuss,topTopic,forwardTopic,getClassDiscussInfo,addLikes} from "@/api/system/sys_class";
+import {getClassInformation,getClassMembers,addClass,addClassMembers,getNewTopicInformation,
+  getTopicReply,insertTopic,replyDiscuss,topTopic,forwardTopic,addLikes,updateUserClassInfo,deleteUserClassInfo} from "@/api/system/sys_class";
 import {getCurrentTimeStr} from "@/lib/utils";
+import { showAllLanguageMaterialGroup} from "@/api/system/sys_materialGroup";
 import testJob from "@/views/system/components/testJob";
 
 export default {
@@ -469,6 +497,7 @@ export default {
       topicInfoList:[],
       currentClass:{},
       currentTopic:{},
+      currentMemInfo:{},
       tempTopicObj:{
         discussTest:"",
         discussTitle:""
@@ -487,6 +516,7 @@ export default {
       addClassVisible:false,
       addTopicVisible:false,
       addDiscussVisible:false,
+      updateStudentInfoVisible:false,
       topicDetail:false,
       //课程详情显示与否标志
       classMembers:[],
@@ -496,12 +526,18 @@ export default {
       selectUserList:[],
       sexIcon:{0:"el-icon-female",1:"el-icon-male"},
       memberType:{1:"学生",2:"助教",3:"老师",4:"管理员"},
+      memberList:[
+        {label:"学生",value:1},{label:"助教",value:2},{label:"老师",value:3},{label:"管理员",value:4}
+      ],
       newClass:{name:"", courseName:sessionStorage.getItem("courseName"),},
       newClassRules:{
         name:[{required: true, message: '请输入班级名字',trigger:'blur'}]
       },
       usersList:[],
-      tabSelect:"student"
+      tabSelect:"student",
+      sortType:'时间顺序',
+      testJobData:[],
+      testJobTotal:0
     }
   },
 
@@ -518,6 +554,14 @@ export default {
           return '女';
         case 1:
           return '男';
+      }
+    },
+
+    classSetFuc(flag){
+      if(flag){
+        return 'iconfont icon-chooseLike'
+      }else {
+        return 'iconfont icon-unChoseLike'
       }
     },
 
@@ -543,10 +587,26 @@ export default {
       })
     },
 
-    getTopicList(){
-      getTopicInformation({classId:this.currentClass.id,pageNum:1,pageSize:10}).then((res)=>{
+    getTopicList(opt){
+      opt = Object.assign({},{classId:this.currentClass.id,pageNum:1,pageSize:10},opt)
+      getNewTopicInformation(opt).then((res)=>{
         this.setTopicData(res);
       })
+    },
+
+    getTestJobList(){
+      showAllLanguageMaterialGroup({
+        cur: 1,
+        size: 30,
+        classId:this.currentClass.id,
+      }).then(res => {
+        if(res.data){
+          let records = res.data.records;
+          this.testJobData = records;
+          let total = res.data.total;
+          this.testJobTotal = total || 50;
+        }
+      });
     },
 
     handleSaveClass(){
@@ -634,12 +694,38 @@ export default {
 
     },
 
-    handleUpdateMem(){
-
+    handleUpdateMem(idx){
+      this.currentMemInfo = JSON.parse(JSON.stringify(this.classMembers[idx]));
+      this.updateStudentInfoVisible = true;
     },
 
-    handleDeleteMem(){
+    handleSaveUpdateMember(){
+      let type = this.currentMemInfo.rtype;
+      let accountNo = this.currentMemInfo.accountNo;
+      updateUserClassInfo({classId:this.currentClass.id,type,accountNo}).then(res=>{
+        this.$message({message: `更新成员类型成功`, type: 'success'});
+        this.getClassList();
+        this.updateStudentInfoVisible = false;
+      }).catch(e=>{
+        this.$message({message: `更新成员类型失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
+      })
+    },
 
+    handleDeleteMem(idx){
+      let tempObj = JSON.parse(JSON.stringify(this.classMembers[idx]));
+      this.$confirm('确认移除当前学生吗？')
+          .then(_ => {
+            deleteUserClassInfo(tempObj).then((res)=>{
+              if(res.data){
+                this.$message({message: "移除成功", type: 'success'});
+               this.handleSelectTabs();
+              }
+            }).catch((e)=>{
+              this.$message({message: `移除失败，原因为${e.msg}`, type: 'error'});
+              console.log(e.msg);
+            });
+          }).catch(_ => {});
     },
 
     showClassInfo(tempObj){
@@ -655,9 +741,14 @@ export default {
     setClassData(data){
       if(data){
         this.classInfoList = data.data.records;
-        let tempObj = JSON.parse(JSON.stringify(this.classInfoList[0])) || {};
-        tempObj.gmtCreate = this.getCurrentTime(tempObj.gmtCreate);
-        tempObj.gmtModified = this.getCurrentTime(tempObj.gmtModified);
+        let tempObj;
+        if(this.choseClass && this.choseClass.id){
+          tempObj = JSON.parse(JSON.stringify(this.choseClass));
+        }else {
+          tempObj = JSON.parse(JSON.stringify(this.classInfoList[0])) || {};
+          tempObj.gmtCreate = tempObj.gmtCreate && this.getCurrentTime(tempObj.gmtCreate) || '';
+          tempObj.gmtModified = tempObj.gmtModified && this.getCurrentTime(tempObj.gmtModified) || '';
+        }
         this.currentClass = tempObj;
         this.classNum = this.classInfoList.length;
        this.showClassInfo(tempObj);
@@ -714,16 +805,18 @@ export default {
 
     handleSelectTabs(){
       switch(this.tabSelect){
-        case "student":
-        default:
-          this.getClassList();
-          break;
         case "teacher":
           break;
         case "topic":
           this.getTopicList();
           break;
-
+        case "test":
+          this.getTestJobList();
+          break;
+        case "student":
+        default:
+          this.getClassList();
+          break;
       }
 
     },
@@ -789,7 +882,7 @@ export default {
 
     getReplyInfo(){
       let obj = Object.assign({},{classId:this.currentClass.id})
-      getClassDiscussInfo(obj).then((res)=>{
+      getNewTopicInformation(obj).then((res)=>{
         if(res.code === 0){
           this.topicReply = res.data.records;
         }
@@ -824,15 +917,11 @@ export default {
     },
 
     chooseLike(e,index){
-      let flag = false;//区分点赞还是取消点赞
+      let flag = -1;//区分点赞还是取消点赞
       if(e.target && e.target.className.indexOf('icon-unChoseLike') === -1){
-        e.target.className = e.target.className.replaceAll('icon-chooseLike','icon-unChoseLike');
-        let num = parseInt(e.target.innerText);
-        e.target.innerText = num >= 1 ? (num-1).toString() : '0';
+        flag = 1;
       }else {
-        e.target.className = e.target.className.replaceAll('icon-unChoseLike','icon-chooseLike');
-        let num = parseInt(e.target.innerText);
-        e.target.innerText = (num+1).toString();
+        flag = 0;
       }
       let discussId = '';
       if(!this.currentTopic.discussId && index !== undefined){
@@ -840,13 +929,33 @@ export default {
       }else {
         discussId = this.currentTopic.discussId || '';
       }
-      addLikes({discussId}).then((res)=>{
-        console.log(res);
+      addLikes({discussId,likeFlag:flag}).then((res)=>{
+        if(e.target && e.target.className.indexOf('icon-unChoseLike') === -1){
+          e.target.className = e.target.className.replaceAll('icon-chooseLike','icon-unChoseLike');
+          let num = parseInt(e.target.innerText);
+          e.target.innerText = num >= 1 ? (num-1).toString() : '0';
+        }else {
+          e.target.className = e.target.className.replaceAll('icon-unChoseLike','icon-chooseLike');
+          let num = parseInt(e.target.innerText);
+          e.target.innerText = (num+1).toString();
+        }
       }).catch((e)=>{
         this.$message({message: `点赞接口调用失败，原因为:${e.msg}`, type: 'error'});
         console.log(e);
       });
-    }
+    },
+
+    handleTopicSort(idx){
+     let sortObj = ['时间倒序','时间顺序','按点赞数'];
+     this.sortType = sortObj[parseInt(idx)];
+     let obj = {};
+     if(parseInt(idx) === 0 || parseInt(idx) === 1){
+       obj = {sortByTime:parseInt(idx)}
+     }else if(parseInt(idx) === 2){
+       obj = {sortByLikes:0}
+     }
+     this.getTopicList(obj);
+    },
 
   }
 }

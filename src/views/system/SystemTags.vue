@@ -3,24 +3,9 @@
     <el-card body-style="padding: 0">
       <el-form ref="userQueryForm" :model="materialQueryForm" label-width="80px">
         <el-row :gutter="24">
-          <el-col :span="5">
-            <el-form-item label="标签标识" prop="id">
-              <el-input v-model="materialQueryForm.id" placeholder="请输入标签标识"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
+          <el-col :span="8">
             <el-form-item label="标签名称" prop="name">
               <el-input v-model="materialQueryForm.name" placeholder="请输入标签名称"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="标签权重" prop="weight">
-              <el-input v-model="materialQueryForm.weight" placeholder="请输入标签权重"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="标签类别" prop="category">
-              <el-input v-model="materialQueryForm.category" placeholder="请输入标签类别"/>
             </el-form-item>
           </el-col>
           <el-col :span="3" padding="0 20px">

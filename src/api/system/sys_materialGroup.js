@@ -3,7 +3,7 @@ import {getJwtToken} from "@/lib/utils";
 export const showAllLanguageMaterialGroup = (opt) => {
   return newJwtServerInstance.request({
     // corpus-server
-    url: `/corpus-server/api/cpsgrp/v1/list?cur=1&size=22`,
+    url: `/corpus-server/api/cpsgrp/v1/list?cur=${opt.cur||1}&size=${opt.size || 22}`,
     method: 'post',
     data: opt,
     params:{}

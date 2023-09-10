@@ -109,6 +109,18 @@ export const getTopicInformation  = (query) => {
     });
 };
 
+export const getNewTopicInformation  = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/discuss/v1/getDiscussInfo`,
+        method: 'post',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
 export const getTopicReply  = (query) => {
     return jwtServerInstance.request({
         url: `/api/discuss/v1/getReplyInfoByCurrent?discussId=${query.discussId}&&pageNum=${query.pageNum || 1}&pageSize=${query.pageSize || 10}`,
@@ -169,21 +181,9 @@ export const forwardTopic = (query) => {
     });
 };
 
-export const getClassDiscussInfo = (query) => {
-    return jwtServerInstance.request({
-        url: `/api/discuss/v1/getDiscussInfo?classId=${query.classId}&pageNum=${query.pageNum || 1}&pageSize=${query.pageSize || 10}`,
-        method: 'get',
-        data: query,
-        params:{},
-        headers:{
-            token:getJwtToken()
-        }
-    });
-};
-
 export const addLikes = (query) => {
     return jwtServerInstance.request({
-        url: `/api/discuss/v1/addLikes?discussId=${query.discussId}`,
+        url: `/api/discuss/v1/addLikes?discussId=${query.discussId}&likeFlag=${query.likeFlag || 0}`,
         method: 'get',
         data: query,
         params:{},
@@ -193,6 +193,30 @@ export const addLikes = (query) => {
     });
 };
 
+
+export const updateUserClassInfo = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/class/v1/update_user_class`,
+        method: 'post',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
+export const deleteUserClassInfo = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/class/v1/del_user_class?id=${query.id}`,
+        method: 'get',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
 
 
 

@@ -14,7 +14,7 @@
             语料组库
           </el-button>
         </div>
-        <div v-for="(subItem,subIndex) in tableData" :key="subIndex">
+        <div v-for="(subItem,subIndex) in testJobData" :key="subIndex">
           <el-card style="margin-top: 1%;width: 30%; float: left;margin-left: 2%;margin-bottom: 1%;">
             <el-descriptions :title="subItem.title" :contentStyle="contentStyle" :labelStyle="labelStyle">
               <el-descriptions-item label="难易程度" prop="id" span="3">{{subItem.difficulty}}</el-descriptions-item>
@@ -92,7 +92,7 @@
     <!-- 添加作业弹出框 -->
     <el-dialog title="新建作业" :visible.sync="addJobVisible" width="30%" :modal="false">
       <div style="max-height: 2.667rem;overflow-y: auto;">
-        <div v-for="(subItem,subIndex) in tableData" :key="subIndex" style="width: 99%;">
+        <div v-for="(subItem,subIndex) in testJobData" :key="subIndex" style="width: 99%;">
           <el-row>
             <el-card @click.native="selectMaterialGroup($event,subIndex)" style="margin: 0.1rem 0.1rem 0 0.1rem;">
               <el-col :span="21">
@@ -188,9 +188,6 @@ import {showAllLanguageMaterialGroup} from "@/api/system/sys_materialGroup";
 export default {
   name: "testJob",
   mixins: [MixinCUD],
-  created(){
-    this.getJobList()
-  },
   data() {
     return {
       classDetail:false,
@@ -229,6 +226,11 @@ export default {
       classMembers:[]
     }
   },
+  props:{
+    testJobData:{
+        type:Array
+    }
+  },
   methods: {
     handleAddJob(){
         this.addJobVisible = true;
@@ -239,7 +241,7 @@ export default {
     },
 
     handleUpdate(index){
-      let id = this.tableData[index].id;
+      let id = this.testJobData[index].id;
       sessionStorage.setItem("cpsrcdId",id)
       this.$router.push({path:"/home/sysmaterialgroupdetail",query:{id}})
     },
@@ -251,12 +253,13 @@ export default {
 
     handleReturnJob(){
       this.classDetail = false;
+      this.getJobList();
     },
 
     setData(data){
       if(data.data){
         let records = data.data.records;
-        this.tableData = records;
+        this.testJobData = records;
         let total = data.data.total;
         this.pageTotal = total || 50;
       }
@@ -266,6 +269,7 @@ export default {
       showAllLanguageMaterialGroup({
         cur: 1,
         size: 30,
+        classId:this.currentClass.id,
       }).then(res => {
        this.setData(res)
       });
