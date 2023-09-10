@@ -615,6 +615,7 @@ export default {
         this.currentClass = tempClass;
         this.showClassInfo(tempClass);
       }
+      this.handleSelectTabs();
       this.updateClassVisible = false;
     },
 
