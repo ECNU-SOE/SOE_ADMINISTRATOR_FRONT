@@ -266,12 +266,7 @@ export default {
   },
 
   beforeRouteEnter(to, from, next) {
-    getTagsList({
-      "ids":[2,5],//ids不为空时按照ids查询，ids为空时按其余条件查询
-      "name":"ch",
-      "weight":0.87,
-      "category":2
-    }).then(res => {
+    getTagsList({}).then(res => {
       next(vm => vm.setData(res))
     });
   }

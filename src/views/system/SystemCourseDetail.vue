@@ -43,6 +43,10 @@
       </el-col>
       <el-col :span="17" style="margin-left: 1%;">
         <classSet v-if="radio === '2'"></classSet>
+        <div v-if="radio === '4'" style="overflow-y: auto;">
+          <el-card><chartTop></chartTop></el-card>
+          <el-card style="margin-top: 0.02rem;"><chartCenter></chartCenter></el-card>
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -57,13 +61,14 @@ import {
   getCurrentCourseInformation
 } from '@/api/system/sys_course.js';
 
-import classSet from "./components/classSet.vue";
-
+import classSet from "../../components/classSet.vue";
+import chartTop from "../../components/echarts/chartTop.vue";
+import chartCenter from "../../components/echarts/chartCenter.vue";
 import {getCurrentTimeStr} from "@/lib/utils";
 
 export default {
   name: "course",
-  components:{classSet},
+  components:{classSet,chartTop,chartCenter},
 
   data(){
     return {

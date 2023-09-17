@@ -49,7 +49,7 @@ export const getUserInfo = () => {
 //用户列表查询接口
 export const getUsers = (queryform,pagination) => {
   return jwtServerInstance.request({
-    url:`/api/user/v1/list?cur=${pagination.pageNum}&size=${pagination.pageSize}`,
+    url:`/api/user/v1/list?cur=${pagination.pageNum || 1}&size=${pagination.pageSize || 999}`,
     method:'post',
     headers:{
       token:getJwtToken()

@@ -292,15 +292,21 @@
             @close="handleClose(tag)">
           {{tag}}
         </el-tag>
-        <el-input
+        <el-select
             class="input-new-tag"
             v-if="inputVisible"
             v-model="inputValue"
             ref="saveTagInput"
             size="small"
-            @keyup.enter.native="handleInputConfirm"
-            @blur="handleInputConfirm">
-        </el-input>
+            @change="handleInputConfirm">
+          <el-option
+              v-for="item in tagOptions"
+              :key="item.id"
+              :label="item.name"
+              :disabled="item.disabled"
+              :value="item.id">
+          </el-option>
+        </el-select>
         <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
       </el-form-item>
     </el-form>
@@ -329,6 +335,7 @@ import {pinyin} from "pinyin-pro"
 import {getCurrentLanguageMaterialGroup,addTopicInterface,deleteTopicInterface,updateTopicInterface,
   updateCpsrcdInterface,deleteCpsrcdInterface,addCpsrcdInterface,getTopicInterface,updateCurrentLanguageMaterialGroup,saveAudio} from '@/api/system/sys_materialGroup';
 import {getCurrentTimeStr} from "@/lib/utils";
+import { getTagsList} from '@/api/system/sys_tag'
 export default {
   name: "SystemMaterialGroupDetail.vue",
   data() {
@@ -399,6 +406,7 @@ export default {
           label: 'read_chapter'
         }
       ],
+      tagOptions:[],
       statusObj:{0: '允许修改', 1: '允许创建者修改', 2: '不允许创建者修改'},
       statusOptions:[
       {
@@ -768,9 +776,27 @@ export default {
     },
 
     showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
+      getTagsList({}).then((res)=>{
+        let records = res.data.records;
+        let chooseTags = this.tempCpsrcdObj.tags;
+        let count = 0;
+        records.forEach(function (it,idx){
+          for(let i = 0;i < chooseTags.length;i++){
+            if(it.name === chooseTags[i]){
+              count++;
+              records[idx].disabled = true;
+            }
+          }
+        })
+        this.tagOptions = records;
+        if(count === records.length){
+          this.$message({message: `已添加所有标签，无法再次添加`, type: 'error'});
+          this.inputVisible = false;
+        }else {
+          this.inputVisible = true;
+        }
+      }).catch((e)=>{
+        this.$message({message: `获取标签，原因为${e.msg}`, type: 'error'});
       });
     },
 
@@ -791,10 +817,15 @@ export default {
       this.tempCpsrcdObj = JSON.parse(JSON.stringify(tempObj));
     },
 
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.tempCpsrcdObj.tags.push(inputValue);
+    handleInputConfirm(e) {
+      let tempObj = {};
+      this.tagOptions.forEach(function (it){
+        if(it.id === e){
+          tempObj = it;
+        }
+      })
+      if (tempObj.id) {
+        this.tempCpsrcdObj.tags.push(tempObj.name);
       }
       this.inputVisible = false;
       this.inputValue = '';

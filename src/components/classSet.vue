@@ -464,7 +464,7 @@ import {getClassInformation,getClassMembers,addClass,addClassMembers,getNewTopic
   getTopicReply,insertTopic,replyDiscuss,topTopic,forwardTopic,addLikes,updateUserClassInfo,deleteUserClassInfo} from "@/api/system/sys_class";
 import {getCurrentTimeStr} from "@/lib/utils";
 import { showAllLanguageMaterialGroup} from "@/api/system/sys_materialGroup";
-import testJob from "@/views/system/components/testJob";
+import testJob from "@/components/testJob";
 
 export default {
   name: "classSet",
@@ -701,9 +701,9 @@ export default {
     },
 
     handleSaveUpdateMember(){
-      let type = this.currentMemInfo.rtype;
+      let rType = this.currentMemInfo.rtype;
       let accountNo = this.currentMemInfo.accountNo;
-      updateUserClassInfo({classId:this.currentClass.id,type,accountNo}).then(res=>{
+      updateUserClassInfo({classId:this.currentClass.id,rType,accountNo}).then(res=>{
         this.$message({message: `更新成员类型成功`, type: 'success'});
         this.getClassList();
         this.updateStudentInfoVisible = false;
@@ -787,8 +787,8 @@ export default {
     },
 
     getCurrentStudent(){
-      getCurrentUsers({account_list:this.formInline.phone}).then(res=>{
-        this.usersList = res.data.records;
+      getUsers({phone:this.formInline.phone},{}).then(res=>{
+
       }).catch(e=>{
 
       })

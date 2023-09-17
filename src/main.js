@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'amfe-flexible';
 import '@/assets/iconfont/iconfont.css';
+// import echarts from 'echarts';
 
 Vue.use(ElementUI);
 
@@ -15,6 +16,7 @@ const pinyin = require('pinyin-pro');
 
 Vue.config.productionTip = false;
 
+// Vue.prototype.$echarts = echarts;
 new Vue({
   router,
   store,

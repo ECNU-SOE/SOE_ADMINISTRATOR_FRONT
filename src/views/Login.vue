@@ -7,7 +7,7 @@
           <h2 class="title systemTitle">后台管理系统</h2>
           <div class="input-field">
             <i class="fa fa-user"></i>
-            <input type="text" v-model="loginForm.username" placeholder="Username">
+            <input type="text" v-model="loginForm.username" placeholder="phone">
           </div>
           <div class="input-field">
             <i class="fa fa-lock"></i>
@@ -27,7 +27,7 @@
           <h2 class="title systemTitle">用户注册</h2>
           <div class="input-field">
             <i class="fa fa-user"></i>
-            <input type="text" placeholder="userName" v-model="loginForm.username">
+            <input type="text" placeholder="phone" v-model="loginForm.username">
           </div>
           <div class="input-field">
             <i class="fa fa-envelope"></i>
@@ -97,10 +97,12 @@
 
           sign_up_btn.addEventListener('click',()=>{
             container.classList.add("sign-up-mode");
+            this.clearLoginObj();
           })
 
           sign_in_btn.addEventListener('click',()=>{
             container.classList.remove("sign-up-mode");
+            this.clearLoginObj();
           })
         },
         methods:{
@@ -121,6 +123,10 @@
                 });
             },
             registerUserName(){
+              if(!/^1[345678]\d{9}$/.test(this.loginForm.username)){
+                this.$message({message: `注册失败，目前只支持中国大陆的手机号码`, type: 'error'});
+                return;
+              }
               if(this.loginForm.password !== this.loginForm.repeat){
                 this.$message({message: `注册失败，两次输入的密码不一致`, type: 'error'});
                 return;
@@ -147,6 +153,16 @@
               },
             getPassword(){
 
+            },
+            clearLoginObj(){
+              this.loginForm = {
+                  username: "",
+                  nickName:"",
+                  repeat:"",
+                  password: "",
+                  errorMsg:"",
+                  errorVisible: false
+              }
             }
         }
     }
