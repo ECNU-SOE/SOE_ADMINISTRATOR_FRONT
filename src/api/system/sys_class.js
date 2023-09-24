@@ -111,8 +111,8 @@ export const getTopicInformation  = (query) => {
 
 export const getNewTopicInformation  = (query) => {
     return jwtServerInstance.request({
-        url: `/api/discuss/v1/getDiscussInfo`,
-        method: 'post',
+        url: `/api/discuss/v1/getDiscussInfo?classId=${query.classId}&pageNum=1&pageSize=10`,
+        method: 'get',
         data: query,
         params:{},
         headers:{
@@ -217,6 +217,19 @@ export const deleteUserClassInfo = (query) => {
         }
     });
 };
+
+export const addMaterialToClass = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/class/v1/add_cpsgrp`,
+        method: 'post',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
+
 
 
 

@@ -92,14 +92,12 @@
     <!-- 添加作业弹出框 -->
     <el-dialog title="新建作业" :visible.sync="addJobVisible" width="30%" :modal="false">
       <div style="max-height: 2.667rem;overflow-y: auto;">
-        <div v-for="(subItem,subIndex) in testJobData" :key="subIndex" style="width: 99%;">
+        <div v-for="(subItem,subIndex) in allJobData" :key="subIndex" style="width: 99%;">
           <el-row>
             <el-card @click.native="selectMaterialGroup($event,subIndex)" style="margin: 0.1rem 0.1rem 0 0.1rem;">
               <el-col :span="21">
                 <el-descriptions :title="subItem.title" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
                   <el-descriptions-item label="难易程度" prop="id" span="3">{{subItem.difficulty}}</el-descriptions-item>
-                  <el-descriptions-item label="开始始间" prop="gmtCreate" span="3">{{getCurrentTime(subItem.startTime)}}</el-descriptions-item>
-                  <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{getCurrentTime(subItem.endTime)}}</el-descriptions-item>
                 </el-descriptions>
               </el-col>
               <el-col :span="2">
@@ -118,6 +116,25 @@
                 <span class="dialog-footer">
                     <el-button @click="addJobVisible = false">取 消</el-button>
                     <el-button type="primary" @click="handleSaveMaterialGroup">确 定</el-button>
+                </span>
+      </template>
+    </el-dialog>
+
+    <!-- 设置作业时间弹出框 -->
+    <el-dialog title="" :visible.sync="selectJobTimeVisible" width="30%" :modal="false" :show-close=false>
+      <div style="max-height: 2.667rem;text-align: center;">
+        <el-date-picker
+            v-model="selectTime"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期">
+        </el-date-picker>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="selectJobTimeVisible = false;addJobVisible=true">取 消</el-button>
+                    <el-button type="primary" @click="handleSaveJob">确 定</el-button>
                 </span>
       </template>
     </el-dialog>
@@ -183,8 +200,9 @@
 
 <script>
 import MixinCUD from '@/components/MixinCUD'
-import {getCurrentTimeStr} from "@/lib/utils";
-import {showAllLanguageMaterialGroup} from "@/api/system/sys_materialGroup";
+import {getCurrentTimeStr, getCurrentTimeStrWithoutHour} from "@/lib/utils";
+import {addCurrentLanguageMaterialGroup, showAllLanguageMaterialGroup} from "@/api/system/sys_materialGroup";
+import {addMaterialToClass} from "@/api/system/sys_class";
 export default {
   name: "testJob",
   mixins: [MixinCUD],
@@ -201,6 +219,7 @@ export default {
       tableData:[],
       materialGroupRadio:-1,
       addJobVisible:false,
+      selectJobTimeVisible:false,
       editGroupVisible:false,
       selections:{
         id:"",
@@ -223,17 +242,41 @@ export default {
       jobList:[],
       judgeOrder:"0",
       sexIcon:{0:"el-icon-female",1:"el-icon-male"},
-      classMembers:[]
+      classMembers:[],
+      allJobData:[],
+      choseMaterial:{},
+      selectTime:[]
     }
   },
   props:{
+    currentClass:{
+      type:Object
+    },
     testJobData:{
-        type:Array
+      type:Array
     }
   },
   methods: {
+    getAllJobData(){
+      showAllLanguageMaterialGroup({
+        cur: 1,
+        size: 30
+      }).then(res => {
+        if(res.data){
+          let records = res.data.records;
+          this.allJobData = records;
+        }
+      }).catch((e)=>{
+        this.$message({message: `获取语料组失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
+      });
+    },
     handleAddJob(){
-        this.addJobVisible = true;
+      this.choseMaterial = {};
+      this.selectTime = [];
+      this.materialGroupRadio = -1;
+      this.getAllJobData();
+      this.addJobVisible = true;
     },
 
     handleMaterialGroup(){
@@ -259,9 +302,7 @@ export default {
     setData(data){
       if(data.data){
         let records = data.data.records;
-        this.testJobData = records;
-        let total = data.data.total;
-        this.pageTotal = total || 50;
+        this.$emit('change', records)
       }
     },
 
@@ -276,18 +317,57 @@ export default {
     },
 
     getCurrentTime(time){
-      return getCurrentTimeStr(time)
+      return getCurrentTimeStrWithoutHour(time)
     },
 
-    selectMaterialGroup(){
+    selectMaterialGroup(e,index){
       //选哪个作业
+      this.choseMaterial = JSON.parse(JSON.stringify(this.allJobData[index]));
     },
 
     handleSaveMaterialGroup(){
         //存选中的作业
+      if(Object.keys(this.choseMaterial) && Object.keys(this.choseMaterial).length){
+        this.selectJobTimeVisible = true;
+        this.addJobVisible = false;
+      }else {
+        this.$message({message: '请选择语料组之后再点击确定', type: 'warning'});
+      }
+    },
+
+    handleSaveJob(){
+      let obj = Object.assign({},this.choseMaterial);
+      if(this.selectTime && this.selectTime.length){
+        obj.startTime = this.getCurrentTime(this.selectTime[0]);
+        obj.endTime = this.getCurrentTime(this.selectTime[1]);
+        obj.cpsgrpId = obj.id;
+      }
+      obj.classId = this.currentClass.id || '';
+      let self = this;
+      addMaterialToClass(obj).then((res)=>{
+        if(res.data){
+          self.selectJobTimeVisible = false;
+          self.$message({message: `保存作业成功`, type: 'success'});
+          self.getJobList();
+        }
+      }).catch((e)=>{
+        this.$message({message: `保存作业失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
+      })
     },
 
     handleAddMaterialGroup(){
+      this.selections = {
+        id:"",
+        title:"",
+        type:-1,
+        description:"",
+        difficulty:null,
+        difficulty1:null,
+        difficulty2:null,
+        topics:[],
+        modStatus:null
+      };
       this.addJobVisible = false;
       this.editGroupVisible = true;
     },
@@ -299,13 +379,23 @@ export default {
 
     handleSaveAddMaterialGroup(){
       //存语料组方案
+      let opt = this.selections || {};
+      opt.difficulty = opt.difficulty1 + opt.difficulty2;
+      addCurrentLanguageMaterialGroup(opt).then((e)=>{
+        if(e.data){
+          this.$message({message: "添加成功", type: 'success'});
+          this.getAllJobData();
+        }
+      }).catch((e)=>{
+        this.$message({message: e.msg, type: 'error'});
+      });
       this.editGroupVisible = false;
       this.addJobVisible = true;
     },
 
     searchStudent(){
 
-    }
+    },
 
   }
 }

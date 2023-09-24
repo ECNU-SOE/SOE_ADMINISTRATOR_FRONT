@@ -79,7 +79,7 @@
       </el-tab-pane>
       <el-tab-pane label="教学团队" name="teacher">教学团队</el-tab-pane>
       <el-tab-pane label="考试作业" name="test">
-        <testJob :testJobData="testJobData" ref="testJob"></testJob>
+        <testJob :testJobData="testJobData" ref="testJob" :currentClass="currentClass" @change="testJobDataFuc"></testJob>
       </el-tab-pane>
       <el-tab-pane label="话题讨论" name="topic">
         <div v-if="topicDetail === false">
@@ -537,11 +537,16 @@ export default {
       tabSelect:"student",
       sortType:'时间顺序',
       testJobData:[],
-      testJobTotal:0
+      testJobTotal:0,
+      testJobObj:''
     }
   },
 
   methods: {
+    testJobDataFuc(val){
+      this.testJobData = val;
+    },
+
     exportXls(){
 
     },
@@ -591,6 +596,9 @@ export default {
       opt = Object.assign({},{classId:this.currentClass.id,pageNum:1,pageSize:10},opt)
       getNewTopicInformation(opt).then((res)=>{
         this.setTopicData(res);
+      }).catch((e)=>{
+          console.log(e);
+        this.$message({message: `查询话题失败，原因为:${e.msg}`, type: 'error'});
       })
     },
 
@@ -681,7 +689,7 @@ export default {
       let tempList = JSON.parse(JSON.stringify(this.selectUserList));
       let classId = this.currentClass.id;
       for(let i = 0; i < tempList.length; i++){
-        addClassMembers({accountNo:tempList[i].accountNo,classId,type:1}).then(res=>{
+        addClassMembers({accountNo:tempList[i].accountNo,classId,rType:1}).then(res=>{
           if(res.data){
             this.$message({message: "添加用户到当前课程成功!", type: 'success'});
             this.getClassList();
@@ -787,10 +795,19 @@ export default {
     },
 
     getCurrentStudent(){
-      getUsers({phone:this.formInline.phone},{}).then(res=>{
-
+      let obj = {};
+      if(this.formInline.phone){
+        obj.phone = this.formInline.phone;
+      }
+      if(this.formInline.name){
+        obj.nickName = this.formInline.name;
+      }
+      getUsers(obj,{}).then(res=>{
+        this.usersList = res.data.records;
       }).catch(e=>{
-
+        console.log(e);
+        this.$message({message: `查询失败，原因为:${e.msg}`, type: 'error'});
+        console.log(e);
       })
     },
 

@@ -201,6 +201,7 @@
 
 import { showAllLanguageMaterialGroup,deleteLanguageMaterialGroup,getCurrentLanguageMaterialGroup,
   getLanguageMaterial,updateCurrentLanguageMaterialGroup,addTopicInterface,addCurrentLanguageMaterialGroup} from '@/api/system/sys_materialGroup'
+import {getClassInformation} from '@/api/system/sys_class'
 import {getJwtToken,getCurrentTimeStr} from "@/lib/utils";
 
 export default {
@@ -343,8 +344,6 @@ export default {
         });
       }else {
         opt.difficulty = opt.difficulty1 + opt.difficulty2;
-        opt.startTime = getCurrentTimeStr(opt.startTime);
-        opt.endTime = getCurrentTimeStr(opt.endTime);
         addCurrentLanguageMaterialGroup(opt).then((e)=>{
           if(e.data){
             this.$message({message: "添加成功", type: 'success'});
@@ -446,7 +445,19 @@ export default {
       return getCurrentTimeStr(time)
     },
 
-    handleClassList(index){
+    handleClassList(index,item){
+      if(item.releaseStatus === 0){
+        this.$message({message: '暂无发布的班级，请发布后再查看', type: 'warning'});
+        return;
+      }
+      this.classInfoList = [];
+      let cpsgrpId = this.tableData[index].id;
+      getClassInformation({cpsgrpId}).then((res)=>{
+        this.classInfoList = res.data.records;
+      }).catch((e)=>{
+        console.log(e.msg);
+        this.$message({message: e.msg, type: 'error'});
+      })
 
       this.showClassVisible = true;
     }
