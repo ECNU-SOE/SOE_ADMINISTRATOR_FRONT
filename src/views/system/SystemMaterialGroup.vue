@@ -181,8 +181,8 @@
             <el-descriptions-item label="课程名称" prop="name" span="3" >{{subItem.name}}</el-descriptions-item>
             <el-descriptions-item label="课程标识" prop="id" span="3">{{subItem.id}}</el-descriptions-item>
             <el-descriptions-item label="课程描述" prop="description" span="3">{{subItem.description}}</el-descriptions-item>
-            <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{subItem.gmtCreate}}</el-descriptions-item>
-            <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{subItem.gmtModified}}</el-descriptions-item>
+            <el-descriptions-item label="创建时间" prop="gmtCreate" span="3">{{getCurrentTime(subItem.gmtCreate)}}</el-descriptions-item>
+            <el-descriptions-item label="结束时间" prop="gmtModified" span="3">{{getCurrentTime(subItem.gmtModified)}}</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </div>
