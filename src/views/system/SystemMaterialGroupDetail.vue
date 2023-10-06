@@ -228,97 +228,192 @@
 
   <el-dialog :title="cpsrcdTitle" class="editGroups" :visible.sync="editCpsrcdVisible" width="40%" :show-close=false>
     <el-form label-width="120px" :rules="cpsrcdObjRules" :model="tempCpsrcdObj">
-      <el-row :gutter="20">
-        <el-col :span="12">
+        <el-form-item label="题目编号" prop="id">
+            <el-input v-model="tempCpsrcdObj.id" :disabled="true"></el-input>
+        </el-form-item>
+      <el-row :gutter="24">
+        <el-col :span="10">
           <el-form-item label="子题顺序" prop="cNum">
             <el-input-number v-model="tempCpsrcdObj.cNum"></el-input-number>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="10" :offset="1">
           <el-form-item label="本题分值" prop="wordWeight">
             <el-input-number v-model="tempCpsrcdObj.wordWeight"></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="题目类型" prop="type">
-        <el-input v-model="tempCpsrcdObj.type"></el-input>
+        <el-row :gutter="20">
+            <el-col :span="11">
+                <el-form-item label="题目类型" prop="type">
+                    <el-select v-model="tempCpsrcdObj.type" :disabled="true">
+                        <el-option
+                                v-for="item in materialTypeList"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-col>
+            <el-col :span="11">
+                <el-form-item label="评测模式">
+                    <el-select v-model="tempCpsrcdObj.evalMode" :disabled="true">
+                        <el-option
+                                v-for="item in modeOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <el-form-item label="题目难度">
+            <el-rate
+                    v-model="tempCpsrcdObj.difficulty"
+                    show-score
+                    text-color="#ff9900"
+                    score-template="(0-10)" :disabled="true">
+            </el-rate>
+        </el-form-item>
+        <el-form-item label="评测文本" prop="refText">
+            <el-input v-model="tempCpsrcdObj.refText" type="textarea" :disabled="true"></el-input>
+        </el-form-item>
+      <el-form-item v-if="showPinyin" label="文本拼音" prop="pinyin" >
+        <el-input v-model="tempCpsrcdObj.pinyin" type="textarea" :disabled="true"></el-input>
+<!--        <el-button class="button-new-tag" size="small" @click="productPinYin" type="primary">生成</el-button>-->
       </el-form-item>
-      <el-form-item label="评测模式" prop="evalMode">
-        <el-select v-model="tempCpsrcdObj.evalMode">
-          <el-option
-              v-for="item in modeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="本题难度" prop="difficulty">
-        <el-rate
-            v-model="tempCpsrcdObj.difficulty"
-            show-score
-            text-color="#ff9900"
-            score-template="">
-        </el-rate>
-      </el-form-item>
-
-      <el-form-item label="评测文本" prop="refText">
-        <el-input v-model="tempCpsrcdObj.refText" type="textarea"></el-input>
-      </el-form-item>
-      <el-form-item label="文本拼音" prop="pinyin">
-        <el-input v-model="tempCpsrcdObj.pinyin" type="textarea"></el-input>
-        <el-button class="button-new-tag" size="small" @click="productPinYin" type="primary">生成</el-button>
-      </el-form-item>
-      <el-form-item label="示范音频" prop="audioUrl">
-        <el-input v-model="tempCpsrcdObj.audioUrl" ></el-input>
-        <el-upload
-            class="upload-demo"
-            action=""
-            :on-change="audioUrlChange"
-            :show-file-list="false">
-          <el-button size="small" type="primary" :loading="loadingStatus">点击上传</el-button>
-        </el-upload>
-      </el-form-item>
-      <el-form-item label="" prop="">
-        <audio :src="tempCpsrcdObj.audioUrl" controls="controls" ref="audio"></audio>
-      </el-form-item>
-
-      <el-form-item label="标签" prop="tags">
-        <el-tag
-            :key="tag"
-            v-for="tag in tempCpsrcdObj.tags"
-            closable
-            :disable-transitions="false"
-            @close="handleClose(tag)">
-          {{tag}}
-        </el-tag>
-        <el-select
-            class="input-new-tag"
-            v-if="inputVisible"
-            v-model="inputValue"
-            ref="saveTagInput"
-            size="small"
-            @change="handleInputConfirm">
-          <el-option
-              v-for="item in tagOptions"
-              :key="item.id"
-              :label="item.name"
-              :disabled="item.disabled"
-              :value="item.id">
-          </el-option>
-        </el-select>
-        <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
-      </el-form-item>
+        <el-form-item label="展示拼音">
+            <el-switch
+                    v-model="showPinyin"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949">
+            </el-switch>
+        </el-form-item>
+        <el-form-item label="示范音频" prop="audioUrl">
+            <el-upload
+                    class="upload-demo"
+                    action=""
+                    :on-change="audioUrlChange"
+                    :show-file-list="false">
+                <el-input v-model="tempCpsrcdObj.audioUrl" :disabled="true"></el-input>
+            </el-upload>
+            <el-button size="small" type="primary" @click="playAudio">播放</el-button>
+        </el-form-item>
+        <el-form-item label="标签">
+            <el-tag
+                    :key="tag"
+                    v-for="tag in tempCpsrcdObj.tags"
+                    :disable-transitions="false">
+                {{tag}}
+            </el-tag>
+        </el-form-item>
     </el-form>
     <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="closeCpsrcdId">取 消</el-button>
+                    <el-button @click="updateMaterial" class="updateClass">修改原题</el-button>
+                    <el-button @click="editCpsrcdVisible=false">取 消</el-button>
                     <el-button type="primary" @click="saveCpsrcdId">确 定</el-button>
                 </span>
     </template>
   </el-dialog>
 
-  <el-dialog :title="cpsrcdTitle" class="editGroups" :visible.sync="editAudioVisible" width="30%" :show-close=false>
+    <el-dialog :title="dialogMaterialTitle" class="editGroups" :visible.sync="editMaterialVisible" width="40%" :show-close=false>
+        <el-form label-width="120px" :rules="cpsrcdObjRules" :model="tempCpsrcdObj">
+            <el-row :gutter="20">
+                <el-col :span="11">
+                    <el-form-item label="题目类型" prop="type">
+                        <el-select v-model="tempCpsrcdObj.type">
+                            <el-option
+                                    v-for="item in materialTypeList"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="11">
+                    <el-form-item label="评测模式" prop="evalMode">
+                        <el-select v-model="tempCpsrcdObj.evalMode">
+                            <el-option
+                                    v-for="item in modeOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item label="题目难度" prop="difficulty">
+                <el-rate
+                        v-model="tempCpsrcdObj.difficulty"
+                        show-score
+                        text-color="#ff9900"
+                        score-template="(0-10)">
+                </el-rate>
+            </el-form-item>
+
+            <el-form-item label="评测文本" prop="refText">
+                <el-input v-model="tempCpsrcdObj.refText" type="textarea"></el-input>
+            </el-form-item>
+            <el-form-item label="文本拼音" prop="pinyin">
+                <el-input v-model="tempCpsrcdObj.pinyin" type="textarea"></el-input>
+                <el-button class="button-new-tag" size="small" @click="productPinYin" type="primary">生成</el-button>
+            </el-form-item>
+            <el-form-item label="示范音频" prop="audioUrl">
+                <el-upload
+                        class="upload-demo"
+                        action=""
+                        :on-change="audioUrlChange"
+                        :show-file-list="false">
+                    <el-row :gutter="24">
+                        <el-col :span="20"><el-input v-model="tempCpsrcdObj.audioUrl" ></el-input></el-col>
+                        <el-col :span="3"><el-button size="small" type="primary" :loading="loadingStatus">上传</el-button></el-col>
+                    </el-row>
+                </el-upload>
+                <el-button size="small" type="primary">录音</el-button>
+                <el-button size="small" type="primary" @click="playAudio">播放</el-button>
+            </el-form-item>
+            <el-form-item label="标签">
+                <el-tag
+                        :key="tag"
+                        v-for="tag in tempCpsrcdObj.tags"
+                        closable
+                        :disable-transitions="false"
+                        @close="handleClose(tag)">
+                    {{tag}}
+                </el-tag>
+                <el-select
+                        class="input-new-tag"
+                        v-if="inputVisible"
+                        ref="saveTagInput"
+                        v-model="inputValue"
+                        size="small"
+                        @change="handleInputConfirm">
+                    <el-option
+                            v-for="item in tagsData"
+                            :key="item.id"
+                            :label="item.name"
+                            :disabled="item.disabled"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="editMaterialVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveEdit">确 定</el-button>
+                </span>
+        </template>
+    </el-dialog>
+
+
+    <el-dialog :title="cpsrcdTitle" class="editGroups" :visible.sync="editAudioVisible" width="30%" :show-close=false>
     <audio :src="currentAudioUrl" autoplay="autoplay" controls="controls" :ref="audio" id="currentAudio"></audio>
     <template #footer>
                 <span class="dialog-footer">
@@ -326,6 +421,85 @@
                 </span>
     </template>
   </el-dialog>
+
+    <el-dialog :title="cpsrcdTitle" class="editGroups" :visible.sync="insertMaterialVisible" width="80%" :show-close=false>
+        <el-card body-style="padding: 0">
+            <el-form ref="roleQueryForm" :model="materialQueryForm" label-width="80px" style="margin-top:0.2rem;">
+                <el-row :gutter="20">
+                    <el-col :span="10">
+                        <el-form-item label="文本内容" prop="textValue">
+                            <el-input v-model="materialQueryForm.textValue"
+                                      placeholder="请输入文本内容"/>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item label="语料类型" prop="type">
+                            <el-select  v-model="materialQueryForm.type" placeholder="请选择" style="width:100%;">
+                                <el-option
+                                        v-for="item in materialTypeList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="语料标签" prop="tags">
+                            <el-select v-model="materialQueryForm.tags" placeholder="请选择" style="width:100%;" multiple>
+                                <el-option
+                                        v-for="item in tagsData"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item label="语料难度" prop="difficulty">
+                            <el-input v-model="materialQueryForm.difficulty"
+                                      placeholder="请输入语料难度范围,例如2-8"/>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6" :offset="1">
+                        <el-form-item>
+                            <el-button type="primary" size="small"
+                                       @click="handleSearch()" icon="el-icon-search">
+                                查询</el-button>
+                            <el-button type="primary" size="small"
+                                       @click="handleClearInfo()" icon="el-icon-refresh" plain>
+                                重置</el-button>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </el-card>
+        <el-card style="height:300px;overflow:auto;">
+            <div v-for="(subItem,subIndex) in materialData" :key="subIndex">
+                <el-card @click.native="selectMaterial($event,subIndex)" style="margin: 0.1rem 0.1rem 0 0.1rem;width:30%;float:left;">
+                    <el-row :gutter="6">
+                        <el-col :span="21">
+                            <el-descriptions title="" :columns="3" :contentStyle="contentStyle" :labelStyle="labelStyle">
+                                <el-descriptions-item label="文本内容" prop="refText" span="3" label-class-name="my-content" content-class-name="my-content">{{subItem.refText}}</el-descriptions-item>
+                                <el-descriptions-item label="标签" span="3" label-class-name="my-content" content-class-name="my-content">{{returnTagsStr(subItem.tags)}}</el-descriptions-item>
+                            </el-descriptions>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-radio v-model="materialRadio" :label="subIndex">{{''}}</el-radio>
+                        </el-col>
+                    </el-row>
+                </el-card>
+            </div>
+        </el-card>
+        <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="closeCpsrcdId">取 消</el-button>
+                    <el-button type="primary" @click="saveCpsrcdId">确 定</el-button>
+                </span>
+        </template>
+    </el-dialog>
+
 
 </div>
 </template>
@@ -335,6 +509,7 @@ import {pinyin} from "pinyin-pro"
 import {getCurrentLanguageMaterialGroup,addTopicInterface,deleteTopicInterface,updateTopicInterface,
   updateCpsrcdInterface,deleteCpsrcdInterface,addCpsrcdInterface,getTopicInterface,updateCurrentLanguageMaterialGroup,saveAudio} from '@/api/system/sys_materialGroup';
 import {getCurrentTimeStr} from "@/lib/utils";
+import {getLanguageMaterial,updateLanguageMaterial} from '@/api/system/sys_material';
 import { getTagsList} from '@/api/system/sys_tag'
 export default {
   name: "SystemMaterialGroupDetail.vue",
@@ -362,6 +537,7 @@ export default {
         subCpsrcds: 'subCpsrcds',
         label: 'title'
       },
+        tagsData:[],
       loadingStatus:false,
       publicOptions:[
         {
@@ -382,6 +558,7 @@ export default {
         value: 3,
         label: '试卷'
       }],
+dialogMaterialTitle:'',
       topicObj:{
         id:"",
         cpsgrpId:this.cpsgrpId,
@@ -391,6 +568,32 @@ export default {
         difficulty:0,
         description:""
       },
+        materialTypeList:[
+            {
+                value: 'read_word',
+                label: '朗读字词'
+            },{
+                value: 'read_sentence1',
+                label: '朗读句子'
+            },{
+                value: 'read_sentence2',
+                label: '朗读诗词'
+            },{
+                value: 'read_chapter',
+                label: '朗读文章'
+            },{
+                value: 'single',
+                label: '单选题'
+            },{
+                value: 'multiply',
+                label: '多选题'
+            },{
+                value: 'write',
+                label: '写汉字'
+            },{
+                value: 'answer',
+                label: '看视频答题'
+            }],
       modeOptions:[
         {
           value: 1,
@@ -406,6 +609,23 @@ export default {
           label: 'read_chapter'
         }
       ],
+        contentStyle:{
+            // "text-align":"center"
+            "overflow":"hidden",
+            "text-overflow":"ellipsis",
+            "white-space":"nowrap"
+        },
+        contentItemStyle:{
+
+        },
+        labelItemStyle:{
+            "text-align":"center;",
+            "margin-left":"0.2rem"
+        },
+        labelStyle:{
+            "text-align":"center;",
+            "margin-left":"5px"
+        },
       tagOptions:[],
       statusObj:{0: '允许修改', 1: '允许创建者修改', 2: '不允许创建者修改'},
       statusOptions:[
@@ -430,6 +650,7 @@ export default {
       inputVisible: false,
       inputValue: '',
       tempTopicObj:{},
+        materialData:[],
       tempCpsrcdObj:{
         cNum:0,
         wordWeight:0.5,
@@ -442,7 +663,14 @@ export default {
       editMaterialGroupVisible:false,
       editCpsrcdVisible:false,
       editAudioVisible:false,
+editMaterialVisible:false,
+insertMaterialVisible:false,
       audio:null,
+materialRadio:-1,
+showPinyin:true,
+chooseMaterial:{},
+materialQueryForm:{
+},
       formObjRules:{
         title:[ {required: true, message: '请输入语料组标题',trigger:'blur'}]
       },
@@ -475,6 +703,21 @@ export default {
   },
   methods:{
 
+
+updateMaterial(){
+//    this.dialogMaterialTitle = '修改题目';
+//    getTagsList({}).then((res)=>{
+//        this.tagsData = res.data.records;
+//    }).catch((e)=>{
+//        this.$message({message: `获取标签失败，原因为${e}`, type: 'error'});
+//    });
+//    this.editMaterialVisible = true;
+//    this.editCpsrcdVisible = false;
+},
+
+    selectMaterial($event,index){
+        this.chooseMaterial = JSON.parse(JSON.stringify(this.materialData[index]));
+    },
     clearTopicObj(){
       this.tempTopicObj={
         id:"",
@@ -495,6 +738,24 @@ export default {
             description:""
           }
     },
+
+      saveEdit(){
+          if(!this.tempCpsrcdObj.refText){
+              this.$message({message: "语料文本内容不能为空.", type: 'warning'});
+              return false;
+          }
+          this.editMaterialVisible = false;
+          updateLanguageMaterial({data:this.form}).then((res) => {
+              if(res.code !== 0){
+                  this.$message({message: "修改失败!", type: 'error'});
+                  return;
+              }
+              this.$message({message: "修改语料成功!", type: 'success'});
+          }).catch((e)=>{
+              this.$message({message: `修改失败，原因为${e}`, type: 'error'});
+          });
+
+      },
 
     clearTopicsList(){
       this.formObj.topics = [];
@@ -559,8 +820,30 @@ export default {
       this.editMaterialGroupVisible = true;
     },
 
+      handleClearInfo(){
+          this.materialQueryForm = {};
+          getLanguageMaterial({}).then((res)=>{
+              this.materialData = res.data.records;
+          })
+      },
+
     handleSearch(){
-      this.getMaterialGroup({id:this.cpsgrpId});
+        let opt = JSON.parse(JSON.stringify(this.materialQueryForm))
+        opt.tagIds = opt.tags;
+        if(opt.difficulty){
+            let list = opt.difficulty.split('-');
+            if(list.length === 2){
+                opt.difficultyBegin = list[0];
+                opt.difficultyEnd = list[1];
+            }else if(list.length === 1){
+                opt.difficultyBegin = list[0];
+            }else{
+                this.$message({message: "请输入合理范围的难度.", type: 'warning'});
+            }
+        }
+        getLanguageMaterial(opt).then((res)=>{
+            this.materialData = res.data.records;
+        })
     },
 
     addTopic(){
@@ -646,7 +929,18 @@ export default {
         this.tempCpsrcdObj.tags = [];
       }
       this.cpsrcdTitle = "添加子题";
-      this.editCpsrcdVisible = true;
+        getLanguageMaterial({}).then((res)=>{
+            this.materialData = res.data.records;
+        }).catch((e)=>{
+            console.log(e.msg)
+        });
+        getTagsList({}).then((res)=>{
+            this.tagsData = res.data.records;
+        }).catch((e)=>{
+            console.log(e.msg)
+        });
+      this.insertMaterialVisible = true;
+        this.chooseMaterial = {};
     },
 
     updateCpsrcdId(subIndex){
@@ -663,10 +957,10 @@ export default {
     },
 
     saveCpsrcdId(){
-      this.editCpsrcdVisible = false;
       let self = this;
       let tempObj = JSON.parse(JSON.stringify(this.tempCpsrcdObj));
       if(tempObj.id){
+          this.editCpsrcdVisible = false;
         updateCpsrcdInterface(tempObj).then((res)=>{
           if(res.data){
             this.$message({message: "更新成功", type: 'success'});
@@ -679,6 +973,8 @@ export default {
           console.log(e);
         });
       }else {
+          this.insertMaterialVisible = false;
+          tempObj = JSON.parse(JSON.stringify(this.chooseMaterial));
         addCpsrcdInterface(tempObj).then((res) => {
           if (res.data) {
             this.$message({message: "新增成功", type: 'success'});
@@ -695,7 +991,7 @@ export default {
 
 
     closeCpsrcdId(){
-      this.editCpsrcdVisible = false;
+      this.insertMaterialVisible = false;
     },
 
     deleteCpsrcdId(index){
@@ -782,7 +1078,7 @@ export default {
         let count = 0;
         records.forEach(function (it,idx){
           for(let i = 0;i < chooseTags.length;i++){
-            if(it.name === chooseTags[i]){
+            if(it === chooseTags[i]){
               count++;
               records[idx].disabled = true;
             }
@@ -830,7 +1126,15 @@ export default {
       this.inputVisible = false;
       this.inputValue = '';
     },
-
+      returnTagsStr(list){
+          let returnStr = [];
+          if(list && list.length){
+              list.forEach((ele)=>{
+                  returnStr.push(ele.name);
+              });
+          }
+          return returnStr.join(',');
+      },
 
   }
 }

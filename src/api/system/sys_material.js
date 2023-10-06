@@ -1,9 +1,9 @@
 import {newJwtServerInstance} from "../index";
-
+import {getJwtToken} from "@/lib/utils";
 export const getLanguageMaterial = (query) => {
   // corpus-server
   return newJwtServerInstance.request({
-    url: `/corpus-server/api/corpus/v1/list?cur=1&size=100`,
+    url: `/corpus-server/api/cpsrcd/v1/list?cur=1&size=999`,
     method: 'post',
     data: query,
     params:{}
@@ -12,24 +12,36 @@ export const getLanguageMaterial = (query) => {
 
 export const addLanguageMaterial = (opt) => {
   return newJwtServerInstance.request({
-    url: `/corpus-server/api/corpus/v1/add`,
+    url: `/corpus-server/api/cpsrcd/v1/add`,
     method: 'post',
     data: opt.data,
     params:{},
     headers:{
-      token:opt.token
+      token:getJwtToken()
     }
   });
 };
 
-export const addLanguageMaterialGroup = (opt) => {
+export const updateLanguageMaterial = (opt) => {
   return newJwtServerInstance.request({
-    url: `/corpus-server/api/cpsgrp/v1/create`,
+    url: `/corpus-server/api/cpsrcd/v1/mod`,
     method: 'post',
+    data: opt.data,
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
+  });
+};
+
+export const deleteLanguageMaterial = (opt) => {
+  return newJwtServerInstance.request({
+    url: `/corpus-server/api/cpsrcd/v1/del?cpsrcdId=${opt.id}`,
+    method: 'get',
     data: opt,
     params:{},
     headers:{
-      token:opt.token
+      token:getJwtToken()
     }
   });
 };

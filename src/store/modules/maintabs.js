@@ -77,7 +77,9 @@ const mutations = {
           }
         }
         //最后让路由生效
-        router.$addRoutes(systemRoutes)
+        systemRoutes.forEach(res=>{
+            router.addRoute(res);
+        })
     },
     removeTab(state, route){
         if(route !== FIRST_PAGE){
