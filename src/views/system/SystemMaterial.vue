@@ -59,9 +59,10 @@
         <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">批量导入</el-button>
         <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-delete" size="small" style="margin: 0 0 10px 20px">批量删除</el-button>
         <el-table :data="tableData" border class="table"  ref="multipleTable" header-cell-class-name="table-header">
-        <el-table-column prop="type" label="类型" align="center"></el-table-column>
+            <el-table-column type="selection"></el-table-column>
+            <el-table-column prop="type" label="类型" align="center"></el-table-column>
           <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>
-          <el-table-column prop="refText" label="文本内容" align="center"></el-table-column>
+          <el-table-column prop="refText" label="文本内容" align="center" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="标签" align="center">
               <template slot-scope="scope">
                   {{ returnTagsStr(scope.row.tags)}}
@@ -72,7 +73,7 @@
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
               <el-button size="mini" type="primary" icon="el-icon-video-play" circle
-                         @click="playAudio(scope.$index)"/>
+                         @click="playAudio(scope.$index)" :class="haveAudioPlayFuc(scope.row)"/>
             <el-button size="mini" type="primary" icon="el-icon-edit" circle
                        @click="handleEdit(scope.$index, scope.row)"/>
             <el-button size="mini" type="danger" icon="el-icon-delete" circle
@@ -80,6 +81,17 @@
           </template>
         </el-table-column>
       </el-table>
+        <el-pagination
+                :page-sizes="[20, 50, 100, 200]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :current-page="pagination.pageNum"
+                :page-size="pagination.pageSize"
+                :total="pagination.total"
+                @size-change="handlePageSizeChange"
+                @current-change="handlePageNumChange"
+                background
+                style="float: right;margin-bottom: 10px">
+        </el-pagination>
     </el-card>
 
 
@@ -157,7 +169,7 @@
                           ref="saveTagInput"
                           v-model="inputValue"
                           size="small"
-                          @change="handleInputConfirm">
+                          @visible-change="handleInputConfirm" multiple>
                       <el-option
                               v-for="item in tempTagsData"
                               :key="item.id"
@@ -218,6 +230,11 @@
                     audioUrl:'',
                     difficulty:-1,
                     evalMode:null
+                },
+                pagination:{
+                    pageNum: 1,
+                    pageSize: 20,
+                    total: null
                 },
                 pageTotal:0,
                 editVisible:false,
@@ -290,6 +307,14 @@
 
         methods:{
 
+    haveAudioPlayFuc(e){
+        if(e.audioUrl !== null){
+            return '';
+        }else{
+            return 'noneAudio';
+        }
+        console.log(e)
+    },
             chooseEvalMode(e){
                 switch(e){
                     case '朗读字词':
@@ -315,7 +340,7 @@
                     let count = 0;
                     records.forEach(function (it,idx){
                         for(let i = 0;i < chooseTags.length;i++){
-                            if(it.name === chooseTags[i]){
+                            if(it.name === chooseTags[i].name){
                                 count++;
                                 records[idx].disabled = true;
                             }
@@ -342,31 +367,46 @@
                 this.editAudioVisible = false;
             },
 
-            handleInputConfirm(e) {
-                let tempObj = {};
-                this.tempTagsData.forEach(function (it){
-                    if(it.id === e){
-                        tempObj = it;
+            handleInputConfirm(flag) {
+                if(!flag){
+                    let tempObj = {};
+                    let form = JSON.parse(JSON.stringify(this.form || {}));
+                    if(!form.tags){
+                        form.tags = []
                     }
-                })
-                if (tempObj.id) {
-                    if(this.form.tags === ''){
-                        this.form.tags = []
-                    }
-                    this.form.tags.push(tempObj);
+                    let selectItem = this.inputValue;
+                    this.tempTagsData.forEach(function (it){
+                        if(Array.isArray(selectItem)){
+                            selectItem.forEach(function (select){
+                                if(it.id === select){
+                                    form.tags.push(it);
+                                }
+                            })
+                        }else{
+                            if(it.id === selectItem){
+                               form.tags.push(it);
+                            }
+                        }
+                    })
+                    this.form = form;
+                    this.inputVisible = false;
+                    this.inputValue = '';
                 }
-                this.inputVisible = false;
-                this.inputValue = '';
             },
 
             playAudio(idx){
                 this.cpsrcdTitle = "播放音频"
+                this.currentAudioUrl = '';
                 if(typeof idx === 'number'){
-                    this.currentAudioUrl = this.tableData[idx].audioUrl
+                    this.currentAudioUrl = this.tableData[idx].audioUrl || ''
                 }else{
-                    this.currentAudioUrl = this.form.audioUrl
+                    this.currentAudioUrl = this.form.audioUrl || ''
                 }
-                this.editAudioVisible = true;
+                if(!this.currentAudioUrl){
+                    this.$message({message: "当前题目无可播放音频，请上传后再试！", type: 'warning'});
+                }else{
+                    this.editAudioVisible = true;
+                }
             },
 
             audioUrlChange(file,fileList){
@@ -403,11 +443,24 @@
 
         handleClearInfo(){
             this.materialQueryForm = {};
-            getLanguageMaterial({}).then((res)=>{
+            getLanguageMaterial(this.pagination).then((res)=>{
                 this.setData(res);
             })
         },
 
+            handlePageSizeChange(val){
+                let opt = Object.assign({},this.pagination,{pageSize:val})
+                getLanguageMaterial(opt).then((res)=>{
+                    this.setData(res);
+                })
+            },
+
+        handlePageNumChange(val){
+            let opt = Object.assign({},this.pagination,{pageNum:val})
+            getLanguageMaterial(opt).then((res)=>{
+                this.setData(res);
+            })
+        },
             // 查询操作
             handleSearch(){
                 this.query.pageIndex = 1;
@@ -424,6 +477,7 @@
                         this.$message({message: "请输入合理范围的难度.", type: 'warning'});
                     }
                 }
+                opt = Object.assign(opt,this.pagination);
                 getLanguageMaterial(opt).then((res)=>{
                     this.setData(res);
                 })
@@ -432,7 +486,8 @@
             setData(data){
                 if(data){
                     this.tableData = data.data.records;
-                    this.pageTotal = data.data.total || 50;
+                    this.pagination.pageSize = data.data.size
+                    this.pagination.total = data.data.total
                 }
             },
 
@@ -481,7 +536,7 @@
                 let id = this.tableData[index].id
                 this.$confirm("确定要删除吗？").then(() => {
                     deleteLanguageMaterial({id}).then((res)=>{
-                        getLanguageMaterial({}).then((resData)=>{
+                        getLanguageMaterial(this.pagination).then((resData)=>{
                             this.setData(resData);
                         })
                         this.$message({message: "删除成功", type: 'success'});
@@ -520,7 +575,7 @@
                                         return;
                                     }
                                     this.editVisible = false;
-                                    getLanguageMaterial({}).then((resData)=>{
+                                    getLanguageMaterial(this.pagination).then((resData)=>{
                                         this.setData(resData);
                                     })
                                     this.$message({message: "修改语料成功!", type: 'success'});
@@ -535,7 +590,7 @@
                                     return;
                                 }
                                 this.editVisible = false;
-                                getLanguageMaterial({}).then((resData)=>{
+                                getLanguageMaterial(this.pagination).then((resData)=>{
                                     this.setData(resData);
                                 })
                                 this.$message({message: "修改语料成功!", type: 'success'});
@@ -551,7 +606,7 @@
                                 return;
                             }
                             this.editVisible = false;
-                            getLanguageMaterial({}).then((resData)=>{
+                            getLanguageMaterial(this.pagination).then((resData)=>{
                                 this.setData(resData);
                             })
                             this.$message({message: "添加语料成功!", type: 'success'});
@@ -566,7 +621,11 @@
 
         beforeRouteEnter(to, from, next) {
             axios.all([
-                getLanguageMaterial({}),
+                getLanguageMaterial({
+                    pageNum: 1,
+                    pageSize: 20,
+                    total: null
+                }),
                 getTagsList({})])
                 .then(axios.spread(function (res1, res2) {
                 // 两个请求都执行完成后，进入该函数
@@ -580,4 +639,8 @@
 .el-form {
   margin-top: 20px;
 }
+
+    .noneAudio{
+    background-color:grey
+    }
 </style>
