@@ -98,8 +98,8 @@ export const addUser = (userForm) => {
 //删除一条sys_user数据记录
 export const deleteUser = (accountNo) => {
   return jwtServerInstance.request({
-    url:'/system/sysuser/delete',
-    method:'post',
+    url:`/api/user/v1/del?accountNo=${accountNo}`,
+    method:'get',
     headers:{
       token:getJwtToken()
     },

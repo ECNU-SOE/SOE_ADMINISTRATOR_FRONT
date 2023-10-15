@@ -134,10 +134,10 @@
               </el-form-item>
 
               <el-form-item label="评测文本" prop="refText">
-                  <el-input v-model="form.refText" type="textarea"></el-input>
+                  <el-input v-model="form.refText" type="textarea" autosize></el-input>
               </el-form-item>
               <el-form-item label="文本拼音" prop="pinyin">
-                  <el-input v-model="form.pinyin" type="textarea"></el-input>
+                  <el-input v-model="form.pinyin" type="textarea" autosize></el-input>
                   <el-button class="button-new-tag" size="small" @click="productPinYin" type="primary">生成</el-button>
               </el-form-item>
               <el-form-item label="示范音频" prop="audioUrl">
@@ -146,13 +146,14 @@
                           action=""
                           :on-change="audioUrlChange"
                           :show-file-list="false">
-                      <el-row :gutter="24">
-                          <el-col :span="20"><el-input v-model="form.audioUrl" ></el-input></el-col>
-                          <el-col :span="3"><el-button size="small" type="primary" :loading="loadingStatus">上传</el-button></el-col>
+                      <el-row :gutter="54">
+                        <el-col :span="15"><el-input v-model="form.audioUrl" ></el-input></el-col>
+                        <el-col :span="3"><el-button size="small" type="primary" :loading="loadingStatus">上传</el-button></el-col>
+                        <el-col :span="3"><el-button size="small" type="primary">录音</el-button></el-col>
+                        <el-col :span="3"><el-button size="small" type="primary" @click="playAudio($event)">播放</el-button></el-col>
                       </el-row>
                   </el-upload>
-                  <el-button size="small" type="primary">录音</el-button>
-                  <el-button size="small" type="primary" @click="playAudio">播放</el-button>
+
               </el-form-item>
               <el-form-item label="标签">
                   <el-tag
@@ -183,8 +184,9 @@
           </el-form>
           <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="editVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="saveEdit">确 定</el-button>
+                  <el-button v-if="dialogTitle === '修改语料'" @click="previewCurrentTitle" class="previewTitle">预览</el-button>
+                  <el-button @click="editVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="saveEdit">确 定</el-button>
                 </span>
           </template>
       </el-dialog>
@@ -197,6 +199,40 @@
                 </span>
           </template>
       </el-dialog>
+
+    <el-dialog title="预览题目" :visible.sync="previewVisible" width="30%" :show-close=false>
+      <div class="previewTitle">
+        <div><label>标签:</label><label style="margin-left: 0.1rem;">{{returnTagsStr(form.tags)}}</label></div>
+        <el-row>
+          <el-col :span="16">
+            <label>示范语音</label>
+            <audio :src="currentAudioUrl" autoplay="autoplay" controls="controls" :ref="audio" style="display: none" class="audioDemo"></audio>
+            <el-button type="text" icon="el-icon-video-play"
+                       @click="playDemo()" class="playAudio"></el-button>
+            <el-button type="text" icon="el-icon-video-pause"
+                       @click="pauseDemo()" class="playAudio"></el-button>
+            <el-button type="text" icon="el-icon-refresh"
+                       @click="loadDemo()" class="playAudio"></el-button>
+          </el-col>
+          <el-col :span="6">
+            <label>展示拼音:</label>
+            <el-switch
+                v-model="showPinyin"
+                style="scale:1.3;margin-left:0.05rem;"
+                active-color="#13ce66"
+                inactive-color="#ff4949" @change="showPinyinFuc">
+            </el-switch>
+          </el-col>
+        </el-row>
+        <div>{{form.type}}</div>
+        <el-input v-model="previewDemo" type="textarea" :autosize="returnAutoObj"></el-input>
+      </div>
+      <template #footer>
+                <span class="dialog-footer">
+                    <el-button type="primary" @click="closePreviewPage">关闭</el-button>
+                </span>
+      </template>
+    </el-dialog>
 
   </div>
 </template>
@@ -213,125 +249,154 @@
 
         data(){
             return {
-                materialQueryForm:{
-                },
-                currentAudioUrl:'',
-                cpsrcdObjRules:{},
-                tableData:[],
-                tagsData:[],
-                tempTagsData:[],
-                dialogTitle:'',
-                form:{
-                    id:"",
-                    type: "",
-                    pinyin:"",
-                    refText:"",
-                    tags:[],
-                    audioUrl:'',
-                    difficulty:-1,
-                    evalMode:null
-                },
-                pagination:{
-                    pageNum: 1,
-                    pageSize: 20,
-                    total: null
-                },
-                pageTotal:0,
-                editVisible:false,
-                inputVisible:false,
-                editAudioVisible:false,
-                audio:null,
-                query:{
-                    cur: 1,
-                    size: 20,
-                },
-                stateArr:[],
-                pageIndex:0,
-                cpsrcdTitle:'',
-                set:{
-                    0:"单字",
-                    1:"词语",
-                    2:"句子",
-                    3:"段落",
-                    5:"古诗"
-                },
-                materialTypeList:[
-                    {
-                        value: '朗读字词',
-                        label: '朗读字词'
-                    },{
-                        value: '朗读句子',
-                        label: '朗读句子'
-                    },{
-                        value: '朗读诗词',
-                        label: '朗读诗词'
-                    },{
-                        value: '朗读文章',
-                        label: '朗读文章'
-                    },{
-                        value: '单选题',
-                        label: '单选题'
-                    },{
-                        value: '多选题',
-                        label: '多选题'
-                    },{
-                        value: '写汉字',
-                        label: '写汉字'
-                    },{
-                        value: '看视频答题',
-                        label: '看视频答题'
-                    },{
-                        value: '其他',
-                        label: '其他'
-                    }],
-                modeOptions:[
-                    {
-                        value: 1,
-                        label: 'read_syllable'
-                    }, {
-                        value: 2,
-                        label: 'read_word'
-                    }, {
-                        value: 3,
-                        label: 'read_sentence'
-                    }, {
-                        value: 4,
-                        label: 'read_chapter'
-                    }
-                ],
-                loadingStatus:false,
-                inputValue:''
+              materialQueryForm:{
+              },
+              currentAudioUrl:'',
+              cpsrcdObjRules:{},
+              tableData:[],
+              tagsData:[],
+              tempTagsData:[],
+              dialogTitle:'',
+              form:{
+                id:"",
+                type: "",
+                pinyin:"",
+                refText:"",
+                tags:[],
+                audioUrl:'',
+                difficulty:-1,
+                evalMode:null
+              },
+              pagination:{
+                pageNum: 1,
+                pageSize: 20,
+                total: null
+              },
+              pageTotal:0,
+              editVisible:false,
+              inputVisible:false,
+              editAudioVisible:false,
+              previewVisible:false,
+              audio:null,
+              query:{
+                cur: 1,
+                size: 20,
+              },
+              stateArr:[],
+              pageIndex:0,
+              cpsrcdTitle:'',
+              set:{
+                0:"单字",
+                1:"词语",
+                2:"句子",
+                3:"段落",
+                5:"古诗"
+              },
+              materialTypeList:[
+                {
+                  value: '朗读字词',
+                  label: '朗读字词'
+                },{
+                  value: '朗读句子',
+                  label: '朗读句子'
+                },{
+                  value: '朗读诗词',
+                  label: '朗读诗词'
+                },{
+                  value: '朗读文章',
+                  label: '朗读文章'
+                },{
+                  value: '单选题',
+                  label: '单选题'
+                },{
+                  value: '多选题',
+                  label: '多选题'
+                },{
+                  value: '写汉字',
+                  label: '写汉字'
+                },{
+                  value: '看视频答题',
+                  label: '看视频答题'
+                },{
+                  value: '其他类型',
+                  label: '其他类型'
+                }],
+              modeOptions:[ {
+                value: 1,
+                label: 'read_syllable'
+              }, {
+                value: 2,
+                label: 'read_word'
+              }, {
+                value: 3,
+                label: 'read_sentence'
+              }, {
+                value: 4,
+                label: 'read_chapter'
+              },{
+                value: 5,
+                label: 'answer_based'
+              },{
+                value: 6,
+                label: 'open_ended'
+              }  ],
+              loadingStatus:false,
+              inputValue:'',
+              contentStyle:{
+                "text-align":"center;"
+              },
+              labelStyle:{
+                "text-align":"center;",
+                "margin-left":"5px"
+              },
+              showPinyin:true,
+              returnAutoObj:{
+                minRows: 6,
+                maxRows: 10
+              },
+              previewDemo:""
             }
         },
 
 
         methods:{
 
-    haveAudioPlayFuc(e){
-        if(e.audioUrl !== null){
-            return '';
-        }else{
-            return 'noneAudio';
-        }
-        console.log(e)
-    },
-            chooseEvalMode(e){
-                switch(e){
-                    case '朗读字词':
-                        this.form.evalMode = 2;
-                        break;
-                    case '朗读句子':
-                    case '朗读诗词':
-                        this.form.evalMode = 3;
-                        break;
-                    case '朗读文章':
-                        this.form.evalMode = 4;
-                        break;
-                    default:
-                        this.form.evalMode = 0;
-                }
+          haveAudioPlayFuc(e){
+            if(e.audioUrl !== null){
+              return '';
+            }else{
+              return 'noneAudio';
+            }
+            console.log(e)
+          },
 
-            },
+          chooseEvalMode(e){
+            switch(e){
+              case '朗读字词':
+                this.form.evalMode = 2;
+                break;
+              case '朗读句子':
+              case '朗读诗词':
+                this.form.evalMode = 3;
+                break;
+              case '朗读文章':
+                this.form.evalMode = 4;
+                break;
+              case '单选题[非拼音版]':
+              case '多选题':
+              case '写汉字':
+                this.form.evalMode = 5;
+                break;
+              case '看视频答题':
+              case '其他类型':
+                this.form.evalMode = 6;
+                break;
+                break;
+              default:
+                this.form.evalMode = 0;
+            }
+
+          },
 
             showInput() {
                 getTagsList({}).then((res)=>{
@@ -398,14 +463,18 @@
                 this.cpsrcdTitle = "播放音频"
                 this.currentAudioUrl = '';
                 if(typeof idx === 'number'){
-                    this.currentAudioUrl = this.tableData[idx].audioUrl || ''
+                  this.currentAudioUrl = this.tableData[idx].audioUrl || ''
                 }else{
-                    this.currentAudioUrl = this.form.audioUrl || ''
+                  idx.stopPropagation();
+                  this.currentAudioUrl = this.form.audioUrl || ''
                 }
                 if(!this.currentAudioUrl){
-                    this.$message({message: "当前题目无可播放音频，请上传后再试！", type: 'warning'});
+                  this.$message({message: "当前题目无可播放音频，请上传后再试！", type: 'warning'});
                 }else{
-                    this.editAudioVisible = true;
+                  if(document.querySelector("#currentAudio")){
+                    document.querySelector("#currentAudio").load();
+                  }
+                  this.editAudioVisible = true;
                 }
             },
 
@@ -615,7 +684,54 @@
                         });
                     }
                 }
+            },
+
+          previewCurrentTitle(){
+            if(this.form && this.form.id){
+              this.previewDemo = this.form.pinyin + "\n" + this.form.refText;
+              this.previewVisible = true;
+              this.editVisible = false;
+            }else{
+              this.$message({message: "当前题目并未正确录入，请录入后重试!", type: 'warning'});
             }
+          },
+
+          closePreviewPage() {
+            this.previewVisible = false;
+            this.editVisible = true;
+          },
+
+          playDemo(){
+            this.currentAudioUrl = this.form.audioUrl || '';
+            if(!this.currentAudioUrl){
+              this.$message({message: "当前题目无可播放音频，请上传后再试！", type: 'warning'});
+            }
+            document.querySelector(".audioDemo").play();
+          },
+
+          pauseDemo(){
+            this.currentAudioUrl = this.form.audioUrl || '';
+            if(!this.currentAudioUrl){
+              this.$message({message: "当前题目无可播放音频，请上传后再试！", type: 'warning'});
+            }
+            document.querySelector(".audioDemo").pause();
+          },
+
+          loadDemo(){
+            this.currentAudioUrl = this.form.audioUrl || '';
+            if(!this.currentAudioUrl){
+              this.$message({message: "当前题目无可播放音频，请上传后再试！", type: 'warning'});
+            }
+            document.querySelector(".audioDemo").load();
+          },
+
+          showPinyinFuc(flag){
+            if(flag){
+              this.previewDemo = this.form.pinyin + "\n" + this.form.refText;
+            }else {
+              this.previewDemo = this.form.refText;
+            }
+          }
 
         },
 
@@ -636,11 +752,14 @@
 </script>
 
 <style scoped>
-.el-form {
-  margin-top: 20px;
-}
-
+    .playAudio{
+      scale: 2;
+      margin-left: 0.1rem;
+    }
+    .el-form {
+      margin-top: 20px;
+    }
     .noneAudio{
-    background-color:grey
+      background-color:grey
     }
 </style>

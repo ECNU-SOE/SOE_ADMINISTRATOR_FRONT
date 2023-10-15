@@ -74,8 +74,8 @@
         </el-card>
 
         <el-card>
-          <el-button type="primary" size="small" style="margin: 0 0 10px 20px"
-                     icon="el-icon-plus" @click="handleAdd('新增用户')">新增</el-button>
+<!--          <el-button type="primary" size="small" style="margin: 0 0 10px 20px"-->
+<!--                     icon="el-icon-plus" @click="handleAdd('新增用户')">新增</el-button>-->
 
           <el-table :data="tableData" border default-expand-all stripe style="width: 100%;margin-bottom: 20px;">
             <el-table-column prop="phone" label="手机号" width="120" align="center"/>

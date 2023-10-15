@@ -1,6 +1,6 @@
 <template>
     <div style="margin-top: 150px;text-align: center;">
-      <h2>注意：系统每逢小时整点会自动清理数据！</h2>
+<!--      <h2>注意：系统每逢小时整点会自动清理数据！</h2>-->
     </div>
 </template>
 
