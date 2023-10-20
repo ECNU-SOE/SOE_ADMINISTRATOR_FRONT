@@ -279,13 +279,13 @@
         <el-form-item label="评测文本" prop="refText">
             <el-input v-model="tempCpsrcdObj.refText" type="textarea" :disabled="true"></el-input>
         </el-form-item>
-      <el-form-item v-if="showPinyin" label="文本拼音" prop="pinyin" >
+      <el-form-item v-if="tempCpsrcdObj.enablePinyin" label="文本拼音" prop="pinyin" >
         <el-input v-model="tempCpsrcdObj.pinyin" type="textarea" :disabled="true"></el-input>
 <!--        <el-button class="button-new-tag" size="small" @click="productPinYin" type="primary">生成</el-button>-->
       </el-form-item>
         <el-form-item label="展示拼音">
             <el-switch
-                    v-model="showPinyin"
+                    v-model="tempCpsrcdObj.enablePinyin"
                     active-color="#13ce66"
                     inactive-color="#ff4949">
             </el-switch>
@@ -662,14 +662,12 @@ dialogMaterialTitle:'',
       editMaterialGroupVisible:false,
       editCpsrcdVisible:false,
       editAudioVisible:false,
-editMaterialVisible:false,
-insertMaterialVisible:false,
+      editMaterialVisible:false,
+      insertMaterialVisible:false,
       audio:null,
-materialRadio:-1,
-showPinyin:true,
-chooseMaterial:{},
-materialQueryForm:{
-},
+      materialRadio:-1,
+      chooseMaterial:{},
+      materialQueryForm:{},
       formObjRules:{
         title:[ {required: true, message: '请输入语料组标题',trigger:'blur'}]
       },
@@ -877,6 +875,7 @@ updateMaterial(){
             this.topicObj = this.tempTopicObj;
           }
         }).catch((e)=>{
+          this.$message({message: `更新失败，原因为${e.msg}`, type: 'error'});
           console.log(e);
         });
       }else {
@@ -888,6 +887,7 @@ updateMaterial(){
             this.topicObj = this.tempTopicObj;
           }
         }).catch((e)=>{
+          this.$message({message: `新增失败，原因为${e.msg}`, type: 'error'});
           console.log(e);
         });
       }
@@ -907,6 +907,7 @@ updateMaterial(){
                 this.getMaterialGroup({id:this.cpsgrpId});
               }
             }).catch((e)=>{
+              this.$message({message: `删除失败，原因为${e.msg}`, type: 'error'});
               console.log(e);
             });
           }).catch(_ => {});
@@ -939,7 +940,8 @@ updateMaterial(){
             console.log(e.msg)
         });
       this.insertMaterialVisible = true;
-        this.chooseMaterial = {};
+      this.materialRadio = -1;
+      this.chooseMaterial = {};
     },
 
     updateCpsrcdId(subIndex){
@@ -965,7 +967,7 @@ updateMaterial(){
         obj.topicId = this.topicObj.id;
         obj.cNum = tempObj.cNum;
         obj.score = tempObj.score;
-        obj.enablePinyin = this.showPinyin;
+        obj.enablePinyin = tempObj.enablePinyin;
         obj.description = tempObj.description;
         updateCpsrcdInterface(obj).then((res)=>{
           if(res.data){
@@ -976,12 +978,13 @@ updateMaterial(){
             });
           }
         }).catch((e)=>{
+          this.$message({message: `更新失败，原因为${e.msg}`, type: 'error'});
           console.log(e);
         });
       }else {
           this.insertMaterialVisible = false;
           obj = JSON.parse(JSON.stringify(this.chooseMaterial));
-          obj.cpsrcdId = tempObj.id;
+          obj.cpsrcdId = obj.id;
           obj.topicId = this.topicObj.id;
           addCpsrcdInterface(obj).then((res) => {
           if (res.data) {
@@ -992,6 +995,7 @@ updateMaterial(){
             });
           }
         }).catch((e) => {
+            this.$message({message: `新增失败，原因为${e.msg}`, type: 'error'});
           console.log(e);
         });
       }
@@ -1006,6 +1010,7 @@ updateMaterial(){
       let deleteItem = this.topicObj.subCpsrcds[index];
       this.$confirm('确认删除当前子题吗？')
           .then(_ => {
+            deleteItem.cpsrcdId = deleteItem.id;
             deleteCpsrcdInterface(deleteItem).then((res)=>{
               if(res.data){
                 this.$message({message: "删除成功", type: 'success'});
@@ -1015,6 +1020,7 @@ updateMaterial(){
                 // this.getMaterialGroup({id:this.cpsgrpId});
               }
             }).catch((e)=>{
+              this.$message({message: `删除失败，原因为${e.msg}`, type: 'error'});
               console.log(e);
             });
           }).catch(_ => {});
@@ -1027,7 +1033,7 @@ updateMaterial(){
         this.getMaterialGroup({id:this.cpsgrpId});
         this.editMaterialGroupVisible = false;
       }).catch((e)=>{
-        this.$message({message: `保存失败，原因为${e}`, type: 'error'});
+        this.$message({message: `保存失败，原因为${e.msg}`, type: 'error'});
       })
     },
 

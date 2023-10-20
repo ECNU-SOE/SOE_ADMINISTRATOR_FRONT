@@ -117,8 +117,8 @@ export const updateCpsrcdInterface = (query) => {
 
 export const deleteCpsrcdInterface = (query) => {
   return newJwtServerInstance.request({
-    url: `/corpus-server/api/topic_cps/v1/del?cpsrcdId=${query.id}`,
-    method: 'get',
+    url: `/corpus-server/api/topic_cps/v1/del`,
+    method: 'post',
     data: query,
     params:{}
   });
