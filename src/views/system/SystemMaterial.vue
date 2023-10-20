@@ -125,12 +125,11 @@
                   </el-col>
               </el-row>
               <el-form-item label="题目难度">
-                  <el-rate
-                          v-model="form.difficulty"
-                          show-score
-                          text-color="#ff9900"
-                          score-template="(0-10)">
-                  </el-rate>
+                <el-slider
+                    v-model="form.difficulty"
+                    :max="12"
+                    show-stops>
+                </el-slider>
               </el-form-item>
 
               <el-form-item label="评测文本" prop="refText">
@@ -484,7 +483,7 @@
                 params.append("file",file.raw);
                 saveAudio(params).then((res)=>{
                     if(res.data){
-                        this.tempCpsrcdObj.audioUrl = res.data;
+                        this.form.audioUrl = res.data;
                         this.loadingStatus = false;
                     }
                 }).catch((e)=>{
@@ -509,27 +508,26 @@
                 }
                 return returnStr.join(',');
             },
-
-        handleClearInfo(){
+          handleClearInfo(){
             this.materialQueryForm = {};
             getLanguageMaterial(this.pagination).then((res)=>{
-                this.setData(res);
+              this.setData(res);
             })
-        },
+          },
 
-            handlePageSizeChange(val){
-                let opt = Object.assign({},this.pagination,{pageSize:val})
-                getLanguageMaterial(opt).then((res)=>{
-                    this.setData(res);
-                })
-            },
+          handlePageSizeChange(val){
+            let opt = Object.assign({},this.pagination,{pageSize:val})
+            getLanguageMaterial(opt).then((res)=>{
+              this.setData(res);
+            })
+          },
 
-        handlePageNumChange(val){
+          handlePageNumChange(val){
             let opt = Object.assign({},this.pagination,{pageNum:val})
             getLanguageMaterial(opt).then((res)=>{
-                this.setData(res);
+              this.setData(res);
             })
-        },
+          },
             // 查询操作
             handleSearch(){
                 this.query.pageIndex = 1;

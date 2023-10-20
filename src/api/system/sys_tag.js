@@ -3,7 +3,7 @@ import {getJwtToken} from "@/lib/utils";
 
 export const getTagsList = function (opt){
     return newJwtServerInstance.request({
-        url:'/corpus-server/api/tag/v1/list?cur=1&size=10',
+        url:`/corpus-server/api/tag/v1/list?cur=${opt.pageNum || '1'}&size=${opt.pageSize || '999'}`,
         method:'post',
         headers:{
             token:getJwtToken()

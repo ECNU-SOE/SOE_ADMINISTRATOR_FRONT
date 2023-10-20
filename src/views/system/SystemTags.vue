@@ -37,6 +37,17 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+          :page-sizes="[20, 50, 100, 200]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :current-page="pagination.pageNum"
+          :page-size="pagination.pageSize"
+          :total="pagination.total"
+          @size-change="handlePageSizeChange"
+          @current-change="handlePageNumChange"
+          background
+          style="float: right;margin-bottom: 10px">
+      </el-pagination>
     </el-card>
 
     <!-- 编辑查看语料组弹出框 -->
@@ -72,6 +83,7 @@
 
 import { getTagsList,updateTags,addTags,deleteTags} from '@/api/system/sys_tag'
 import {getJwtToken,getCurrentTimeStr} from "@/lib/utils";
+import {getLanguageMaterial} from "@/api/system/sys_material";
 
 export default {
   name: "tags",
@@ -122,7 +134,12 @@ export default {
         name: [
           {required: true, message: '请选择标签名称',trigger:'blur'}
         ]
-      }
+      },
+      pagination:{
+        pageNum: 1,
+        pageSize: 20,
+        total: null
+      },
     }
   },
 
@@ -255,18 +272,36 @@ export default {
         let records = data.data.records;
         this.tableData = records;
         let total = data.data.total;
-        this.pageTotal = total || 50;
+        this.pagination.total = total || 50;
       }
     },
 
     getCurrentTime(time){
       return getCurrentTimeStr(time)
-    }
+    },
+
+    handlePageSizeChange(val){
+      let opt = Object.assign({},this.pagination,{pageSize:val})
+      getTagsList(opt).then((res)=>{
+        this.setData(res);
+      })
+    },
+
+    handlePageNumChange(val){
+      let opt = Object.assign({},this.pagination,{pageNum:val})
+      getTagsList(opt).then((res)=>{
+        this.setData(res);
+      })
+    },
 
   },
 
   beforeRouteEnter(to, from, next) {
-    getTagsList({}).then(res => {
+    getTagsList({
+      pageNum: 1,
+      pageSize: 20,
+      total: null
+    }).then(res => {
       next(vm => vm.setData(res))
     });
   }

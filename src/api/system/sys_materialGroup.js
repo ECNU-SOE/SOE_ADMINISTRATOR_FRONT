@@ -99,7 +99,7 @@ export const deleteTopicInterface = (query) => {
 
 export const addCpsrcdInterface = (query) => {
   return newJwtServerInstance.request({
-    url: `/corpus-server/api/cpsrcd/v1/add`,
+    url: `/corpus-server/api/topic_cps/v1/add`,
     method: 'post',
     data: query,
     params:{}
@@ -108,7 +108,7 @@ export const addCpsrcdInterface = (query) => {
 
 export const updateCpsrcdInterface = (query) => {
   return newJwtServerInstance.request({
-    url: `/corpus-server/api/cpsrcd/v1/mod`,
+    url: `/corpus-server/api/topic_cps/v1/mod`,
     method: 'post',
     data: query,
     params:{}
@@ -117,7 +117,7 @@ export const updateCpsrcdInterface = (query) => {
 
 export const deleteCpsrcdInterface = (query) => {
   return newJwtServerInstance.request({
-    url: `/corpus-server/api/cpsrcd/v1/del?cpsrcdId=${query.id}`,
+    url: `/corpus-server/api/topic_cps/v1/del?cpsrcdId=${query.id}`,
     method: 'get',
     data: query,
     params:{}

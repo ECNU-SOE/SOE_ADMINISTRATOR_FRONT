@@ -238,8 +238,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="10" :offset="1">
-          <el-form-item label="本题分值" prop="wordWeight">
-            <el-input-number v-model="tempCpsrcdObj.wordWeight"></el-input-number>
+          <el-form-item label="本题分值" prop="score">
+            <el-input-number v-model="tempCpsrcdObj.score"></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>
@@ -270,12 +270,11 @@
             </el-col>
         </el-row>
         <el-form-item label="题目难度">
-            <el-rate
-                    v-model="tempCpsrcdObj.difficulty"
-                    show-score
-                    text-color="#ff9900"
-                    score-template="(0-10)" :disabled="true">
-            </el-rate>
+          <el-slider
+              v-model="tempCpsrcdObj.difficulty"
+              :max="12"
+              show-stops :disabled="true">
+          </el-slider>
         </el-form-item>
         <el-form-item label="评测文本" prop="refText">
             <el-input v-model="tempCpsrcdObj.refText" type="textarea" :disabled="true"></el-input>
@@ -959,9 +958,16 @@ updateMaterial(){
     saveCpsrcdId(){
       let self = this;
       let tempObj = JSON.parse(JSON.stringify(this.tempCpsrcdObj));
+      let obj = {};
       if(tempObj.id){
-          this.editCpsrcdVisible = false;
-        updateCpsrcdInterface(tempObj).then((res)=>{
+        this.editCpsrcdVisible = false;
+        obj.cpsrcdId = tempObj.id;
+        obj.topicId = this.topicObj.id;
+        obj.cNum = tempObj.cNum;
+        obj.score = tempObj.score;
+        obj.enablePinyin = this.showPinyin;
+        obj.description = tempObj.description;
+        updateCpsrcdInterface(obj).then((res)=>{
           if(res.data){
             this.$message({message: "更新成功", type: 'success'});
             self.clearCpsrcdObj();
@@ -974,8 +980,10 @@ updateMaterial(){
         });
       }else {
           this.insertMaterialVisible = false;
-          tempObj = JSON.parse(JSON.stringify(this.chooseMaterial));
-        addCpsrcdInterface(tempObj).then((res) => {
+          obj = JSON.parse(JSON.stringify(this.chooseMaterial));
+          obj.cpsrcdId = tempObj.id;
+          obj.topicId = this.topicObj.id;
+          addCpsrcdInterface(obj).then((res) => {
           if (res.data) {
             this.$message({message: "新增成功", type: 'success'});
             self.clearCpsrcdObj();
