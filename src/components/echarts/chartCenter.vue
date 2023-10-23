@@ -6,16 +6,38 @@
 
 <script>
 import * as echarts from 'echarts'
+import {completionStatistics} from "@/api/system/sys_statistics";
+import {getClassInformation} from "@/api/system/sys_class";
 export default {
   name: 'chartCenter',
   mounted(){
     this.drawLine()
   },
+  data(){
+    return {
+      classInfoList:[],
+    }
+  },
+  props:{
+    courseId:{
+      type:String
+    }
+  },
   methods:{
     drawLine(){
       // 初始化实例
       let myChart = echarts.init(document.getElementById('chartCenter'))
-
+      let seriesData = [];
+      let courseId = this.courseId
+      getClassInformation({courseId}).then((res)=>{
+        completionStatistics({courseId,classId:res.data.records[0].id}).then((resData)=>{
+          seriesData = resData.data.records;
+        }).catch((e)=>{
+          this.$message({message: `获取数据失败，原因为${e.msg}`, type: 'error'});
+        });
+      }).catch((e)=>{
+        this.$message({message: `获取班级信息失败，原因为${e.msg}`, type: 'error'});
+      })
       // 绘制图表，定义数据
       let option = {
         title: {
@@ -53,8 +75,14 @@ export default {
       }
 
       // 渲染数据
-      myChart.setOption(option, true)
-    }
+      myChart.setOption(option, true);
+    },
+
+
+    getClassList(){
+
+    },
+
   }
 }
 </script>

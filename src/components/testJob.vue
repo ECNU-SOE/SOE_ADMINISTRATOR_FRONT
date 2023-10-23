@@ -3,10 +3,12 @@
     <el-row>
       <div v-if="classDetail === false">
         <div style="width: 100%;margin:0.1rem;">
-          <el-radio v-model="radio" label="all" size="mini">全部</el-radio>
-          <el-radio v-model="radio" label="notStart" size="mini">未开始</el-radio>
-          <el-radio v-model="radio" label="processing" size="mini" >进行中</el-radio>
-          <el-radio v-model="radio" label="stopped" size="mini" >已结束</el-radio>
+          <el-radio-group v-model="radio" @input="selectMaterialGroupList">
+            <el-radio :label=null size="mini">全部</el-radio>
+            <el-radio :label=1 size="mini">未开始</el-radio>
+            <el-radio :label=2 size="mini" >进行中</el-radio>
+            <el-radio :label=3 size="mini" >已结束</el-radio>
+          </el-radio-group>
           <el-button size="small" type="primary" icon="el-icon-edit" @click="handleAddJob()" style="margin-left: 30%;">
             新建作业
           </el-button>
@@ -209,7 +211,7 @@ export default {
   data() {
     return {
       classDetail:false,
-      radio:'all',
+      radio:null,
       contentStyle:{
 
       },
@@ -306,12 +308,12 @@ export default {
       }
     },
 
-    getJobList(){
-      showAllLanguageMaterialGroup({
+    getJobList(opt={}){
+      showAllLanguageMaterialGroup(Object.assign({},{
         cur: 1,
         size: 30,
         classId:this.currentClass.id,
-      }).then(res => {
+      },opt)).then(res => {
        this.setData(res)
       });
     },
@@ -396,6 +398,10 @@ export default {
     searchStudent(){
 
     },
+
+    selectMaterialGroupList(status){
+      this.getJobList({status:status});
+    }
 
   }
 }

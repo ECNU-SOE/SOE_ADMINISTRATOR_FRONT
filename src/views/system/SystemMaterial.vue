@@ -5,8 +5,8 @@
       <el-form ref="roleQueryForm" :model="materialQueryForm" label-width="80px">
         <el-row :gutter="20">
           <el-col :span="10">
-            <el-form-item label="文本内容" prop="textValue">
-              <el-input v-model="materialQueryForm.textValue"
+            <el-form-item label="文本内容" prop="refText">
+              <el-input v-model="materialQueryForm.refText"
                         placeholder="请输入文本内容"/>
             </el-form-item>
           </el-col>
@@ -56,20 +56,20 @@
 
     <el-card>
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加语料</el-button>
-        <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">批量导入</el-button>
-        <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-delete" size="small" style="margin: 0 0 10px 20px">批量删除</el-button>
-        <el-table :data="tableData" border class="table"  ref="multipleTable" header-cell-class-name="table-header">
-            <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="type" label="类型" align="center"></el-table-column>
-          <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>
-          <el-table-column prop="refText" label="文本内容" align="center" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="标签" align="center">
-              <template slot-scope="scope">
-                  {{ returnTagsStr(scope.row.tags)}}
-              </template>
-          </el-table-column>
-          <el-table-column prop="gmtCreate" label="创建时间" align="center"></el-table-column>
-          <el-table-column prop="gmtModified" label="更新时间" align="center"></el-table-column>
+      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">批量导入</el-button>
+      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-delete" size="small" style="margin: 0 0 10px 20px">批量删除</el-button>
+      <el-table :data="tableData" border class="table"  ref="multipleTable" header-cell-class-name="table-header">
+        <el-table-column type="selection"></el-table-column>
+        <el-table-column prop="type" label="类型" align="center"></el-table-column>
+        <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>
+        <el-table-column prop="refText" label="文本内容" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column label="标签" align="center">
+          <template slot-scope="scope">
+            {{ returnTagsStr(scope.row.tags)}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="gmtCreate" label="创建时间" align="center" sortable></el-table-column>
+        <el-table-column prop="gmtModified" label="更新时间" align="center" sortable></el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
               <el-button size="mini" type="primary" icon="el-icon-video-play" circle
@@ -169,6 +169,7 @@
                           ref="saveTagInput"
                           v-model="inputValue"
                           size="small"
+                          filterable
                           @visible-change="handleInputConfirm" multiple>
                       <el-option
                               v-for="item in tempTagsData"
@@ -353,7 +354,8 @@
                 minRows: 6,
                 maxRows: 10
               },
-              previewDemo:""
+              previewDemo:"",
+              sortType:'时间顺序',
             }
         },
 
@@ -361,7 +363,7 @@
         methods:{
 
           haveAudioPlayFuc(e){
-            if(e.audioUrl !== null){
+            if(e.audioUrl){
               return '';
             }else{
               return 'noneAudio';
@@ -594,7 +596,7 @@
                 Object.keys(this.form).forEach((item) => {
                     this.form[item] = row[item];
                 });
-                this.form.difficulty = parseFloat(this.form.difficulty/2);
+                this.form.difficulty = parseFloat(this.form.difficulty);
             },
 
             // 删除操作
@@ -603,10 +605,14 @@
                 let id = this.tableData[index].id
                 this.$confirm("确定要删除吗？").then(() => {
                     deleteLanguageMaterial({id}).then((res)=>{
+                      if(res.data !== 0){
+                        this.$message({message: res.msg, type: 'error'});
+                      }else {
                         getLanguageMaterial(this.pagination).then((resData)=>{
-                            this.setData(resData);
+                          this.setData(resData);
                         })
                         this.$message({message: "删除成功", type: 'success'});
+                      }
                     }).catch((e)=>{
                         this.$message({message: `删除失败，原因为${e.msg}`, type: 'error'});
                     })
@@ -631,14 +637,14 @@
                     }else{
                         newForm.tagIds = []
                     }
-                    newForm.difficulty = parseFloat(newForm.difficulty) *2;
+                    newForm.difficulty = parseFloat(newForm.difficulty);
                     delete newForm.tags;
                     if(newForm.id){
                         if(newForm.userBy && parseInt(newForm.userBy) > 0){
                             this.$confirm(`当前有${parseInt(newForm.userBy)}个语料组使用该语料。确定要修改当前语料信息吗？`).then(() => {
                                 updateLanguageMaterial({data:newForm}).then((res) => {
                                     if(res.code !== 0){
-                                        this.$message({message: "修改失败!", type: 'error'});
+                                        this.$message({message: res.msg, type: 'error'});
                                         return;
                                     }
                                     this.editVisible = false;
@@ -653,7 +659,7 @@
                         }else{
                             updateLanguageMaterial({data:newForm}).then((res) => {
                                 if(res.code !== 0){
-                                    this.$message({message: "修改失败!", type: 'error'});
+                                    this.$message({message: res.msg, type: 'error'});
                                     return;
                                 }
                                 this.editVisible = false;
@@ -686,7 +692,7 @@
 
           previewCurrentTitle(){
             if(this.form && this.form.id){
-              this.previewDemo = this.form.pinyin + "\n" + this.form.refText;
+              this.previewDemo = this.form.pinyin ? this.form.pinyin + "\n" + this.form.refText : this.form.refText;
               this.previewVisible = true;
               this.editVisible = false;
             }else{
@@ -724,12 +730,25 @@
           },
 
           showPinyinFuc(flag){
-            if(flag){
+            if(flag && this.form.pinyin){
               this.previewDemo = this.form.pinyin + "\n" + this.form.refText;
             }else {
               this.previewDemo = this.form.refText;
             }
-          }
+          },
+
+          handleMaterialSort(idx){
+            let sortObj = ['时间倒序','时间顺序'];
+            this.sortType = sortObj[parseInt(idx)];
+            let obj = {};
+            if(parseInt(idx) === 0 || parseInt(idx) === 1){
+              obj = {sortByTime:parseInt(idx)}
+            }
+            let opt = Object.assign({},this.pagination,obj)
+            getLanguageMaterial(opt).then((res)=>{
+              this.setData(res);
+            })
+          },
 
         },
 
@@ -760,4 +779,6 @@
     .noneAudio{
       background-color:grey
     }
+
+    .el-textarea__inner { text-align: center; }
 </style>

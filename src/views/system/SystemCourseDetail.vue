@@ -45,7 +45,7 @@
         <classSet v-if="radio === '2'"></classSet>
         <div v-if="radio === '4'" style="overflow-y: auto;">
           <el-card><chartTop></chartTop></el-card>
-          <el-card style="margin-top: 0.02rem;"><chartCenter></chartCenter></el-card>
+          <el-card style="margin-top: 0.02rem;"><chartCenter :courseId="courseId"></chartCenter></el-card>
         </div>
       </el-col>
     </el-row>
