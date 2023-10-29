@@ -58,14 +58,19 @@
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加语料</el-button>
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">批量导入</el-button>
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-delete" size="small" style="margin: 0 0 10px 20px">批量删除</el-button>
-      <el-table :data="tableData" border class="table"  ref="multipleTable" header-cell-class-name="table-header">
+      <el-table :data="tableData" border class="table"  ref="multipleTable" header-cell-class-name="table-header" v-loading="loading">
         <el-table-column type="selection"></el-table-column>
         <el-table-column prop="type" label="类型" align="center"></el-table-column>
-        <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>
+        <el-table-column prop="difficulty" label="难度" align="center" sortable width="100"></el-table-column>
         <el-table-column prop="refText" label="文本内容" align="center" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column label="标签" align="center">
           <template slot-scope="scope">
             {{ returnTagsStr(scope.row.tags)}}
+          </template>
+        </el-table-column>
+        <el-table-column label="使用次数" align="center" width="100">
+          <template slot-scope="scope">
+            {{ scope.row.usedBy || 0}}
           </template>
         </el-table-column>
         <el-table-column prop="gmtCreate" label="创建时间" align="center" sortable></el-table-column>
@@ -131,12 +136,21 @@
                     show-stops>
                 </el-slider>
               </el-form-item>
-
+            <el-form-item label="对齐方式" prop="alignType">
+              <el-select v-model="form.alignType">
+                <el-option
+                    v-for="item in alignTypeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
               <el-form-item label="评测文本" prop="refText">
-                  <el-input v-model="form.refText" type="textarea" autosize></el-input>
+                  <el-input v-model="form.refText" type="textarea" autosize :disabled="updateStatus"></el-input>
               </el-form-item>
               <el-form-item label="文本拼音" prop="pinyin">
-                  <el-input v-model="form.pinyin" type="textarea" autosize></el-input>
+                  <el-input v-model="form.pinyin" type="textarea" autosize :disabled="updateStatus"></el-input>
                   <el-button class="button-new-tag" size="small" @click="productPinYin" type="primary">生成</el-button>
               </el-form-item>
               <el-form-item label="示范音频" prop="audioUrl">
@@ -292,6 +306,13 @@
                 3:"段落",
                 5:"古诗"
               },
+              alignTypeList:[{
+                value: '居中对齐',
+                label: '居中对齐'
+              },{
+                value: '左对齐',
+                label: '左对齐'
+              }],
               materialTypeList:[
                 {
                   value: '朗读字词',
@@ -356,6 +377,8 @@
               },
               previewDemo:"",
               sortType:'时间顺序',
+              loading:false,
+              updateStatus:false
             }
         },
 
@@ -512,6 +535,7 @@
             },
           handleClearInfo(){
             this.materialQueryForm = {};
+            this.loading = true;
             getLanguageMaterial(this.pagination).then((res)=>{
               this.setData(res);
             })
@@ -519,6 +543,7 @@
 
           handlePageSizeChange(val){
             let opt = Object.assign({},this.pagination,{pageSize:val})
+            this.loading = true;
             getLanguageMaterial(opt).then((res)=>{
               this.setData(res);
             })
@@ -526,6 +551,7 @@
 
           handlePageNumChange(val){
             let opt = Object.assign({},this.pagination,{pageNum:val})
+            this.loading = true;
             getLanguageMaterial(opt).then((res)=>{
               this.setData(res);
             })
@@ -547,12 +573,14 @@
                     }
                 }
                 opt = Object.assign(opt,this.pagination);
+              this.loading = true;
                 getLanguageMaterial(opt).then((res)=>{
                     this.setData(res);
                 })
             },
 
             setData(data){
+                this.loading = false;
                 if(data){
                     this.tableData = data.data.records;
                     this.pagination.pageSize = data.data.size
@@ -591,6 +619,7 @@
             },
 
             handleEdit(index, row){
+                this.updateStatus = true;
                 this.editVisible = true;
                 this.dialogTitle = "修改语料"
                 Object.keys(this.form).forEach((item) => {
@@ -608,6 +637,7 @@
                       if(res.data !== 0){
                         this.$message({message: res.msg, type: 'error'});
                       }else {
+                        this.loading = true;
                         getLanguageMaterial(this.pagination).then((resData)=>{
                           this.setData(resData);
                         })
@@ -620,9 +650,10 @@
             },
 
             handleAdd(){
-                this.dialogTitle = '新增语料';
-                this.clear(this.form);
-                this.editVisible = true;
+              this.updateStatus = false;
+              this.dialogTitle = '新增语料';
+              this.clear(this.form);
+              this.editVisible = true;
             },
 
 
@@ -648,6 +679,7 @@
                                         return;
                                     }
                                     this.editVisible = false;
+                                    this.loading = true;
                                     getLanguageMaterial(this.pagination).then((resData)=>{
                                         this.setData(resData);
                                     })
@@ -663,6 +695,7 @@
                                     return;
                                 }
                                 this.editVisible = false;
+                              this.loading = true;
                                 getLanguageMaterial(this.pagination).then((resData)=>{
                                     this.setData(resData);
                                 })
@@ -679,6 +712,7 @@
                                 return;
                             }
                             this.editVisible = false;
+                          this.loading = true;
                             getLanguageMaterial(this.pagination).then((resData)=>{
                                 this.setData(resData);
                             })
@@ -745,6 +779,7 @@
               obj = {sortByTime:parseInt(idx)}
             }
             let opt = Object.assign({},this.pagination,obj)
+            this.loading = true;
             getLanguageMaterial(opt).then((res)=>{
               this.setData(res);
             })
