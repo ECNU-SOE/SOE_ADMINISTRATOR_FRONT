@@ -70,7 +70,7 @@
         </el-table-column>
         <el-table-column label="使用次数" align="center" width="100">
           <template slot-scope="scope">
-            {{ scope.row.usedBy || 0}}
+            {{ scope.row.usageCnt || 0}}
           </template>
         </el-table-column>
         <el-table-column prop="gmtCreate" label="创建时间" align="center" sortable></el-table-column>
@@ -136,8 +136,8 @@
                     show-stops>
                 </el-slider>
               </el-form-item>
-            <el-form-item label="对齐方式" prop="alignType">
-              <el-select v-model="form.alignType">
+            <el-form-item label="对齐方式" prop="text_align">
+              <el-select v-model="form.text_align">
                 <el-option
                     v-for="item in alignTypeList"
                     :key="item.value"
@@ -307,11 +307,17 @@
                 5:"古诗"
               },
               alignTypeList:[{
-                value: '居中对齐',
+                value:  -1,
+                label: '左对齐'
+              },{
+                value: 0,
                 label: '居中对齐'
               },{
-                value: '左对齐',
+                value: 1,
                 label: '左对齐'
+              },{
+                value: 2,
+                label: '两端对齐'
               }],
               materialTypeList:[
                 {
@@ -619,7 +625,7 @@
             },
 
             handleEdit(index, row){
-                this.updateStatus = true;
+                this.updateStatus = false;
                 this.editVisible = true;
                 this.dialogTitle = "修改语料"
                 Object.keys(this.form).forEach((item) => {
@@ -634,7 +640,7 @@
                 let id = this.tableData[index].id
                 this.$confirm("确定要删除吗？").then(() => {
                     deleteLanguageMaterial({id}).then((res)=>{
-                      if(res.data !== 0){
+                      if(res.code !== 0){
                         this.$message({message: res.msg, type: 'error'});
                       }else {
                         this.loading = true;
