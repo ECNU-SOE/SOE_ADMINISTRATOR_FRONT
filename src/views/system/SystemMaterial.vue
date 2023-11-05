@@ -63,12 +63,17 @@
         <el-table-column prop="type" label="类型" align="center"></el-table-column>
         <el-table-column prop="difficulty" label="难度" align="center" sortable width="100"></el-table-column>
         <el-table-column prop="refText" label="文本内容" align="center" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column label="标签" align="center">
+        <el-table-column label="标签" align="center"  width="150">
           <template slot-scope="scope">
             {{ returnTagsStr(scope.row.tags)}}
           </template>
         </el-table-column>
-        <el-table-column label="使用次数" align="center" width="100">
+        <el-table-column label="对齐方式" align="center"  width="150">
+          <template slot-scope="scope">
+            {{ returnTextAlignStr(scope.row.textAlign)}}
+          </template>
+        </el-table-column>
+        <el-table-column label="频次" align="center" width="100">
           <template slot-scope="scope">
             {{ scope.row.usageCnt || 0}}
           </template>
@@ -136,8 +141,8 @@
                     show-stops>
                 </el-slider>
               </el-form-item>
-            <el-form-item label="对齐方式" prop="text_align">
-              <el-select v-model="form.text_align">
+            <el-form-item label="对齐方式" prop="textAlign">
+              <el-select v-model="form.textAlign">
                 <el-option
                     v-for="item in alignTypeList"
                     :key="item.value"
@@ -314,7 +319,7 @@
                 label: '居中对齐'
               },{
                 value: 1,
-                label: '左对齐'
+                label: '右对齐'
               },{
                 value: 2,
                 label: '两端对齐'
@@ -530,15 +535,36 @@
                 this.form = JSON.parse(JSON.stringify(tempObj));
             },
 
-            returnTagsStr(list){
-                let returnStr = [];
-                if(list && list.length){
-                    list.forEach((ele)=>{
-                        returnStr.push(ele.name);
-                    });
-                }
-                return returnStr.join(',');
-            },
+          returnTextAlignStr(index){
+            let str = '';
+            switch (index){
+              case -1:
+              default:
+                str = '左对齐';
+                break;
+              case 0:
+                str = '居中对齐';
+                break;
+              case 1:
+                str = '右对齐';
+                break;
+              case 2:
+                str = '两端对齐';
+                break;
+           }
+            return str;
+          },
+
+          returnTagsStr(list){
+            let returnStr = [];
+            if(list && list.length){
+              list.forEach((ele)=>{
+                returnStr.push(ele.name);
+              });
+            }
+            return returnStr.join(',');
+          },
+
           handleClearInfo(){
             this.materialQueryForm = {};
             this.loading = true;
@@ -677,44 +703,25 @@
                     newForm.difficulty = parseFloat(newForm.difficulty);
                     delete newForm.tags;
                     if(newForm.id){
-                        if(newForm.userBy && parseInt(newForm.userBy) > 0){
-                            this.$confirm(`当前有${parseInt(newForm.userBy)}个语料组使用该语料。确定要修改当前语料信息吗？`).then(() => {
-                                updateLanguageMaterial({data:newForm}).then((res) => {
-                                    if(res.code !== 0){
-                                        this.$message({message: res.msg, type: 'error'});
-                                        return;
-                                    }
-                                    this.editVisible = false;
-                                    this.loading = true;
-                                    getLanguageMaterial(this.pagination).then((resData)=>{
-                                        this.setData(resData);
-                                    })
-                                    this.$message({message: "修改语料成功!", type: 'success'});
-                                }).catch((e)=>{
-                                    this.$message({message: `修改失败，原因为${e.msg}`, type: 'error'});
-                                });
-                            }).catch(() => {});
-                        }else{
-                            updateLanguageMaterial({data:newForm}).then((res) => {
-                                if(res.code !== 0){
-                                    this.$message({message: res.msg, type: 'error'});
-                                    return;
-                                }
-                                this.editVisible = false;
-                              this.loading = true;
-                                getLanguageMaterial(this.pagination).then((resData)=>{
-                                    this.setData(resData);
-                                })
-                                this.$message({message: "修改语料成功!", type: 'success'});
-                            }).catch((e)=>{
-                                this.$message({message: `修改失败，原因为${e.msg}`, type: 'error'});
-                            });
+                      updateLanguageMaterial({data:newForm}).then((res) => {
+                        if(res.code !== 0){
+                          this.$message({message: `修改失败,原因为${res.msg}!`, type: 'error'});
+                          return;
                         }
+                        this.editVisible = false;
+                        this.loading = true;
+                        getLanguageMaterial(this.pagination).then((resData)=>{
+                          this.setData(resData);
+                        })
+                        this.$message({message: "修改语料成功!", type: 'success'});
+                      }).catch((e)=>{
+                        this.$message({message: `修改失败，原因为${e.msg}`, type: 'error'});
+                      });
                     }else {
                         delete newForm.id;
                         addLanguageMaterial({data:newForm}).then((res) => {
                             if(res.code !== 0){
-                                this.$message({message: "添加失败!", type: 'error'});
+                                this.$message({message: `添加失败,原因为${res.msg}!`, type: 'error'});
                                 return;
                             }
                             this.editVisible = false;

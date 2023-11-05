@@ -59,7 +59,7 @@
         <el-form-item label="标签权重">
           <el-input v-model="selections.weight"></el-input>
         </el-form-item>
-        <el-form-item label="标签种类">
+        <el-form-item label="标签类别">
           <el-input v-model="selections.category"></el-input>
 <!--          <el-select v-model="selections.category" style="width: 45%;">-->
 <!--            <el-option label="A" value=0>A</el-option>-->
