@@ -6,7 +6,10 @@ export const getLanguageMaterial = (query) => {
     url: `/corpus-server/api/cpsrcd/v1/list?cur=${query.pageNum || '1'}&size=${query.pageSize || '999'}`,
     method: 'post',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 

@@ -6,7 +6,10 @@ export const showAllLanguageMaterialGroup = (opt) => {
     url: `/corpus-server/api/cpsgrp/v1/list?cur=${opt.cur||1}&size=${opt.size || 22}`,
     method: 'post',
     data: opt,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -27,7 +30,10 @@ export const getCurrentLanguageMaterialGroup = (opt) => {
     url: `/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=${opt.id}`,
     method: 'get',
     data: opt,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -36,7 +42,10 @@ export const updateCurrentLanguageMaterialGroup = (opt) => {
     url: `/corpus-server/api/cpsgrp/v1/update`,
     method: 'post',
     data: opt,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -57,7 +66,10 @@ export const getLanguageMaterial = (query) => {
     url: `/corpus-server/api/corpus/v1/list?cur=1&size=100`,
     method: 'post',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -66,7 +78,10 @@ export const addTopicInterface = (query) => {
     url: `/corpus-server/api/topic/v1/add`,
     method: 'post',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -75,7 +90,10 @@ export const getTopicInterface = (query) => {
     url: `/corpus-server/api/topic/v1/detail?topicId=${query.id}`,
     method: 'get',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -84,7 +102,10 @@ export const updateTopicInterface = (query) => {
     url: `/corpus-server/api/topic/v1/update`,
     method: 'post',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -93,7 +114,10 @@ export const deleteTopicInterface = (query) => {
     url: `/corpus-server/api/topic/v1/del?topicId=${query.id}`,
     method: 'get',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -102,7 +126,10 @@ export const addCpsrcdInterface = (query) => {
     url: `/corpus-server/api/topic_cps/v1/add`,
     method: 'post',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -111,7 +138,10 @@ export const updateCpsrcdInterface = (query) => {
     url: `/corpus-server/api/topic_cps/v1/mod`,
     method: 'post',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 
@@ -120,7 +150,10 @@ export const deleteCpsrcdInterface = (query) => {
     url: `/corpus-server/api/topic_cps/v1/del`,
     method: 'post',
     data: query,
-    params:{}
+    params:{},
+    headers:{
+      token:getJwtToken()
+    }
   });
 };
 

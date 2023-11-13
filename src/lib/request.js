@@ -25,7 +25,7 @@ class HttpRequest {
         instance.interceptors.response.use(
             response => {
                 const res = response.data;
-                if (res.code === 0 || (Array.isArray(res) && res.length)) {
+                if (res.code === 0 || (Array.isArray(res) && res.length) || response.status === 200) {
                     return res;
                 } else {
                     throw res;

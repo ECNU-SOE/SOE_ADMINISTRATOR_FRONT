@@ -19,10 +19,18 @@
 
     <el-card>
       <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-plus" size="small" style="margin: 0 0 10px 20px">添加标签</el-button>
+      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-upload" size="small" style="margin: 0 0 10px 20px">批量导入</el-button>
+      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-upload2" size="small" style="margin: 0 0 10px 20px">批量导出</el-button>
+      <el-button type="primary"  @click="handleAdd()" class="addMaterialBtn" icon="el-icon-delete" size="small" style="margin: 0 0 10px 20px">批量删除</el-button>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header" >
-        <el-table-column prop="id" label="标签标识" align="center" width="100" />
+        <el-table-column type="selection"></el-table-column>
         <el-table-column prop="name" label="标签名称" align="center"></el-table-column>
         <el-table-column prop="weight" label="标签权重" align="center"/>
+        <el-table-column prop="usageCnt" label="频次" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.usageCnt || 0}}
+          </template>
+        </el-table-column>
         <el-table-column prop="category" label="标签类别" align="center">
 <!--          <template slot-scope="scope">-->
 <!--            {{ modObj[scope.row.modStatus]}}-->

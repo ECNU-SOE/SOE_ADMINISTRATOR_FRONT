@@ -5,6 +5,15 @@ module.exports = {
   // publicPath:process.env.NODE_ENV === 'production'?"/dongbb/":"/",
   publicPath:"/",
   chainWebpack: config =>{
+    config.module
+        .rule('')
+        .test(/\.md$/)
+        .use('html-loader')
+        .loader('html-loader')
+        .end()
+        .use('markdown-loader')
+        .loader('markdown-loader')
+        .end(),
     config.resolve.alias
       .set('@',resolve('src'))
   },

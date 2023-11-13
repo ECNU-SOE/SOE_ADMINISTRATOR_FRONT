@@ -230,6 +230,18 @@ export const addMaterialToClass = (query) => {
     });
 };
 
+export const exportScores = (query) => {
+    return jwtServerInstance.request({
+        url: `/api/v1/statistics/exportExcel?classId=${query.classId}&cpsgrpId=${query.cpsgrpId}`,
+        method: 'get',
+        responseType:'blob',
+        data: query,
+        params:{},
+        headers:{
+            token:getJwtToken()
+        }
+    });
+};
 
 
 

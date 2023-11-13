@@ -84,7 +84,7 @@
           <el-button size="small" type="primary" @click="handleUpdate()" style="margin-left: 2rem;">
             批量打分
           </el-button>
-          <el-button size="small" type="primary" @click="handleGetDetail()">
+          <el-button size="small" type="primary" @click="handleExportScores()">
             导出成绩
           </el-button>
         </div>
@@ -204,7 +204,7 @@
 import MixinCUD from '@/components/MixinCUD'
 import {getCurrentTimeStr, getCurrentTimeStrWithoutHour} from "@/lib/utils";
 import {addCurrentLanguageMaterialGroup, showAllLanguageMaterialGroup} from "@/api/system/sys_materialGroup";
-import {addMaterialToClass} from "@/api/system/sys_class";
+import {addMaterialToClass,exportScores} from "@/api/system/sys_class";
 export default {
   name: "testJob",
   mixins: [MixinCUD],
@@ -401,6 +401,23 @@ export default {
 
     selectMaterialGroupList(status){
       this.getJobList({status:status});
+    },
+
+    handleExportScores(){
+      exportScores({cpsgrpId:sessionStorage.getItem("cpsrcdId"),classId:this.currentClass.id}).then((res)=>{
+        const blob = new Blob([res.data], { type: 'application/vnd.ms-excel;charset=utf-8' })
+        let url1 = window.URL.createObjectURL(blob)
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url1
+
+        link.setAttribute('download', 'data.xlsx')
+        document.body.appendChild(link)
+        link.click()
+          console.log(res);
+      }).catch((e)=>{
+        console.log(e.msg);
+      })
     }
 
   }

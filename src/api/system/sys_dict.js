@@ -21,9 +21,9 @@ export const getSysDict =
     return jwtServerInstance.request({
         url:'/system/sysdict/query',
         method:'post',
-      headers:{
-        token:getJwtToken()
-      },
+        headers:{
+            token:getJwtToken()
+        },
         data:qs.stringify({
             groupName,
             groupCode
@@ -36,9 +36,9 @@ export const updateSysDict = (dialogForm) => {
     return jwtServerInstance.request({
         url:'/system/sysdict/update',
         method:'post',
-      headers:{
-        token:getJwtToken()
-      },
+        headers:{
+            token:getJwtToken()
+        },
         data:dialogForm
     })
 }
@@ -48,9 +48,9 @@ export const addSysDict = (dialogForm) => {
     return jwtServerInstance.request({
         url:'/system/sysdict/add',
         method:'post',
-      headers:{
-        token:getJwtToken()
-      },
+        headers:{
+            token:getJwtToken()
+        },
         data:dialogForm
     })
 }
@@ -60,9 +60,9 @@ export const deleteSysDict = (deleteId) => {
     return jwtServerInstance.request({
         url:'/system/sysdict/delete',
         method:'post',
-      headers:{
-        token:getJwtToken()
-      },
+        headers:{
+            token:getJwtToken()
+        },
         data:qs.stringify({
             id:deleteId
         })
