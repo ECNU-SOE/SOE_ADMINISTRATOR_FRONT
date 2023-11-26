@@ -241,7 +241,8 @@ export default {
         title:"",
         score:"",
         difficulty:0,
-        description:""
+        description:"",
+        subCpsrcds:[]
       },
       classInfoList:[],
       materialQueryForm:{
@@ -320,7 +321,9 @@ export default {
       if(classId){
         getCurrentLanguageMaterialGroup({id:classId}).then((res)=>{
           this.tableData = [];
-          this.tableData.push(res.data);
+          if(res.code === 0){
+            this.tableData.push(res.data);
+          }
         }).catch((e)=>{
           this.tableData = [];
           console.log(e)
@@ -401,7 +404,7 @@ export default {
     },
 
     releaseStatusFunc(idx){
-      if(idx === 0){
+      if(idx === 0 || !idx){
         return `未使用`
       }else {
         return `${idx}个班级`
@@ -471,6 +474,10 @@ export default {
     }).then(res => {
       next(vm => vm.setData(res))
     });
+  },
+  beforeRouteLeave(to,from,next){
+    to.meta.keepAlive = true
+    next(0)
   }
 };
 </script>

@@ -245,7 +245,7 @@
           </el-col>
         </el-row>
         <div>{{form.type}}</div>
-        <mavon-editor v-model="previewDemo" :subfield="false" :toolbar="mavonObj"/>
+        <mavon-editor v-model="previewDemo" :subfield="false" :toolbar="mavonObj" @change="changePreviewDemo"/>
 <!--        <el-input v-model="previewDemo" type="textarea" :autosize="returnAutoObj"></el-input>-->
       </div>
       <template #footer>
@@ -792,7 +792,7 @@
           }else {
             this.previewDemo = this.form.refText;
           }
-          marked(this.previewDemo)
+          // marked(this.previewDemo)
         },
 
         handleMaterialSort(idx){
@@ -808,6 +808,10 @@
             this.setData(res);
           })
         },
+
+        changePreviewDemo(value,render){
+          this.html = render
+        }
 
       },
 

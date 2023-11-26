@@ -77,6 +77,7 @@
               <el-button size="small" type="primary" icon="el-icon-circle-plus-outline" @click="addCpsrcdId()">
                 新增子题
               </el-button>
+              <label class="cpsrcdCountClass">当前题型有 {{topicObj.subCpsrcds && topicObj.subCpsrcds.length || 0}} 个子题</label>
             </el-form-item>
             <div>
               <div v-for="(subItem,subIndex) in topicObj.subCpsrcds" :key="subIndex">
@@ -89,13 +90,7 @@
                         <el-descriptions-item label="题目类型" span="3">{{subItem.type}}</el-descriptions-item>
                         <el-descriptions-item label="评测模式" span="3">{{ modeObj[subItem.evalMode]}}</el-descriptions-item>
                         <el-descriptions-item label="难度" span="3">
-                          <el-rate
-                              v-model="subItem.difficulty"
-                              show-score
-                              disabled
-                              text-color="#ff9900"
-                              score-template="">
-                          </el-rate>
+                         {{subItem.difficulty}}
                         </el-descriptions-item>
                         <el-descriptions-item label="标签" span="3">
                           <template v-for="(tagItem,tagIndex) in subItem.tags">
@@ -296,9 +291,11 @@
                     action=""
                     :on-change="audioUrlChange"
                     :show-file-list="false">
-                <el-input v-model="tempCpsrcdObj.audioUrl" :disabled="true"></el-input>
+              <el-row :gutter="54">
+                <el-col :span="20"><el-input v-model="tempCpsrcdObj.audioUrl" :disabled="true"></el-input></el-col>
+                <el-col :span="3"><el-button size="small" type="primary" @click="playAudio">播放</el-button></el-col>
+              </el-row>
             </el-upload>
-            <el-button size="small" type="primary" @click="playAudio">播放</el-button>
         </el-form-item>
         <el-form-item label="标签">
             <el-tag
@@ -347,12 +344,11 @@
                 </el-col>
             </el-row>
             <el-form-item label="题目难度" prop="difficulty">
-                <el-rate
-                        v-model="tempCpsrcdObj.difficulty"
-                        show-score
-                        text-color="#ff9900"
-                        score-template="(0-10)">
-                </el-rate>
+              <el-slider
+                  v-model="tempCpsrcdObj.difficulty"
+                  :max="12"
+                  show-stops>
+              </el-slider>
             </el-form-item>
 
             <el-form-item label="评测文本" prop="refText">
@@ -368,13 +364,13 @@
                         action=""
                         :on-change="audioUrlChange"
                         :show-file-list="false">
-                    <el-row :gutter="24">
-                        <el-col :span="20"><el-input v-model="tempCpsrcdObj.audioUrl" ></el-input></el-col>
-                        <el-col :span="3"><el-button size="small" type="primary" :loading="loadingStatus">上传</el-button></el-col>
-                    </el-row>
+                  <el-row :gutter="54">
+                    <el-col :span="15"><el-input v-model="tempCpsrcdObj.audioUrl" ></el-input></el-col>
+                    <el-col :span="3"><el-button size="small" type="primary" :loading="loadingStatus">上传</el-button></el-col>
+                    <el-col :span="3"><el-button size="small" type="primary">录音</el-button></el-col>
+                    <el-col :span="3"><el-button size="small" type="primary" @click="playAudio($event)">播放</el-button></el-col>
+                  </el-row>
                 </el-upload>
-                <el-button size="small" type="primary">录音</el-button>
-                <el-button size="small" type="primary" @click="playAudio">播放</el-button>
             </el-form-item>
             <el-form-item label="标签">
                 <el-tag
@@ -405,7 +401,7 @@
         </el-form>
         <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="editMaterialVisible = false">取 消</el-button>
+                    <el-button @click="editMaterialVisible = false;editCpsrcdVisible = true">取 消</el-button>
                     <el-button type="primary" @click="saveEdit">确 定</el-button>
                 </span>
         </template>
@@ -557,7 +553,7 @@ export default {
         value: 3,
         label: '试卷'
       }],
-dialogMaterialTitle:'',
+      dialogMaterialTitle:'',
       topicObj:{
         id:"",
         cpsgrpId:this.cpsgrpId,
@@ -565,34 +561,35 @@ dialogMaterialTitle:'',
         title:"",
         score:"",
         difficulty:0,
-        description:""
+        description:"",
+        subCpsrcds:[]
       },
-        materialTypeList:[
-            {
-                value: 'read_word',
-                label: '朗读字词'
-            },{
-                value: 'read_sentence1',
-                label: '朗读句子'
-            },{
-                value: 'read_sentence2',
-                label: '朗读诗词'
-            },{
-                value: 'read_chapter',
-                label: '朗读文章'
-            },{
-                value: 'single',
-                label: '单选题'
-            },{
-                value: 'multiply',
-                label: '多选题'
-            },{
-                value: 'write',
-                label: '写汉字'
-            },{
-                value: 'answer',
-                label: '看视频答题'
-            }],
+      materialTypeList:[
+        {
+          value: 'read_word',
+          label: '朗读字词'
+        },{
+          value: 'read_sentence1',
+          label: '朗读句子'
+        },{
+          value: 'read_sentence2',
+          label: '朗读诗词'
+        },{
+          value: 'read_chapter',
+          label: '朗读文章'
+        },{
+          value: 'single',
+          label: '单选题'
+        },{
+          value: 'multiply',
+          label: '多选题'
+        },{
+          value: 'write',
+          label: '写汉字'
+        },{
+          value: 'answer',
+          label: '看视频答题'
+        }],
       modeOptions:[
         {
           value: 1,
@@ -608,23 +605,23 @@ dialogMaterialTitle:'',
           label: 'read_chapter'
         }
       ],
-        contentStyle:{
-            // "text-align":"center"
-            "overflow":"hidden",
-            "text-overflow":"ellipsis",
-            "white-space":"nowrap"
-        },
-        contentItemStyle:{
+      contentStyle:{
+        // "text-align":"center"
+        "overflow":"hidden",
+        "text-overflow":"ellipsis",
+        "white-space":"nowrap"
+      },
+      contentItemStyle:{
 
-        },
-        labelItemStyle:{
-            "text-align":"center;",
-            "margin-left":"0.2rem"
-        },
-        labelStyle:{
-            "text-align":"center;",
-            "margin-left":"5px"
-        },
+      },
+      labelItemStyle:{
+        "text-align":"center;",
+        "margin-left":"0.2rem"
+      },
+      labelStyle:{
+        "text-align":"center;",
+        "margin-left":"5px"
+      },
       tagOptions:[],
       statusObj:{0: '允许修改', 1: '允许创建者修改', 2: '不允许创建者修改'},
       statusOptions:[
@@ -651,7 +648,7 @@ dialogMaterialTitle:'',
       tempTopicObj:{},
         materialData:[],
       tempCpsrcdObj:{
-        cNum:0,
+        cNum:-1,
         wordWeight:0.5,
         tags:[]
       },
@@ -699,22 +696,21 @@ dialogMaterialTitle:'',
     console.log(this.$route)
   },
   methods:{
-
-
-updateMaterial(){
-//    this.dialogMaterialTitle = '修改题目';
-//    getTagsList({}).then((res)=>{
-//        this.tagsData = res.data.records;
-//    }).catch((e)=>{
-//        this.$message({message: `获取标签失败，原因为${e}`, type: 'error'});
-//    });
-//    this.editMaterialVisible = true;
-//    this.editCpsrcdVisible = false;
-},
+    updateMaterial(){
+      this.dialogMaterialTitle = '修改原题';
+      getTagsList({}).then((res)=>{
+        this.tagsData = res.data.records;
+      }).catch((e)=>{
+        this.$message({message: `获取标签失败，原因为${e}`, type: 'error'});
+      });
+      this.editMaterialVisible = true;
+      this.editCpsrcdVisible = false;
+    },
 
     selectMaterial($event,index){
         this.chooseMaterial = JSON.parse(JSON.stringify(this.materialData[index]));
     },
+
     clearTopicObj(){
       this.tempTopicObj={
         id:"",
@@ -723,36 +719,39 @@ updateMaterial(){
         title:"",
         score:"",
         difficulty:0,
-        description:""
-      },
-          this.topicObj={
-            id:"",
-            cpsgrpId:this.cpsgrpId,
-            tNum:0,
-            title:"",
-            score:"",
-            difficulty:0,
-            description:""
-          }
+        description:"",
+        subCpsrcds:[]
+      };
+      this.topicObj={
+        id:"",
+        cpsgrpId:this.cpsgrpId,
+        tNum:0,
+        title:"",
+        score:"",
+        difficulty:0,
+        description:"",
+        subCpsrcds:[]
+      }
     },
 
-      saveEdit(){
-          if(!this.tempCpsrcdObj.refText){
-              this.$message({message: "语料文本内容不能为空.", type: 'warning'});
-              return false;
-          }
-          this.editMaterialVisible = false;
-          updateLanguageMaterial({data:this.form}).then((res) => {
-              if(res.code !== 0){
-                  this.$message({message: "修改失败!", type: 'error'});
-                  return;
-              }
-              this.$message({message: "修改语料成功!", type: 'success'});
-          }).catch((e)=>{
-              this.$message({message: `修改失败，原因为${e}`, type: 'error'});
-          });
+    saveEdit(){
+      if(!this.tempCpsrcdObj.refText){
+        this.$message({message: "语料文本内容不能为空.", type: 'warning'});
+        return false;
+      }
+      updateLanguageMaterial({data:this.tempCpsrcdObj}).then((res) => {
+        if(res.code !== 0){
+          this.$message({message: "修改失败!", type: 'error'});
+          return;
+        }
+        this.$message({message: "修改语料成功!", type: 'success'});
+        this.editMaterialVisible = false;
+        this.editCpsrcdVisible = true;
+      }).catch((e)=>{
+        this.$message({message: `修改失败，原因为${e}`, type: 'error'});
+      });
 
-      },
+    },
 
     clearTopicsList(){
       this.formObj.topics = [];
@@ -763,7 +762,7 @@ updateMaterial(){
         id:"",
         cpsgrpId:"",
         topicId:"",
-        cNum:"",
+        cNum:-1,
         evalMode:1,
         refText:"",
         difficulty:-1,
@@ -817,12 +816,12 @@ updateMaterial(){
       this.editMaterialGroupVisible = true;
     },
 
-      handleClearInfo(){
-          this.materialQueryForm = {};
-          getLanguageMaterial({}).then((res)=>{
-              this.materialData = res.data.records;
-          })
-      },
+    handleClearInfo(){
+      this.materialQueryForm = {};
+      getLanguageMaterial({}).then((res)=>{
+        this.materialData = res.data.records;
+      })
+    },
 
     handleSearch(){
         let opt = JSON.parse(JSON.stringify(this.materialQueryForm))
@@ -851,9 +850,13 @@ updateMaterial(){
 
     editTopic(tempObj){
       this.clearTopicObj();
+      let self = this;
       getTopicInterface({id:tempObj.id}).then((res)=>{
         tempObj = res.data
-        this.topicObj = tempObj;
+        self.topicObj = tempObj;
+        if(Array.isArray(self.topicObj.subCpsrcds)){
+          self.topicObj.subCpsrcds = self.topicObj.subCpsrcds.filter(it=>it !== null);
+        }
       })
     },
 
@@ -969,6 +972,7 @@ updateMaterial(){
         obj.score = tempObj.score;
         obj.enablePinyin = tempObj.enablePinyin;
         obj.description = tempObj.description;
+        obj.tags = tempObj.tags;
         updateCpsrcdInterface(obj).then((res)=>{
           if(res.data){
             this.$message({message: "更新成功", type: 'success'});
@@ -1112,8 +1116,20 @@ updateMaterial(){
 
     playAudio(idx){
       this.cpsrcdTitle = "播放音频"
-      this.currentAudioUrl = this.topicObj.subCpsrcds[idx].audioUrl
-      this.editAudioVisible = true;
+      if(typeof idx === 'number'){
+        this.currentAudioUrl = this.topicObj.subCpsrcds[idx].audioUrl || ''
+      }else{
+        idx.stopPropagation();
+        this.currentAudioUrl = this.tempCpsrcdObj.audioUrl || ''
+      }
+      if(!this.currentAudioUrl){
+        this.$message({message: "当前题目无可播放音频，请上传后再试！", type: 'warning'});
+      }else{
+        if(document.querySelector("#currentAudio")){
+          document.querySelector("#currentAudio").load();
+        }
+        this.editAudioVisible = true;
+      }
     },
 
     closeAudio(){
@@ -1140,16 +1156,19 @@ updateMaterial(){
       this.inputVisible = false;
       this.inputValue = '';
     },
-      returnTagsStr(list){
-          let returnStr = [];
-          if(list && list.length){
-              list.forEach((ele)=>{
-                  returnStr.push(ele.name);
-              });
-          }
-          return returnStr.join(',');
-      },
-
+    returnTagsStr(list){
+      let returnStr = [];
+      if(list && list.length){
+        list.forEach((ele)=>{
+          returnStr.push(ele.name);
+        });
+      }
+      return returnStr.join(',');
+    },
+  },
+  beforeRouteLeave(to,from,next){
+    to.meta.keepAlive = true
+    next(0)
   }
 }
 </script>
@@ -1164,6 +1183,11 @@ updateMaterial(){
   position: absolute;
   margin-left: 55%;
   margin-top: 5%;
+}
+
+.cpsrcdCountClass{
+  margin-left: 5%;
+  color:black
 }
 
 </style>

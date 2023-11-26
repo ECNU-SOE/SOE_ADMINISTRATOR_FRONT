@@ -70,6 +70,11 @@ const mutations = {
         let loadedRoutes = []; //动态加载的前端路由初始化
         //将菜单转换为路由
         menuToRoutes(state.menuList,loadedRoutes)
+        for(let i in loadedRoutes){
+            loadedRoutes[i].meta = {
+                keepAlive:true
+            };
+        }
         //固定路由与动态加载的前端路由进行组合
         for(let i in systemRoutes){
           if(systemRoutes[i].path === HOME_PAGE){
