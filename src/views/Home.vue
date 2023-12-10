@@ -21,7 +21,7 @@
 <!--          </a>-->
           <el-dropdown>
             <span class="el-dropdown-link">
-                <el-avatar style="float: left"> {{username}} </el-avatar>
+                <el-avatar style="float: left;white-space: nowrap;overflow:hidden;text-overflow:ellipsis;font-size: 0.05rem;" :title="username"> {{username}} </el-avatar>
                 <i class="el-icon-arrow-down el-icon--right" style="padding-top: 20px"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
@@ -56,7 +56,7 @@
 
 <script>
   import LayoutMenu from './layout/LayoutMenu'
-  import {getTokenUser, setJwtToken} from '@/lib/utils'
+  import {getRealName, setJwtToken} from '@/lib/utils'
 
   export default {
     name: 'home',
@@ -102,7 +102,7 @@
     },
     computed: {
       username() {
-        return getTokenUser();
+        return getRealName();
       }
     }
   }
