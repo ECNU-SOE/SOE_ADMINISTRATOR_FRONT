@@ -13,7 +13,8 @@ export const getApiTree = (apiQueryForm) => {
     },
     data:qs.stringify({
       apiNameLike:apiQueryForm.name,
-      apiStatus: apiQueryForm.status
+      apiStatus: apiQueryForm.status,
+      apiUrl: apiQueryForm.url,
     })
   })
 }

@@ -2,7 +2,7 @@
   <div>
     <el-card body-style="padding: 0">
       <el-form ref="apiQueryform" :model="apiQueryform" label-width="80px">
-        <el-row :gutter="20">
+        <el-row :gutter="23">
           <el-col :span="6">
             <el-form-item label="接口名称" prop="name">
               <el-input v-model="apiQueryform.name" placeholder="请输入接口名称"></el-input>
@@ -10,13 +10,22 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="是否禁用" prop="status">
-              <dict-select :dictValue.sync="apiQueryform.status"
-                           groupCode="common.status"
-                           placeholder="请选择接口禁用状态">
-              </dict-select>
+              <el-select v-model="apiQueryform.status" placeholder="请选择接口禁用状态">
+                <el-option
+                    v-for="item in apiStatusList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6" :offset="6">
+          <el-col :span="6">
+            <el-form-item label="访问路径" prop="url">
+              <el-input v-model="apiQueryform.url" placeholder="请输入接口路径"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
             <el-form-item>
               <el-button type="primary" size="small"
                          @click="submitQueryForm()" icon="el-icon-search">
@@ -37,8 +46,9 @@
       <el-table :data="tableData" row-key="id"
                 border  stripe style="width: 100%;margin-bottom: 20px;">
         <el-table-column prop="apiName" label="接口名称" width="300" fixed="left"/>
+        <el-table-column prop="apiSort" label="排序" width="100" align="center"/>
         <el-table-column prop="url" label="访问路径" width="300" align="center"/>
-        <el-table-column prop="apiSort" label="排序" width="300" align="center"/>
+        <el-table-column prop="apiNums" label="接口数量" width="300" align="center"/>
         <el-table-column prop="status" label="是否禁用" width="" align="center">
           <template slot-scope="scope">
             <el-switch
@@ -119,7 +129,8 @@
         apiTree: [], //带root节点,用于新增修改
         apiQueryform: {
           name: "",
-          status: null
+          status: null,
+          url:''
         },
         elTreeDisabled:false,
         elTreeProps:{         // el-tree-select配置项（必选）
@@ -146,12 +157,13 @@
           apiSort: [
             {required: true, message: '请输入当前接口在同级接口内的排序序号', trigger: 'blur'},
           ]
-        }
+        },
+        apiStatusList:[{label:'全部',value:null},{label:'已禁用',value:true},{label:'未禁用',value:false}]
       }
     },
     methods: {
       submitQueryForm() {
-          getApiTree({name: this.apiQueryform.name, status: this.apiQueryform.status || false})
+          getApiTree({name: this.apiQueryform.name, status: this.apiQueryform.status,url:this.apiQueryform.url})
           .then(res => {
             this.setData(res)
           })
@@ -258,7 +270,7 @@
       }
     },
     beforeRouteEnter(to, from, next) {
-      getApiTree({name: "", status: false}).then(res => {
+      getApiTree({name: null, status: null,url:null}).then(res => {
         next(vm => vm.setData(res))
       })
     }
