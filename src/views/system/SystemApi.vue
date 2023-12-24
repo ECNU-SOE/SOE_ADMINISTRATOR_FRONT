@@ -2,7 +2,7 @@
   <div>
     <el-card body-style="padding: 0">
       <el-form ref="apiQueryform" :model="apiQueryform" label-width="80px">
-        <el-row :gutter="23">
+        <el-row :gutter="24">
           <el-col :span="6">
             <el-form-item label="接口名称" prop="name">
               <el-input v-model="apiQueryform.name" placeholder="请输入接口名称"></el-input>
@@ -25,7 +25,7 @@
               <el-input v-model="apiQueryform.url" placeholder="请输入接口路径"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="5">
             <el-form-item>
               <el-button type="primary" size="small"
                          @click="submitQueryForm()" icon="el-icon-search">

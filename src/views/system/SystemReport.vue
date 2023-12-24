@@ -97,7 +97,7 @@ export default {
   data(){
     return {
       reportQueryForm:{
-        reviewStatus:0
+        reviewStatus:null
       },
       currentAudioUrl:'',
       cpsrcdObjRules:{},

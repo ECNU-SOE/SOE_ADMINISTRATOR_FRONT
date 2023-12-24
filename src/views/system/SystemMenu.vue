@@ -191,16 +191,16 @@
       },
       changeStatus(index,row){
         changeMenuStatus(row.id,row.status).then(res => {
-          if(res.isok){ //如果请求成功，给出成功信息提示
+          if(res.data){ //如果请求成功，给出成功信息提示
             //res.data=controller返回的数据
-            this.$message({message: res.data, type: 'success'});
+            this.$message({message: res.msg, type: 'success'});
           }
         })
       },
       changeHidden(index,row){
         changeMenuHidden(row.id,row.hidden).then(res => {
-          if(res.isok){ //如果请求成功，给出成功信息提示
-            this.$message({message: res.data, type: 'success'});
+          if(res.data){ //如果请求成功，给出成功信息提示
+            this.$message({message: res.msg, type: 'success'});
           }
         })
       },

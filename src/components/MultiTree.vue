@@ -9,7 +9,6 @@
           ref="tree"
           :data="data"
           show-checkbox
-          :check-strictly="true"
           node-key="id"
           :default-expanded-keys="defaultExpandedKeys"
           :default-checked-keys="defaultCheckedKeys"
